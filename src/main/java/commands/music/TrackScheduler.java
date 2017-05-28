@@ -17,7 +17,6 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 class TrackScheduler extends AudioEventAdapter {
 	
-	private static final int HISTORY_SIZE = 5;
 	private final AudioPlayer player;
 	private final BlockingQueue<AudioTrack> queue;
 	
@@ -40,7 +39,6 @@ class TrackScheduler extends AudioEventAdapter {
 		player.startTrack(next, false);
 	}
 	
-	void playPrevious() {}
 	
 	@Override
 	public void onPlayerPause(AudioPlayer player) {}
@@ -56,6 +54,7 @@ class TrackScheduler extends AudioEventAdapter {
 	@Override
 	public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
 		System.out.println("Ended");
+		
 		if (endReason.mayStartNext) {
 			playNext();
 		}

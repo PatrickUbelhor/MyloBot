@@ -10,6 +10,7 @@ public final class Skip extends Music {
 	
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
+		event.getTextChannel().sendMessage("Skipping...").queue();
 		trackScheduler.playNext();
 	}
 	
