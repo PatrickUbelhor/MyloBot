@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-Implementation-Title: First Build
-Implementation-Version: 1.0
-Main-Class: main.Bot
-

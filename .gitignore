@@ -1,0 +1,13 @@
+out/
+build/
+gradle/
+.idea/
+.gradle/
+
+src/test/
+
+gradlew
+gradlew.bat
+SurrenderUpdates.txt
+
+**/.DS_Store
