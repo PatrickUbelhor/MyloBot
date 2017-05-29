@@ -11,7 +11,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * @author PatrickUbelhor
- * @version 05/27/2017
+ * @version 05/28/2017
  *
  * TODO: Add in responses from bot
  */
@@ -39,6 +39,14 @@ class TrackScheduler extends AudioEventAdapter {
 		player.startTrack(next, false);
 	}
 	
+	void pause() {
+		player.setPaused(true);
+	}
+	
+	void unpause() {
+		player.setPaused(false);
+	}
+	
 	
 	@Override
 	public void onPlayerPause(AudioPlayer player) {}
@@ -49,6 +57,7 @@ class TrackScheduler extends AudioEventAdapter {
 	@Override
 	public void onTrackStart(AudioPlayer player, AudioTrack track) {
 		System.out.println("Track has begun");
+		player.getPlayingTrack().setPosition(0);
 	}
 	
 	@Override

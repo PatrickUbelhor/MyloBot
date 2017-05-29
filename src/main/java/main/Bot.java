@@ -21,7 +21,7 @@ import java.util.Objects;
 
 /**
  * @author PatrickUbelhor
- * @version 5/27/2017
+ * @version 5/28/2017
  */
 public class Bot extends ListenerAdapter {
 	
@@ -34,6 +34,8 @@ public class Bot extends ListenerAdapter {
 	private static final ClearText clearText = new ClearText();
 	private static final Play play = new Play();
 	private static final Skip skip = new Skip();
+	private static final Pause pause = new Pause();
+	private static final Unpause unpause = new Unpause();
 	private static final AddPicture picture = new AddPicture();
 	private static final Reverse reverse = new Reverse();
 	private static final Shutdown shutdown = new Shutdown();

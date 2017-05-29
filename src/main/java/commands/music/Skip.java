@@ -4,7 +4,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 /**
  * @author PatrickUbelhor
- * @version 05/27/2017
+ * @version 05/28/2017
  */
 public final class Skip extends Music {
 	

@@ -2,9 +2,11 @@ group 'DiscordBot'
 version '1.0'
 
 apply plugin: 'java'
+apply plugin: 'application'
 
 sourceCompatibility = 1.8
-//mainClassName = 'main.Bot'
+targetCompatibility = 1.8
+mainClassName = 'main.Bot'
 
 repositories {
     mavenCentral()
@@ -16,3 +18,19 @@ dependencies {
     compile 'com.sedmelluq:lavaplayer:1.2.39'
     compile 'net.dv8tion:JDA:3.1.0_206'
 }
+
+
+jar {
+    manifest {
+        attributes('Implementation-Title': 'First Build',
+                'Implementation-Version': version,
+                'Main-Class': 'main.Bot')
+
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+
+}
+
