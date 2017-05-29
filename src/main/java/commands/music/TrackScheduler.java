@@ -11,9 +11,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * @author PatrickUbelhor
- * @version 05/28/2017
- *
- * TODO: Add in responses from bot
+ * @version 05/29/2017
  */
 class TrackScheduler extends AudioEventAdapter {
 	
@@ -40,7 +38,9 @@ class TrackScheduler extends AudioEventAdapter {
 	}
 	
 	void pause() {
-		player.setPaused(true);
+		if (player.getPlayingTrack() != null) {
+			player.setPaused(true);
+		}
 	}
 	
 	void unpause() {

@@ -7,16 +7,16 @@ import java.util.HashMap;
 
 /**
  * @author PatrickUbelhor
- * @version 5/19/2017
+ * @version 5/29/2017
  */
 public abstract class Command {
 	
-	private static ArrayList<Command> commandList = new ArrayList<>(6); // Used to manually order the commands for 'help'
-	private static HashMap<String, Command> commandMap = new HashMap<>(6, 1f);
+	private static ArrayList<Command> commandList = new ArrayList<>(12); // Used to manually order the commands for 'help'
+	private static HashMap<String, Command> commandMap = new HashMap<>(12, 1f);
 	
 	protected Command() {
 		commandList.add(this);
-		commandMap.put(this.getUsage().split(" ")[0], this);
+		commandMap.put(this.getName(), this);
 	}
 	
 	
@@ -74,6 +74,5 @@ public abstract class Command {
 	public abstract void run(MessageReceivedEvent event, String[] args);
 	public abstract String getUsage();
 	public abstract String getDescription();
-//	public abstract String getDetailedDescription();
 	
 }

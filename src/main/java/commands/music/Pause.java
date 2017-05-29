@@ -5,8 +5,6 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 /**
  * @author PatrickUbelhor
  * @version 05/28/2017
- *
- * TODO: Disallow if no track is currently playing. Do this in TrackScheduler
  */
 public class Pause extends Music {
 	

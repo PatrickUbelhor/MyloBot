@@ -9,14 +9,14 @@ import java.util.ArrayList;
 
 /**
  * @author PatrickUbelhor
- * @version 02/16/2017
+ * @version 05/29/2017
+ *
+ * TODO: Make it remember what channel subscribed to this when the bot boots up
  */
 public class CheckSurrender extends Command {
 	
-	// TODO: Make it remember what channel subscribed to this when the bot boots up
-	// TODO: "!check add" subscribes channel
-	// TODO: "!check remove" unsubscribes channel
-	// TODO: "!check" manually checks for an update
+	private static final int NUM_UPDATES = 3;
+	private static final String OUTPUT_FILE = "./SurrenderUpdates.txt";
 	
 	private static ArrayList<MessageChannel> activeChannels = new ArrayList<>();
 	private Checker checker = new Checker();
@@ -24,7 +24,7 @@ public class CheckSurrender extends Command {
 	
 	public boolean subInit() {
 		try {
-			File file = new File("./SurrenderUpdates.txt");
+			File file = new File(OUTPUT_FILE);
 			file.createNewFile();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -39,32 +39,69 @@ public class CheckSurrender extends Command {
 		
 		MessageChannel channel = event.getChannel();
 		
-		if (activeChannels.contains(channel)) {
-			activeChannels.remove(channel);
-			if (activeChannels.isEmpty()) {
-				checker.interrupt();
+		if (args.length > 1) {
+			switch (args[1].toLowerCase()) {
+				
+				case "add":
+					if (activeChannels.contains(channel)) {
+						channel.sendMessage("Channel is already subscribed").queue();
+					} else {
+						activeChannels.add(channel);
+						if (!checker.isAlive()) {
+							checker = new Checker();
+							checker.start();
+						}
+						channel.sendMessage("Adding channel to S@20 update queue").queue();
+					}
+					break;
+					
+				case "remove":
+					if (activeChannels.contains(channel)) {
+						activeChannels.remove(channel);
+						if (activeChannels.isEmpty()) {
+							checker.interrupt();
+						}
+						channel.sendMessage("Removing channel from S@20 update queue").queue();
+					} else {
+						channel.sendMessage("Channel is not subscribed").queue();
+					}
+					break;
+					
+				default:
+					checkOnce(channel);
+					break;
 			}
-			channel.sendMessage("Removing channel from S@20 update queue").queue();
 		} else {
-			activeChannels.add(channel);
-			if (!checker.isAlive()) {
-				checker = new Checker();
-				checker.start();
-			}
-			channel.sendMessage("Adding channel to S@20 update queue").queue();
+			checkOnce(channel);
 		}
 		
 	}
 	
 	
 	public String getUsage() {
-		return "check";
+		return "check [add/remove]";
 	}
 	
 	
 	public String getDescription() {
 		return "Adds/removes the channel from a queue to receive updates\n\t" +
-				"when a new post is made on Surrender@20";
+				"when a new post is made on Surrender@20. No optional\n\t" +
+				"will manually check the feed once.";
+	}
+	
+	
+	private void checkOnce(MessageChannel channel) {
+		boolean foundResult = false;
+		for (String s : checker.check()) {
+			if (s != null) {
+				channel.sendMessage(s).queue();
+				foundResult = true;
+			}
+		}
+		
+		if (!foundResult) {
+			channel.sendMessage("No updates were found!").queue();
+		}
 	}
 	
 	
@@ -104,7 +141,7 @@ public class CheckSurrender extends Command {
 			InputStream is;
 			BufferedReader br;
 			FileWriter fw;
-			String[] lines = new String[3];
+			String[] lines = new String[NUM_UPDATES];
 			String previousResult = "";
 			boolean keyFound = false;
 			
@@ -113,7 +150,7 @@ public class CheckSurrender extends Command {
 				url = new URL("http://www.surrenderat20.net/search/label/Releases/");
 				is = url.openStream();
 				br = new BufferedReader(new InputStreamReader(is));
-				fw = new FileWriter("./SurrenderUpdates.txt", true);
+				fw = new FileWriter(OUTPUT_FILE, true);
 				
 				
 				// Fetches the links from S@20 webpage
@@ -140,7 +177,7 @@ public class CheckSurrender extends Command {
 				
 				
 				// Checks to see if the link has already been posted
-				br = new BufferedReader(new FileReader("./SurrenderUpdates.txt"));
+				br = new BufferedReader(new FileReader(OUTPUT_FILE));
 				for (i = 0; i < lines.length; i++) {
 					while ((previousResult = br.readLine()) != null) {
 						if (previousResult.equals(lines[i])) {
@@ -168,7 +205,6 @@ public class CheckSurrender extends Command {
 			
 			return lines;
 		}
-		
 	}
 	
 }
