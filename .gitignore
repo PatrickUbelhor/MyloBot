@@ -11,3 +11,4 @@ gradlew.bat
 SurrenderUpdates.txt
 
 **/.DS_Store
+.gitignore
