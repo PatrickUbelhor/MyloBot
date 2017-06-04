@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 /**
  * @author PatrickUbelhor
- * @version 5/29/2017
+ * @version 06/03/2017
  */
 public abstract class Command {
 	
@@ -56,6 +56,27 @@ public abstract class Command {
 	 * @return True if initialization succeeded, otherwise false
 	 */
 	protected boolean subInit() {
+		return true;
+	}
+	
+	
+	/**
+	 * Runs finalization code that runs when the bot shuts down. Sends failure
+	 * message to console if an error occurs when closing a command.
+	 */
+	public final void end() {
+		if (!subEnd()) {
+			System.out.printf("Module %s failed to shut down properly!", this.getName());
+		}
+	}
+	
+	
+	/**
+	 * Runs finalization code that runs when the bot shuts down.
+	 *
+	 * @return True if finalization succeeded, otherwise false
+	 */
+	protected boolean subEnd() {
 		return true;
 	}
 	

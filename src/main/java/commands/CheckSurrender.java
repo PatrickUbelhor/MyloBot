@@ -1,5 +1,6 @@
 package commands;
 
+import main.Bot;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
@@ -9,23 +10,47 @@ import java.util.ArrayList;
 
 /**
  * @author PatrickUbelhor
- * @version 05/29/2017
- *
- * TODO: Make it remember what channel subscribed to this when the bot boots up
+ * @version 6/3/2017
  */
 public class CheckSurrender extends Command {
 	
 	private static final int NUM_UPDATES = 3;
-	private static final String OUTPUT_FILE = "./SurrenderUpdates.txt";
+	private static final long DELAY_TIME = 10800000; // Time between checks, in ms. 3 hours.
+	private static final String OUTPUT_FILE_LINKS = "./SurrenderUpdates.txt";
+	private static final String OUTPUT_FILE_IDS = "./ChannelIDs.txt";
 	
 	private static ArrayList<MessageChannel> activeChannels = new ArrayList<>();
+	private static ArrayList<Long> channelIDs = new ArrayList<>();
+	private static String[] oldLinks = new String[NUM_UPDATES];
 	private Checker checker = new Checker();
 	
 	
 	public boolean subInit() {
+		BufferedReader br = null;
+		String line = null;
+		
 		try {
-			File file = new File(OUTPUT_FILE);
-			file.createNewFile();
+			File links = new File(OUTPUT_FILE_LINKS);
+			if (!links.createNewFile()) {
+				br = new BufferedReader(new FileReader(OUTPUT_FILE_LINKS));
+				
+				while ((line = br.readLine()) != null) {
+					addLink(line);
+				}
+			}
+			
+			File ids = new File(OUTPUT_FILE_IDS);
+			if (!ids.createNewFile()) {
+				br = new BufferedReader(new FileReader(OUTPUT_FILE_IDS));
+				
+				while ((line = br.readLine()) != null) {
+					channelIDs.add(Long.parseLong(line));
+					activeChannels.add(Bot.getJDA().getTextChannelById(Long.parseLong(line)));
+				}
+			}
+			
+			if (br != null) br.close();
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
@@ -38,6 +63,7 @@ public class CheckSurrender extends Command {
 	public void run(MessageReceivedEvent event, String[] args) {
 		
 		MessageChannel channel = event.getChannel();
+		channelIDs.add(channel.getIdLong());
 		
 		if (args.length > 1) {
 			switch (args[1].toLowerCase()) {
@@ -78,6 +104,22 @@ public class CheckSurrender extends Command {
 	}
 	
 	
+	public boolean subEnd() {
+		
+		try (FileWriter fw = new FileWriter(OUTPUT_FILE_IDS, false)) {
+			for (long id : channelIDs) {
+				fw.append(Long.toString(id));
+				fw.append('\n');
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+		return true;
+	}
+	
+	
 	public String getUsage() {
 		return "check [add/remove]";
 	}
@@ -105,6 +147,12 @@ public class CheckSurrender extends Command {
 	}
 	
 	
+	private void addLink(String link) {
+		System.arraycopy(oldLinks, 0, oldLinks, 1, oldLinks.length);
+		oldLinks[0] = link;
+	}
+	
+	
 	private class Checker extends Thread {
 		
 		public void run() {
@@ -124,7 +172,7 @@ public class CheckSurrender extends Command {
 				
 				
 				try {
-					Thread.sleep(10800000); // Sleeps for 3 hours
+					Thread.sleep(DELAY_TIME); // Sleeps for 3 hours
 				} catch (InterruptedException e) {
 					System.out.println("Update thread killed");
 					isActive = false;
@@ -141,7 +189,7 @@ public class CheckSurrender extends Command {
 			InputStream is;
 			BufferedReader br;
 			FileWriter fw;
-			String[] lines = new String[NUM_UPDATES];
+			String[] newLinks = new String[NUM_UPDATES];
 			String previousResult = "";
 			boolean keyFound = false;
 			
@@ -150,24 +198,24 @@ public class CheckSurrender extends Command {
 				url = new URL("http://www.surrenderat20.net/search/label/Releases/");
 				is = url.openStream();
 				br = new BufferedReader(new InputStreamReader(is));
-				fw = new FileWriter(OUTPUT_FILE, true);
+				fw = new FileWriter(OUTPUT_FILE_LINKS, true);
 				
 				
 				// Fetches the links from S@20 webpage
-				int i = lines.length - 1;
-				while (i >= 0 && (lines[i] = br.readLine()) != null) {
+				int i = newLinks.length - 1;
+				while (i >= 0 && (newLinks[i] = br.readLine()) != null) {
 					
-					if (lines[i].contains("blog-posts hfeed")) {
+					if (newLinks[i].contains("blog-posts hfeed")) {
 						keyFound = true;
-					} else if (lines[i].contains("blog-pager")) {
+					} else if (newLinks[i].contains("blog-pager")) {
 						keyFound = false;
 					}
 					
-					if (lines[i].contains("news-title") && keyFound) {
-						lines[i] = br.readLine();
-						lines[i] = lines[i].split("\'")[1];
+					if (newLinks[i].contains("news-title") && keyFound) {
+						newLinks[i] = br.readLine();
+						newLinks[i] = newLinks[i].split("\'")[1];
 						
-						if (i == lines.length) {
+						if (i == newLinks.length) {
 							break;
 						}
 						
@@ -177,18 +225,25 @@ public class CheckSurrender extends Command {
 				
 				
 				// Checks to see if the link has already been posted
-				br = new BufferedReader(new FileReader(OUTPUT_FILE));
-				for (i = 0; i < lines.length; i++) {
-					while ((previousResult = br.readLine()) != null) {
-						if (previousResult.equals(lines[i])) {
-							lines[i] = null;
+				for (int j = 0; j < newLinks.length; j++) {
+					for (String oldLink : oldLinks) {
+						if (newLinks[j].equals(oldLink)) {
+							newLinks[j] = null;
 							break;
 						}
 					}
 					
-					if (lines[i] != null) {
-						fw.append(lines[i]);
+					if (newLinks[i] != null) {
+						fw.append(newLinks[i]);
 						fw.append("\n");
+					}
+				}
+				
+				
+				// Updates the old links
+				for (String link : newLinks) {
+					if (link != null) {
+						addLink(link);
 					}
 				}
 				
@@ -203,7 +258,7 @@ public class CheckSurrender extends Command {
 				ioe.printStackTrace();
 			}
 			
-			return lines;
+			return newLinks;
 		}
 	}
 	

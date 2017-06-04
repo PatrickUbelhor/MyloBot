@@ -1,3 +1,7 @@
+Update 1.2:
+    - CheckSurrender now remembers subscribed channels on reboot
+    - CheckSurrender keeps last three links in memory to reduce file IO
+
 Update 1.1:
     - Fixed bug where user could pause when no song is playing.
     - Resized initial data structures in "Command.java".

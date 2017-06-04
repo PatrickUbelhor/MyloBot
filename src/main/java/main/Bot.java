@@ -21,7 +21,7 @@ import java.util.Objects;
 
 /**
  * @author PatrickUbelhor
- * @version 5/28/2017
+ * @version 6/3/2017
  */
 public class Bot extends ListenerAdapter {
 	
@@ -39,6 +39,8 @@ public class Bot extends ListenerAdapter {
 	private static final AddPicture picture = new AddPicture();
 	private static final Reverse reverse = new Reverse();
 	private static final Shutdown shutdown = new Shutdown();
+	
+	private static JDA jda;
 
 	public static void main(String[] args) {
 		
@@ -48,17 +50,21 @@ public class Bot extends ListenerAdapter {
 		
 		try {
 			
-			JDA jda = new JDABuilder(AccountType.BOT)
+			jda = new JDABuilder(AccountType.BOT)
 							  .setToken("MjU1MTQ2Mzc5MDA4MDE2Mzk1.C_6mDw.kJCzmESndFbF17S0s6tuLdMGmmA")
 //							  .setToken("MTkxMzI3NjQzNTc1MTIzOTY4.C2Kd8g.wXykM8CsgX6NIwD7GTnQp7DE-08") THIS IS REDBOT
 							  .buildBlocking();
 			jda.addEventListener(new Bot());
 			
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	
+	public static JDA getJDA() {
+		return jda;
 	}
 
 	
@@ -77,7 +83,7 @@ public class Bot extends ListenerAdapter {
 		 */
 		if (msg.charAt(0) != KEY || author.isBot()) return; // Checking isBot() prevents user from spamming a !reverse
 
-
+		
 		switch (event.getChannelType()) {
 			case TEXT:
 				// TODO: delete messages after a qualified period of time
