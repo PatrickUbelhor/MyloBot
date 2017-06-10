@@ -31,31 +31,27 @@ public class CheckSurrender extends Command {
 	
 	public boolean subInit() {
 		
-		// Try to load all of the news links
-		try (BufferedReader br = new BufferedReader(new FileReader(OUTPUT_FILE_LINKS))){
+		BufferedReader br = null;
+		String line;
+		
+		try {
 			
+			// Try to load all of the news links
 			File links = new File(OUTPUT_FILE_LINKS);
-			String line;
-			
 			if (!links.createNewFile()) {
+				
+				br = new BufferedReader(new FileReader(OUTPUT_FILE_LINKS));
 				while ((line = br.readLine()) != null) {
 					addLink(line);
 				}
+				
 			}
 			
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
-		
-		
-		// Try to load all of the subscribed channels
-		try (BufferedReader br = new BufferedReader(new FileReader(OUTPUT_FILE_IDS))){
-			
+			// Try to load all of the subscribed channels
 			File idFile = new File(OUTPUT_FILE_IDS);
-			String line;
-			
 			if (!idFile.createNewFile()) {
+				
+				br = new BufferedReader(new FileReader(OUTPUT_FILE_IDS));
 				while ((line = br.readLine()) != null) {
 					String[] ids = line.split(ID_DELIMITER);
 					channelIDs.add(new ID(ids[0], ids[1]));
@@ -72,10 +68,21 @@ public class CheckSurrender extends Command {
 				checker.start();
 			}
 			
-		} catch (IOException | NullPointerException e) {
-			// FIXME use this to test your modularity
+		} catch (IOException e) {
+			
 			e.printStackTrace();
 			return false;
+			
+		} finally {
+			
+			// Closes the BufferedReader
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		
 		return true;
