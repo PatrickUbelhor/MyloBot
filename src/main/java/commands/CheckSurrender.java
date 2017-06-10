@@ -26,7 +26,7 @@ public class CheckSurrender extends Command {
 	private static ArrayList<MessageChannel> activeChannels = new ArrayList<>();
 	private static ArrayList<ID> channelIDs = new ArrayList<>();
 	private static String[] oldLinks = new String[NUM_UPDATES];
-	private Checker checker = null;
+	private Checker checker = new Checker();
 	
 	
 	public boolean subInit() {
@@ -64,7 +64,6 @@ public class CheckSurrender extends Command {
 					activeChannels.add(tc);
 				}
 				
-				checker = new Checker();
 				checker.start();
 			}
 			
@@ -157,7 +156,7 @@ public class CheckSurrender extends Command {
 	
 	
 	public String getUsage() {
-		return "check [add/remove]";
+		return "check [add|remove]";
 	}
 	
 	

@@ -17,12 +17,11 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Objects;
 
 /**
  * @author PatrickUbelhor
- * @version 6/3/2017
+ * @version 6/10/2017
  *
  * TODO: Optimize !clear to grab groups of messages when possible. Even if it's slow to check each individual one's age
  * and count them up, but it at least won't be choppy.
@@ -55,9 +54,11 @@ public class Bot extends ListenerAdapter {
 //							  .setToken("MTkxMzI3NjQzNTc1MTIzOTY4.C2Kd8g.wXykM8CsgX6NIwD7GTnQp7DE-08") THIS IS REDBOT
 							  .buildBlocking();
 			
+			System.out.println("Initializing commands...");
 			for (Command c : Command.getCommandList().toArray(new Command[] {})) {
 				c.init();
 			}
+			System.out.println("Initialization finished.");
 			
 			jda.addEventListener(new Bot());
 			
