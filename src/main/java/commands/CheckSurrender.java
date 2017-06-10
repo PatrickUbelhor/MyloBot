@@ -23,41 +23,48 @@ public class CheckSurrender extends Command {
 	private static ArrayList<MessageChannel> activeChannels = new ArrayList<>();
 	private static ArrayList<ID> channelIDs = new ArrayList<>();
 	private static String[] oldLinks = new String[NUM_UPDATES];
-	private Checker checker = new Checker();
+	private Checker checker = null;
 	
 	
 	public boolean subInit() {
-		BufferedReader br = null;
-		String line = null;
 		
-		try {
+		// Try to load all of the news links
+		try (BufferedReader br = new BufferedReader(new FileReader(OUTPUT_FILE_LINKS))){
+			
 			File links = new File(OUTPUT_FILE_LINKS);
+			String line;
+			
 			if (!links.createNewFile()) {
-				br = new BufferedReader(new FileReader(OUTPUT_FILE_LINKS));
-				
 				while ((line = br.readLine()) != null) {
 					addLink(line);
 				}
 			}
 			
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+		
+		// Try to load all of the subscribed channels
+		try (BufferedReader br = new BufferedReader(new FileReader(OUTPUT_FILE_IDS))){
+			
 			File idFile = new File(OUTPUT_FILE_IDS);
+			String line;
+			
 			if (!idFile.createNewFile()) {
-				br = new BufferedReader(new FileReader(OUTPUT_FILE_IDS));
-				
 				while ((line = br.readLine()) != null) {
 					String[] ids = line.split(ID_DELIMITER);
 					channelIDs.add(new ID(ids[0], ids[1]));
 					activeChannels.add(Bot.getJDA().getGuildById(ids[0]).getTextChannelById(ids[1]));
 				}
+				
+				checker = new Checker();
+				checker.start();
 			}
 			
-			if (br != null) br.close();
-			
-		} catch (IOException e) {
+		} catch (IOException | NullPointerException e) {
 			// FIXME use this to test your modularity
-			e.printStackTrace();
-			return false;
-		} catch (NullPointerException e) {
 			e.printStackTrace();
 			return false;
 		}
@@ -141,7 +148,7 @@ public class CheckSurrender extends Command {
 	public String getDescription() {
 		return "Adds/removes the channel from a queue to receive updates\n\t" +
 				"when a new post is made on Surrender@20. No optional\n\t" +
-				"will manually check the feed once.";
+				"parameter will manually check the feed once.";
 	}
 	
 	

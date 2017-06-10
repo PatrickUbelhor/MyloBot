@@ -17,6 +17,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Objects;
 
 /**
@@ -47,7 +48,7 @@ public class Bot extends ListenerAdapter {
 
 	public static void main(String[] args) {
 		
-		for (Command c : Command.getCommandList()) {
+		for (Command c : Command.getCommandList().toArray(new Command[] {})) {
 			c.init();
 		}
 		

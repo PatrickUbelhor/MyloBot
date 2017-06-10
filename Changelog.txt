@@ -1,3 +1,7 @@
+Bugfix 1.2.2
+    - Bot no longer crashes when a command fails to initialize. Command remains unusable.
+    - Fixed description format of !pause
+
 Bugfix 1.2.1
     - Fixed bug where S@20 checker thread wouldn't die on bot shutdown, therefore keeping the program running.
 

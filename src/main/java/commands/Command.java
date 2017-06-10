@@ -45,6 +45,7 @@ public abstract class Command {
 		if (!subInit()) {
 			commandList.remove(this); // FIXME: Removing this during total initiation throws exception
 			commandMap.remove(this.getName());
+			System.err.printf("Failed to initialize %s", this.getName());
 		}
 	}
 	
