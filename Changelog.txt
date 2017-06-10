@@ -1,3 +1,10 @@
+Bugfix 1.2.5
+    - CheckSurrender properly creates new thread on init.
+    - Added initialization terminal output.
+
+Bugfix 1.2.4
+    - CheckSurrender creates save files if they are missing.
+
 Bugfix 1.2.3
     - CheckSurrender now successfully initializes after loading subscribed channels.
 

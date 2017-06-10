@@ -8,6 +8,7 @@ import java.util.LinkedList;
 /**
  * @author PatrickUbelhor
  * @version 06/10/2017
+ * @noinspection WeakerAccess
  */
 public abstract class Command {
 	
@@ -43,9 +44,11 @@ public abstract class Command {
 	 */
 	public final void init() {
 		if (!subInit()) {
-			commandList.remove(this); // FIXME: Removing this during total initiation throws exception
+			commandList.remove(this);
 			commandMap.remove(this.getName());
-			System.err.printf("Failed to initialize !%s\n", this.getName());
+			System.err.printf("\tFailed to initialize !%s\n", this.getName());
+		} else {
+			System.out.printf("\tInitialized !%s\n", this.getName());
 		}
 	}
 	
