@@ -22,6 +22,9 @@ import java.util.Objects;
 /**
  * @author PatrickUbelhor
  * @version 6/3/2017
+ *
+ * TODO: Optimize !clear to grab groups of messages when possible. Even if it's slow to check each individual one's age
+ * and count them up, but it at least won't be choppy.
  */
 public class Bot extends ListenerAdapter {
 	

@@ -2,17 +2,17 @@ package commands;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 /**
  * @author PatrickUbelhor
- * @version 06/03/2017
+ * @version 06/10/2017
  */
 public abstract class Command {
 	
-	private static ArrayList<Command> commandList = new ArrayList<>(12); // Used to manually order the commands for 'help'
-	private static HashMap<String, Command> commandMap = new HashMap<>(12, 1f);
+	private static final LinkedList<Command> commandList = new LinkedList<>(); // Used to manually order the commands for 'help'
+	private static final HashMap<String, Command> commandMap = new HashMap<>(12, 1f);
 	
 	protected Command() {
 		commandList.add(this);
@@ -21,9 +21,9 @@ public abstract class Command {
 	
 	
 	/**
-	 * @return An ArrayList containing all active commands
+	 * @return A LinkedList containing all active commands
 	 */
-	public static ArrayList<Command> getCommandList() {
+	public static LinkedList<Command> getCommandList() {
 		return commandList;
 	}
 	
@@ -43,7 +43,7 @@ public abstract class Command {
 	 */
 	public final void init() {
 		if (!subInit()) {
-			commandList.remove(this);
+			commandList.remove(this); // FIXME: Removing this during total initiation throws exception
 			commandMap.remove(this.getName());
 		}
 	}

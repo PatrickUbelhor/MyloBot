@@ -1,6 +1,9 @@
-Update 1.2:
-    - CheckSurrender now remembers subscribed channels on reboot
-    - CheckSurrender keeps last three links in memory to reduce file IO
+Bugfix 1.2.1
+    - Fixed bug where S@20 checker thread wouldn't die on bot shutdown, therefore keeping the program running.
+
+Update 1.2.0:
+    - CheckSurrender now remembers subscribed channels on reboot.
+    - CheckSurrender keeps last three links in memory to reduce file IO.
 
 Update 1.1:
     - Fixed bug where user could pause when no song is playing.
