@@ -48,16 +48,17 @@ public class Bot extends ListenerAdapter {
 
 	public static void main(String[] args) {
 		
-		for (Command c : Command.getCommandList().toArray(new Command[] {})) {
-			c.init();
-		}
-		
 		try {
 			
 			jda = new JDABuilder(AccountType.BOT)
 							  .setToken("MjU1MTQ2Mzc5MDA4MDE2Mzk1.C_6mDw.kJCzmESndFbF17S0s6tuLdMGmmA")
 //							  .setToken("MTkxMzI3NjQzNTc1MTIzOTY4.C2Kd8g.wXykM8CsgX6NIwD7GTnQp7DE-08") THIS IS REDBOT
 							  .buildBlocking();
+			
+			for (Command c : Command.getCommandList().toArray(new Command[] {})) {
+				c.init();
+			}
+			
 			jda.addEventListener(new Bot());
 			
 		} catch (Exception e) {

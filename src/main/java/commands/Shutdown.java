@@ -9,11 +9,13 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 public class Shutdown extends Command {
 	
 	public void run(MessageReceivedEvent event, String[] args) {
+		
+		System.out.println("Shutting down...");
 		for (Command command : getCommandList()) {
 			command.end();
-			System.out.printf("Killed %s\n", command.getName());
+			System.out.printf("\tKilled %s\n", command.getName());
 		}
-		System.out.println("Commands all killed");
+		System.out.println("All commands killed");
 		event.getJDA().shutdown();
 		System.out.println("Shutdown complete");
 	}

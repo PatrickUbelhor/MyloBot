@@ -1,7 +1,10 @@
 package commands;
 
 import main.Bot;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.io.*;
@@ -56,7 +59,13 @@ public class CheckSurrender extends Command {
 				while ((line = br.readLine()) != null) {
 					String[] ids = line.split(ID_DELIMITER);
 					channelIDs.add(new ID(ids[0], ids[1]));
-					activeChannels.add(Bot.getJDA().getGuildById(ids[0]).getTextChannelById(ids[1]));
+					
+					JDA jda = Bot.getJDA();
+					Guild guild = jda.getGuildById(ids[0]);
+					TextChannel tc = jda.getTextChannelById(ids[1]);
+					System.out.printf("Found subscriber: %s|%s\n", guild.getName(), tc.getName());
+					
+					activeChannels.add(tc);
 				}
 				
 				checker = new Checker();
@@ -194,7 +203,7 @@ public class CheckSurrender extends Command {
 				try {
 					Thread.sleep(DELAY_TIME); // Sleeps for 3 hours
 				} catch (InterruptedException e) {
-					System.out.println("Update thread killed");
+					System.out.println("S@20 update thread killed");
 					isActive = false;
 				}
 			}
@@ -210,7 +219,6 @@ public class CheckSurrender extends Command {
 			BufferedReader br;
 			FileWriter fw;
 			String[] newLinks = new String[NUM_UPDATES];
-			String previousResult = "";
 			boolean keyFound = false;
 			
 			

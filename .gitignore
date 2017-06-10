@@ -1,0 +1,22 @@
+
+# IntelliJ
+.idea/
+build/
+out/
+
+# Mac
+**/.DS_Store
+
+# Gradle
+.gradle/
+gradle/
+gradlew
+gradlew.bat
+
+# Saved data
+ChannelIDs.txt
+SurrenderUpdates.txt
+
+# Will add later; empty and useless right now
+src/test/
+src/main/resources/

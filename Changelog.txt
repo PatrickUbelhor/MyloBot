@@ -1,3 +1,6 @@
+Bugfix 1.2.3
+    - CheckSurrender now successfully initializes after loading subscribed channels.
+
 Bugfix 1.2.2
     - Bot no longer crashes when a command fails to initialize. Command remains unusable.
     - Fixed description format of !pause
