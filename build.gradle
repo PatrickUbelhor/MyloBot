@@ -1,5 +1,5 @@
 group 'DiscordBot'
-version '1.2.0'
+version '1.2.2'
 
 apply plugin: 'java'
 apply plugin: 'application'
@@ -22,7 +22,7 @@ dependencies {
 
 jar {
     manifest {
-        attributes('Implementation-Title': 'First Build',
+        attributes('Implementation-Title': 'MyloBot',
                 'Implementation-Version': version,
                 'Main-Class': 'main.Bot')
 

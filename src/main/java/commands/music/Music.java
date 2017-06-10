@@ -8,7 +8,7 @@ import commands.Command;
 
 /**
  * @author PatrickUbelhor
- * @version 05/28/2017
+ * @version 06/10/2017
  *
  * TODO: Add responses to user interaction
  */
@@ -27,6 +27,12 @@ abstract class Music extends Command {
 			player.addListener(trackScheduler);
 		}
 		hasInit = true;
+		return true;
+	}
+	
+	@Override
+	protected final boolean subEnd() {
+		playerManager.shutdown();
 		return true;
 	}
 	

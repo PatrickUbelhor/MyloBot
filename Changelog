@@ -1,9 +1,0 @@
-Update 1.2:
-    - CheckSurrender now remembers subscribed channels on reboot
-    - CheckSurrender keeps last three links in memory to reduce file IO
-
-Update 1.1:
-    - Fixed bug where user could pause when no song is playing.
-    - Resized initial data structures in "Command.java".
-    - Overhauled "!check" functionality.
-    - Bot now joins the voice channel of the requester to play music. Refuses if user is not in voice channel.

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 /**
  * @author PatrickUbelhor
- * @version 6/3/2017
+ * @version 06/10/2017
  */
 public class CheckSurrender extends Command {
 	
@@ -18,40 +18,53 @@ public class CheckSurrender extends Command {
 	private static final long DELAY_TIME = 10800000; // Time between checks, in ms. 3 hours.
 	private static final String OUTPUT_FILE_LINKS = "./SurrenderUpdates.txt";
 	private static final String OUTPUT_FILE_IDS = "./ChannelIDs.txt";
+	private static final String ID_DELIMITER = ",";
 	
 	private static ArrayList<MessageChannel> activeChannels = new ArrayList<>();
-	private static ArrayList<Long> channelIDs = new ArrayList<>();
+	private static ArrayList<ID> channelIDs = new ArrayList<>();
 	private static String[] oldLinks = new String[NUM_UPDATES];
-	private Checker checker = new Checker();
+	private Checker checker = null;
 	
 	
 	public boolean subInit() {
-		BufferedReader br = null;
-		String line = null;
 		
-		try {
+		// Try to load all of the news links
+		try (BufferedReader br = new BufferedReader(new FileReader(OUTPUT_FILE_LINKS))){
+			
 			File links = new File(OUTPUT_FILE_LINKS);
+			String line;
+			
 			if (!links.createNewFile()) {
-				br = new BufferedReader(new FileReader(OUTPUT_FILE_LINKS));
-				
 				while ((line = br.readLine()) != null) {
 					addLink(line);
 				}
 			}
 			
-			File ids = new File(OUTPUT_FILE_IDS);
-			if (!ids.createNewFile()) {
-				br = new BufferedReader(new FileReader(OUTPUT_FILE_IDS));
-				
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+		
+		// Try to load all of the subscribed channels
+		try (BufferedReader br = new BufferedReader(new FileReader(OUTPUT_FILE_IDS))){
+			
+			File idFile = new File(OUTPUT_FILE_IDS);
+			String line;
+			
+			if (!idFile.createNewFile()) {
 				while ((line = br.readLine()) != null) {
-					channelIDs.add(Long.parseLong(line));
-					activeChannels.add(Bot.getJDA().getTextChannelById(Long.parseLong(line)));
+					String[] ids = line.split(ID_DELIMITER);
+					channelIDs.add(new ID(ids[0], ids[1]));
+					activeChannels.add(Bot.getJDA().getGuildById(ids[0]).getTextChannelById(ids[1]));
 				}
+				
+				checker = new Checker();
+				checker.start();
 			}
 			
-			if (br != null) br.close();
-			
-		} catch (IOException e) {
+		} catch (IOException | NullPointerException e) {
+			// FIXME use this to test your modularity
 			e.printStackTrace();
 			return false;
 		}
@@ -63,7 +76,6 @@ public class CheckSurrender extends Command {
 	public void run(MessageReceivedEvent event, String[] args) {
 		
 		MessageChannel channel = event.getChannel();
-		channelIDs.add(channel.getIdLong());
 		
 		if (args.length > 1) {
 			switch (args[1].toLowerCase()) {
@@ -73,6 +85,7 @@ public class CheckSurrender extends Command {
 						channel.sendMessage("Channel is already subscribed").queue();
 					} else {
 						activeChannels.add(channel);
+						channelIDs.add(new ID(event.getGuild().getId(), channel.getId()));
 						if (!checker.isAlive()) {
 							checker = new Checker();
 							checker.start();
@@ -84,6 +97,7 @@ public class CheckSurrender extends Command {
 				case "remove":
 					if (activeChannels.contains(channel)) {
 						activeChannels.remove(channel);
+						channelIDs.remove(new ID(event.getGuild().getId(), channel.getId()));
 						if (activeChannels.isEmpty()) {
 							checker.interrupt();
 						}
@@ -106,9 +120,15 @@ public class CheckSurrender extends Command {
 	
 	public boolean subEnd() {
 		
+		if (checker.isAlive()) {
+			checker.interrupt();
+		}
+		
 		try (FileWriter fw = new FileWriter(OUTPUT_FILE_IDS, false)) {
-			for (long id : channelIDs) {
-				fw.append(Long.toString(id));
+			for (ID id : channelIDs) {
+				fw.append(id.guildID);
+				fw.append(ID_DELIMITER);
+				fw.append(id.channelID);
 				fw.append('\n');
 			}
 		} catch (IOException e) {
@@ -128,7 +148,7 @@ public class CheckSurrender extends Command {
 	public String getDescription() {
 		return "Adds/removes the channel from a queue to receive updates\n\t" +
 				"when a new post is made on Surrender@20. No optional\n\t" +
-				"will manually check the feed once.";
+				"parameter will manually check the feed once.";
 	}
 	
 	
@@ -148,7 +168,7 @@ public class CheckSurrender extends Command {
 	
 	
 	private void addLink(String link) {
-		System.arraycopy(oldLinks, 0, oldLinks, 1, oldLinks.length);
+		System.arraycopy(oldLinks, 0, oldLinks, 1, oldLinks.length - 1);
 		oldLinks[0] = link;
 	}
 	
@@ -233,8 +253,8 @@ public class CheckSurrender extends Command {
 						}
 					}
 					
-					if (newLinks[i] != null) {
-						fw.append(newLinks[i]);
+					if (newLinks[j] != null) {
+						fw.append(newLinks[j]);
 						fw.append("\n");
 					}
 				}
@@ -259,6 +279,24 @@ public class CheckSurrender extends Command {
 			}
 			
 			return newLinks;
+		}
+	}
+	
+	
+	private class ID {
+		private final String guildID;
+		private final String channelID;
+		
+		private ID(String guildID, String channelID) {
+			this.guildID = guildID;
+			this.channelID = channelID;
+		}
+		
+		@Override
+		public boolean equals(Object id) {
+			return (id.getClass() == this.getClass() &&
+			        this.guildID.equals(((ID) id).guildID) &&
+			        this.channelID.equals(((ID) id).channelID));
 		}
 	}
 	
