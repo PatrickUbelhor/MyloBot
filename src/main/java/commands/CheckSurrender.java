@@ -195,9 +195,7 @@ public class CheckSurrender extends Command {
 			
 			while (isActive) {
 				
-				String[] results = check();
-				
-				for (String result : results) {
+				for (String result : check()) {
 					if (result != null) {
 						for (MessageChannel c : activeChannels) {
 							c.sendMessage(result).queue();
@@ -221,7 +219,6 @@ public class CheckSurrender extends Command {
 			System.out.println("Checking S@20...");
 			
 			URL url;
-			InputStream is;
 			BufferedReader br;
 			FileWriter fw;
 			String[] newLinks = new String[NUM_UPDATES];
@@ -230,8 +227,7 @@ public class CheckSurrender extends Command {
 			
 			try {
 				url = new URL("http://www.surrenderat20.net/search/label/Releases/");
-				is = url.openStream();
-				br = new BufferedReader(new InputStreamReader(is));
+				br = new BufferedReader(new InputStreamReader(url.openStream()));
 				fw = new FileWriter(OUTPUT_FILE_LINKS, true);
 				
 				
@@ -245,14 +241,8 @@ public class CheckSurrender extends Command {
 						keyFound = false;
 					}
 					
-					if (newLinks[i].contains("news-title") && keyFound) {
-						newLinks[i] = br.readLine();
-						newLinks[i] = newLinks[i].split("\'")[1];
-						
-						if (i == newLinks.length) {
-							break;
-						}
-						
+					if (keyFound && newLinks[i].contains("news-title")) {
+						newLinks[i] = br.readLine().split("\'")[1];
 						i--;
 					}
 				}
@@ -281,12 +271,10 @@ public class CheckSurrender extends Command {
 					}
 				}
 				
-				fw.flush();
 				fw.close();
-				is.close();
 				br.close();
 				
-				System.out.println("Done!");
+				System.out.println("Finished checking S@20");
 				
 			} catch (IOException ioe) {
 				ioe.printStackTrace();

@@ -1,25 +1,29 @@
-Bugfix 1.2.5
+Performance Update 1.2.6
+    - ClearText uses block deletion when possible to reduce jumpiness and increase response time.
+    - Fixed bug where passing !clear a non-integer threw an un-caught exception.
+
+Bug fix 1.2.5
     - CheckSurrender properly creates new thread on init.
     - Added initialization terminal output.
 
-Bugfix 1.2.4
+Bug fix 1.2.4
     - CheckSurrender creates save files if they are missing.
 
-Bugfix 1.2.3
+Bug fix 1.2.3
     - CheckSurrender now successfully initializes after loading subscribed channels.
 
-Bugfix 1.2.2
+Bug fix 1.2.2
     - Bot no longer crashes when a command fails to initialize. Command remains unusable.
-    - Fixed description format of !pause
+    - Fixed description format of !pause.
 
-Bugfix 1.2.1
+Bug fix 1.2.1
     - Fixed bug where S@20 checker thread wouldn't die on bot shutdown, therefore keeping the program running.
 
-Update 1.2.0:
+Feature Update 1.2.0:
     - CheckSurrender now remembers subscribed channels on reboot.
     - CheckSurrender keeps last three links in memory to reduce file IO.
 
-Update 1.1:
+Feature Update 1.1:
     - Fixed bug where user could pause when no song is playing.
     - Resized initial data structures in "Command.java".
     - Overhauled "!check" functionality.
