@@ -2,9 +2,7 @@ package main;
 
 import commands.*;
 import commands.music.*;
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.*;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -18,13 +16,11 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.Random;
 
 /**
  * @author PatrickUbelhor
- * @version 6/10/2017
- *
- * TODO: Optimize !clear to grab groups of messages when possible. Even if it's slow to check each individual one's age
- * and count them up, but it at least won't be choppy.
+ * @version 6/18/2017
  */
 public class Bot extends ListenerAdapter {
 	
@@ -42,6 +38,14 @@ public class Bot extends ListenerAdapter {
 	private static final AddPicture picture = new AddPicture();
 	private static final Reverse reverse = new Reverse();
 	private static final Shutdown shutdown = new Shutdown();
+	
+	private static final String[] images = {
+			"https://i.imgur.com/gjRp51B.gif",
+			"http://i3.kym-cdn.com/photos/images/original/001/242/548/f0f.jpg",
+	        "http://i2.kym-cdn.com/photos/images/original/001/243/406/73c.jpg",
+	        "https://i.ytimg.com/vi/pAcf_VV8KmI/maxresdefault.jpg",
+	        "https://i.redditmedia.com/xpQhnmEXXTecqj4sItzLz3KcCnnX-U64lZm_fo4-gF0.png?w=320&s=2348e46110cc92a1c32be25c2bf69c5d"
+	};
 	
 	private static JDA jda;
 
@@ -82,22 +86,36 @@ public class Bot extends ListenerAdapter {
 		MessageChannel channel = event.getChannel();
 		TextChannel ch = event.getTextChannel();
 		String msg = message.getContent().trim();
-
+		
+		// TODO: could possibly make this a subscription service?
+		if (message.mentionsEveryone()) {
+			// Post atEveryone meme
+			String image = images[new Random().nextInt(images.length)];
+			
+			MessageBuilder mb = new MessageBuilder().setEmbed(new EmbedBuilder().setImage(image).build());
+			Message m = mb.build();
+			channel.sendMessage(m).queue();
+			return;
+		}
+		
+		
 		/*
 		FIXME: Checking for '!' here makes David's autodelete code useless. Check afterwards to fix, but maybe not until
 		we complete the 'TODO' below
 		 */
-		if (msg.charAt(0) != KEY || author.isBot()) return; // Checking isBot() prevents user from spamming a !reverse
+		if ((msg.length() > 0 && msg.charAt(0) != KEY) || author.isBot()) return; // Checking isBot() prevents user from spamming a !reverse
 
 		
 		switch (event.getChannelType()) {
 			case TEXT:
 				// TODO: delete messages after a qualified period of time
+				// TODO: make autodelete a subscription service
 				if (Objects.equals(ch.getName(), "patricks_taxes") ||
 				    Objects.equals(ch.getName(), "twitch_streams")) {
 					
 					message.delete().queue();
 				}
+				
 				break;
 			case PRIVATE:
 				// If from a DM, do special stuff here
