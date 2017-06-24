@@ -4,7 +4,7 @@ import java.util.LinkedHashMap
 
 /**
   * @author PatrickUbelhor
-  * @version 06/23/2017
+  * @version 06/24/2017
   */
 private class HttpResponseBuilder {
 	
@@ -18,7 +18,7 @@ private class HttpResponseBuilder {
 	  * @return This builder, for chaining method calls.
 	  */
 	def setCode(code: Int): HttpResponseBuilder = {
-		this.code = Option.apply(code)
+		this.code = Option(code)
 		this
 	}
 	
@@ -27,7 +27,7 @@ private class HttpResponseBuilder {
 	  * @return This builder, for chaining method calls.
 	  */
 	def setMessage(message: String): HttpResponseBuilder = {
-		this.message = Option.apply(message)
+		this.message = Option(message)
 		this
 	}
 	
@@ -36,7 +36,7 @@ private class HttpResponseBuilder {
 	  * @return This builder, for chaining method calls.
 	  */
 	def setContent(content: String): HttpResponseBuilder = {
-		this.content = Option.apply(content)
+		this.content = Option(content)
 		this
 	}
 	

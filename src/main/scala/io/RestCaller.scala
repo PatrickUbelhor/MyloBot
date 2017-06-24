@@ -6,20 +6,11 @@ import java.util.LinkedHashMap
 
 /**
   * An object for making Restful API calls.
-  *
-  * @param address The URL to hit with the HTTP request.
-  * @param sendType The file format with which to send data.
-  * @param receiveType The file format with which data should be received.
   */
 @throws[MalformedURLException]
-private class RestCaller(address: String, sendType: MimeType, receiveType: MimeType) {
+private class RestCaller() {
 	
-	private val url = new URL(url)
 	private val headerProperties = new LinkedHashMap[String, String]()
-	
-	headerProperties.put("Accept", sendType.get())
-	headerProperties.put("Content-type", receiveType.get())
-	
 	
 	/**
 	  * Add an additional property to the header of the HTTP request.
@@ -36,19 +27,21 @@ private class RestCaller(address: String, sendType: MimeType, receiveType: MimeT
 	  * Make a Restful API call with an empty content body.
 	  *
 	  * @param method The HTTP request method type.
+	  * @param url The URL to hit with the HTTP request.
 	  */
 	@throws[IOException]
-	def request(method: RequestType): HttpResponse = {
+	def request(method: RequestType, url: String): HttpResponse = {
 		
-		val connection: HttpURLConnection = url.openConnection().asInstanceOf[HttpURLConnection]
+		val connection: HttpURLConnection = new URL(url).openConnection().asInstanceOf[HttpURLConnection]
 		var response: HttpResponse = null
 		
 		try {
 			
-			connection.setRequestMethod(method.get())
+			connection.setRequestMethod(method.get)
 			
 			// Apply all the request properties
-			for (key: String <- headerProperties.keySet()) {
+			// TODO: Find a less disgusting way to iterate over a set. Maybe don't use Java.util data structures
+			for (key <- headerProperties.keySet().toArray(new Array[String](0))) {
 				connection.setRequestProperty(key, headerProperties.get(key))
 			}
 			

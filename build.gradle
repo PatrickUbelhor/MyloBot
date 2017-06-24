@@ -2,6 +2,7 @@ group 'DiscordBot'
 version '1.2.6'
 
 apply plugin: 'java'
+apply plugin: 'scala'
 apply plugin: 'application'
 
 sourceCompatibility = 1.8
@@ -15,17 +16,20 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    compile 'com.sedmelluq:lavaplayer:1.2.39'
-    compile 'net.dv8tion:JDA:3.1.1_212'
+    compile group: 'org.scala-lang', name: 'scala-library', version: '2.12.2'
+    compile group: 'com.sedmelluq',  name: 'lavaplayer',    version: '1.2.39'
+    compile group: 'net.dv8tion',    name: 'JDA',           version: '3.1.1_212'
+    compile group: 'org.json',       name: 'json',          version: '20170516'
 }
 
 
 jar {
     manifest {
-        attributes('Implementation-Title': 'MyloBot',
+        attributes(
+                'Implementation-Title': 'MyloBot',
                 'Implementation-Version': version,
-                'Main-Class': 'main.Bot')
-
+                'Main-Class': 'main.Bot'
+        )
     }
 
     from {
