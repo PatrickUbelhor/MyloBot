@@ -2,6 +2,7 @@ package main;
 
 import commands.*;
 import commands.music.*;
+import commands.subscription.CheckSurrender;
 import net.dv8tion.jda.core.*;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -14,18 +15,18 @@ import net.dv8tion.jda.core.events.ResumedEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Objects;
 import java.util.Random;
 
 /**
  * @author PatrickUbelhor
- * @version 6/18/2017
+ * @version 6/21/2017
  */
 public class Bot extends ListenerAdapter {
 	
 	private static final char KEY = '!';
-	private static final HashMap<String, Command> commands = Command.getCommandMap();
+	private static final LinkedHashMap<String, Command> commands = Command.getCommandMap();
 	
 	// Even though we don't use these variables, this still adds them to the HashMap
 	private static final Help help = new Help();
@@ -54,12 +55,12 @@ public class Bot extends ListenerAdapter {
 		try {
 			
 			jda = new JDABuilder(AccountType.BOT)
-							  .setToken("MjU1MTQ2Mzc5MDA4MDE2Mzk1.C_6mDw.kJCzmESndFbF17S0s6tuLdMGmmA")
+							  .setToken("MjU1MTQ2Mzc5MDA4MDE2Mzk1.C_6mDw.kJCzmESndFbF17S0s6tuLdMGmmA") // TODO: Move this to config file
 //							  .setToken("MTkxMzI3NjQzNTc1MTIzOTY4.C2Kd8g.wXykM8CsgX6NIwD7GTnQp7DE-08") THIS IS REDBOT
 							  .buildBlocking();
 			
 			System.out.println("Initializing commands...");
-			for (Command c : Command.getCommandList().toArray(new Command[] {})) {
+			for (Command c : Command.getCommandMap().values().toArray(new Command[] {})) {
 				c.init();
 			}
 			System.out.println("Initialization finished.");

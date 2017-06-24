@@ -5,7 +5,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 /**
  * @author PatrickUbelhor
- * @version 05/28/2017
+ * @version 6/21/2017
  */
 public class Help extends Command {
 	
@@ -14,7 +14,7 @@ public class Help extends Command {
 		MessageChannel channel = event.getChannel();
 		String msg = "```\n";
 		
-		for (Command c : Command.getCommandList()) {
+		for (Command c : Command.getCommandMap().values()) {
 			msg += c.getUsage() + "\n\t" + c.getDescription() + "\n";
 		}
 		msg += "```";

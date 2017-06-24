@@ -1,8 +1,11 @@
 Feature Update 1.3.0
+    - Added "auto delete" subscription service.
     - Bot now responds to "@everyone" mentions with an appropriate meme.
-    - Fixed bug where empty message body throws IndexOutOfBoundsException
+    - Changed unpause command from "!continue" to "!unpause".
+    - Fixed bug where empty message body throws IndexOutOfBoundsException.
+    - CommandMap and CommandList now combined into a LinkedHashMap for ordered listing.
 
-Performance Update 1.2.6
+Enhancement Update 1.2.6
     - ClearText uses block deletion when possible to reduce jumpiness and increase response time.
     - Fixed bug where passing !clear a non-integer threw an un-caught exception.
 

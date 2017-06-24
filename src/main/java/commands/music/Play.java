@@ -4,6 +4,8 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.managers.AudioManager;
 
+import java.io.File;
+
 /**
  * @author PatrickUbelhor
  * @version 05/29/2017
@@ -22,6 +24,9 @@ public final class Play extends Music {
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
 		
+		if (args.length != 2) return;
+		
+		// Joins the voice channel if not in one
 		if (!active) {
 			AudioManager am = event.getGuild().getAudioManager();
 			VoiceChannel vc = null;
@@ -43,6 +48,7 @@ public final class Play extends Music {
 			am.setSendingHandler(new AudioPlayerSendHandler(player));
 			am.openAudioConnection(vc);
 		}
+		
 		
 		playerManager.loadItem(args[1], new MyAudioLoadResultHandler(trackScheduler)); // queues the track
 		
