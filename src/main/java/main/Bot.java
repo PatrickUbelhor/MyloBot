@@ -2,7 +2,8 @@ package main;
 
 import commands.*;
 import commands.music.*;
-import commands.subscription.CheckSurrender;
+import commands.subscription.Subscribe;
+import commands.subscription.Unsubscribe;
 import net.dv8tion.jda.core.*;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -21,7 +22,7 @@ import java.util.Random;
 
 /**
  * @author PatrickUbelhor
- * @version 6/21/2017
+ * @version 6/24/2017
  */
 public class Bot extends ListenerAdapter {
 	
@@ -30,7 +31,6 @@ public class Bot extends ListenerAdapter {
 	
 	// Even though we don't use these variables, this still adds them to the HashMap
 	private static final Help help = new Help();
-	private static final CheckSurrender check = new CheckSurrender();
 	private static final ClearText clearText = new ClearText();
 	private static final Play play = new Play();
 	private static final Skip skip = new Skip();
@@ -39,6 +39,8 @@ public class Bot extends ListenerAdapter {
 	private static final AddPicture picture = new AddPicture();
 	private static final Reverse reverse = new Reverse();
 	private static final Shutdown shutdown = new Shutdown();
+	private static final Subscribe sub = new Subscribe();
+	private static final Unsubscribe unsub = new Unsubscribe();
 	
 	private static final String[] images = {
 			"https://i.imgur.com/gjRp51B.gif",

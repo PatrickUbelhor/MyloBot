@@ -31,6 +31,7 @@ class TwitchRequester(clientId: String) {
 			String.format("https://api.twitch.tv/kraken/streams/%s", userId)
 		)
 		
+		// stream can equal null, hence the try block
 		try {
 			val content = new JSONObject(response.getContent).getJSONObject("stream")
 			result = Option(content.getJSONObject("channel").getString("url"))

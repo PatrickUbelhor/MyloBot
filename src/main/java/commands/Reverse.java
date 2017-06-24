@@ -5,25 +5,25 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 /**
  * @author PatrickUbelhor
- * @version 2/16/2017
+ * @version 6/24/2017
  */
 public class Reverse extends Command {
 	
 	public void run(MessageReceivedEvent event, String[] args) {
 		
 		MessageChannel channel = event.getChannel();
-		String msg = "";
+		StringBuilder msg = new StringBuilder();
 		
 		for (int i = 1; i < args.length; i++) {
-			msg += args[i];
+			msg.append(args[i]);
 		}
 		
-		String result = "";
-		for (char c : msg.toCharArray()) {
-			result = c + result;
+		StringBuilder result = new StringBuilder();
+		for (char c : msg.toString().toCharArray()) {
+			result.insert(0, c);
 		}
 		
-		channel.sendMessage(result).queue();
+		channel.sendMessage(result.toString()).queue();
 	}
 	
 	

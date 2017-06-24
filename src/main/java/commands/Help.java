@@ -5,21 +5,22 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 /**
  * @author PatrickUbelhor
- * @version 6/21/2017
+ * @version 6/24/2017
  */
 public class Help extends Command {
 	
 	
 	public void run(MessageReceivedEvent event, String[] args) {
 		MessageChannel channel = event.getChannel();
-		String msg = "```\n";
+		StringBuilder msg = new StringBuilder("```\n");
 		
 		for (Command c : Command.getCommandMap().values()) {
-			msg += c.getUsage() + "\n\t" + c.getDescription() + "\n";
+			msg.append("\t*").append(c.getUsage()).append("*\n");
+			msg.append(c.getDescription()).append("\n\n");
 		}
-		msg += "```";
+		msg.append("```");
 		
-		channel.sendMessage(msg).queue();
+		channel.sendMessage(msg.toString()).queue();
 	}
 	
 	
@@ -29,7 +30,7 @@ public class Help extends Command {
 	
 	
 	public String getDescription() {
-		return "Prints a message containing all bot commands and their\n\tdescriptions";
+		return "Prints a message containing all bot commands and their descriptions";
 	}
 	
 }
