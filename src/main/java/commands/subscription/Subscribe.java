@@ -10,7 +10,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 public class Subscribe extends Command {
 	
 	
-	public final boolean subInit() {
+	public boolean subInit() {
 		boolean passed = false;
 		
 		for (Service s : Service.getServices().values().toArray(new Service[] {})) {
@@ -21,6 +21,14 @@ public class Subscribe extends Command {
 			}
 		}
 		return passed;
+	}
+	
+	
+	public boolean subEnd() {
+		for (Service s : Service.getServices().values().toArray(new Service[] {})) {
+			s.end();
+		}
+		return true;
 	}
 	
 	

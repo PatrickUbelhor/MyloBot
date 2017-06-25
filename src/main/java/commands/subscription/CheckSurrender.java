@@ -1,10 +1,10 @@
 package commands.subscription;
 
 import net.dv8tion.jda.core.entities.MessageChannel;
+import org.apache.commons.collections4.queue.CircularFifoQueue;
 
 import java.io.*;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.LinkedList;
 
 /**
@@ -17,7 +17,7 @@ public class CheckSurrender extends Service {
 	private static final long DELAY_TIME = 10800000; // Time between checks, in ms. 3 hours.
 	private static final String OUTPUT_FILE_LINKS = "./SurrenderUpdates.txt";
 	private static final String OUTPUT_FILE_IDS = "./ChannelIDs.txt";
-	private static String[] oldLinks = new String[NUM_UPDATES];
+	private static CircularFifoQueue<String> oldLinks = new CircularFifoQueue<>(NUM_UPDATES);
 	
 	CheckSurrender() {
 		super(OUTPUT_FILE_IDS);
@@ -45,7 +45,7 @@ public class CheckSurrender extends Service {
 
 				br = new BufferedReader(new FileReader(OUTPUT_FILE_LINKS));
 				while ((line = br.readLine()) != null) {
-					addLink(line);
+					oldLinks.add(line);
 				}
 			}
 
@@ -67,12 +67,6 @@ public class CheckSurrender extends Service {
 		}
 
 		return true;
-	}
-	
-	
-	private void addLink(String link) {
-		System.arraycopy(oldLinks, 0, oldLinks, 1, oldLinks.length - 1);
-		oldLinks[0] = link;
 	}
 	
 	
@@ -118,7 +112,7 @@ public class CheckSurrender extends Service {
 				
 				
 				// Removes old links and writes new ones to file
-				newLinks.removeAll(Arrays.asList(oldLinks));
+				newLinks.removeAll(oldLinks);
 				for (String link : newLinks) {
 					fw.append(link);
 					fw.append("\n");
@@ -126,9 +120,7 @@ public class CheckSurrender extends Service {
 				
 				
 				// Updates the old links
-				for (String link : newLinks) {
-					addLink(link);
-				}
+				oldLinks.addAll(newLinks);
 				
 			} catch (IOException ioe) {
 				ioe.printStackTrace();
