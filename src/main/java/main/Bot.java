@@ -20,9 +20,13 @@ import java.util.LinkedHashMap;
 import java.util.Objects;
 import java.util.Random;
 
+import static main.Globals.DISCORD_TOKEN;
+import static main.Globals.logger;
+
 /**
  * @author PatrickUbelhor
- * @version 6/24/2017
+ * @version 6/30/2017
+ * TODO: On Twitch startup, verify token is valid
  */
 public class Bot extends ListenerAdapter {
 	
@@ -57,15 +61,14 @@ public class Bot extends ListenerAdapter {
 		try {
 			
 			jda = new JDABuilder(AccountType.BOT)
-							  .setToken("MjU1MTQ2Mzc5MDA4MDE2Mzk1.C_6mDw.kJCzmESndFbF17S0s6tuLdMGmmA") // TODO: Move this to config file
-//							  .setToken("MTkxMzI3NjQzNTc1MTIzOTY4.C2Kd8g.wXykM8CsgX6NIwD7GTnQp7DE-08") THIS IS REDBOT
-							  .buildBlocking();
+				      .setToken(DISCORD_TOKEN)
+				      .buildBlocking();
 			
-			System.out.println("Initializing commands...");
+			logger.info("Initializing commands...");
 			for (Command c : Command.getCommandMap().values().toArray(new Command[] {})) {
 				c.init();
 			}
-			System.out.println("Initialization finished.");
+			logger.info("Initialization finished.");
 			
 			jda.addEventListener(new Bot());
 			

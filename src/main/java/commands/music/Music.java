@@ -5,10 +5,11 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import commands.Command;
+import main.Globals;
 
 /**
  * @author PatrickUbelhor
- * @version 06/10/2017
+ * @version 06/30/2017
  *
  * TODO: Add responses to user interaction
  */
@@ -24,6 +25,7 @@ abstract class Music extends Command {
 		if (!hasInit) {
 			AudioSourceManagers.registerRemoteSources(playerManager);
 			AudioSourceManagers.registerLocalSource(playerManager);
+			player.setVolume(Globals.MUSIC_VOLUME);
 			player.addListener(trackScheduler);
 		}
 		hasInit = true;

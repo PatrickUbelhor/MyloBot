@@ -5,7 +5,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 /**
  * @author PatrickUbelhor
- * @version 6/24/2017
+ * @version 6/25/2017
  */
 public class Subscribe extends Command {
 	
@@ -46,7 +46,7 @@ public class Subscribe extends Command {
 			return;
 		}
 		
-		event.getChannel().sendMessage(s.subscribe(event)).queue();
+		event.getChannel().sendMessage(s.subscribe(event, args)).queue();
 	}
 	
 	@Override

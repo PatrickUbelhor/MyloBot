@@ -1,81 +1,70 @@
 package main;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.*;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.Properties;
-import java.util.TreeSet;
 
 /**
  * @author PatrickUbelhor
- * @version 06/24/2017
- * @noinspection WeakerAccess
+ * @version 06/31/2017
  */
 public class Globals {
 	
-	private static final String CONFIG_PATH = "MyloBot.properties";
+	private static final String CONFIG_PATH = "mylobot.properties";
+	private static final Properties properties = new Properties();
 	
+	public static final Logger logger = LogManager.getLogger();
+	public static final String DISCORD_TOKEN;
 	public static final String TWITCH_CLIENT_ID;
-	public static final String VOLUME;
-	
+	public static final int MUSIC_VOLUME;
 	
 	static {
 		
-		String tempTwitchClientId = "o0njrppa6gujdtnipdx8blw9pl6uvu";
-		String tempVolume = "50";
-		
-		Properties prop = new Properties(){
-			@Override
-			public synchronized Enumeration<Object> keys() {
-				return Collections.enumeration(new TreeSet<>(super.keySet()));
-			}
-		};
-		
-		
 		File file = new File(CONFIG_PATH);
-		OutputStream output = null;
-		InputStream input = null;
+		boolean isEmpty = true;
 		
+		properties.clear();
+		
+		// Attempts to create config file if it doesn't exist
 		try {
-			if (file.createNewFile()) {
-				prop.setProperty("TwitchClientId", tempTwitchClientId);
-				prop.setProperty("Volume", tempVolume);
-				
-				output = new FileOutputStream(file);
-				prop.store(output, "Properties for MyloBot");
-			} else {
-				input = new FileInputStream(file);
-				prop.load(input);
-				
-				tempTwitchClientId = prop.getProperty("TwitchClientId", tempTwitchClientId);
-				tempVolume = prop.getProperty("Volume", tempVolume);
-			}
-			
+			isEmpty = file.createNewFile();
 		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			
-			if (output != null) {
-				try {
-					output.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+			logger.error(String.format("Could not create '%s' file.", CONFIG_PATH), e);
+		}
+		
+		// Grabs values from config file
+		if (!isEmpty) {
+			try (FileInputStream fis = new FileInputStream(file)) {
+				properties.load(fis);
+			} catch (IOException e) {
+				logger.error(String.format("Could not read from '%s'.", CONFIG_PATH), e);
 			}
-			
-			if (input != null) {
-				try {
-					input.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-			
-			TWITCH_CLIENT_ID = tempTwitchClientId;
-			VOLUME = tempVolume;
+		}
+		
+		// Initializes constants
+		DISCORD_TOKEN       = check("discord.token", "");
+		TWITCH_CLIENT_ID    = check("twitch.id", "");
+		MUSIC_VOLUME = Integer.parseInt(check("music.volume", "50"));
+		
+		// Put keys in config
+		try (FileWriter fw = new FileWriter(file)) {
+			properties.store(fw, "Properties for MyloBot");
+		} catch (IOException e) {
+			logger.error(String.format("Could not write to '%s'.", CONFIG_PATH), e);
 		}
 		
 	}
 	
+	
+	private static String check(String key, String defaultValue) {
+		if (!properties.containsKey(key)) {
+			logger.error(String.format("Config '%s' does not contain key '%s'. Using default value: '%s'", CONFIG_PATH, key, defaultValue));
+			properties.setProperty(key, defaultValue);
+		}
+		
+		return properties.getProperty(key);
+	}
 	
 }

@@ -5,23 +5,26 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 /**
  * @author PatrickUbelhor
- * @version 06/24/2017
+ * @version 06/25/2017
  */
 public class Unsubscribe extends Command {
 	
 	
 	@Override
 	public final void run(MessageReceivedEvent event, String[] args) {
-		if (args.length < 2) return;
+		if (args.length < 2) {
+			System.out.println("Too few args");
+			return;
+		}
 		
 		Service s = Service.getServices().get(args[1]);
 		
 		if (s == null) {
-			event.getTextChannel().sendMessage("Unknown or unavailable service");
+			event.getChannel().sendMessage("Unknown or unavailable service");
 			return;
 		}
 		
-		event.getTextChannel().sendMessage(s.unsubscribe(event)).queue();
+		event.getChannel().sendMessage(s.unsubscribe(event, args)).queue();
 	}
 	
 	@Override

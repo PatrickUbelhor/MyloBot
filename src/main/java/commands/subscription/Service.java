@@ -109,7 +109,7 @@ abstract class Service {
 	}
 	
 	
-	final String subscribe(MessageReceivedEvent event) {
+	final String subscribe(MessageReceivedEvent event, String[] args) {
 		MessageChannel channel = event.getChannel();
 		
 		if (activeChannels.contains(channel)) {
@@ -127,7 +127,7 @@ abstract class Service {
 	}
 	
 	
-	final String unsubscribe(MessageReceivedEvent event) {
+	final String unsubscribe(MessageReceivedEvent event, String[] args) {
 		MessageChannel channel = event.getChannel();
 		
 		if (!activeChannels.contains(channel)) {

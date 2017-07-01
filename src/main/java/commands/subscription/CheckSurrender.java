@@ -9,15 +9,15 @@ import java.util.LinkedList;
 
 /**
  * @author PatrickUbelhor
- * @version 6/24/2017
+ * @version 6/25/2017
  */
 public class CheckSurrender extends Service {
 	
 	private static final int NUM_UPDATES = 3;
 	private static final long DELAY_TIME = 10800000; // Time between checks, in ms. 3 hours.
 	private static final String OUTPUT_FILE_LINKS = "./SurrenderUpdates.txt";
-	private static final String OUTPUT_FILE_IDS = "./ChannelIDs.txt";
-	private static CircularFifoQueue<String> oldLinks = new CircularFifoQueue<>(NUM_UPDATES);
+	private static final String OUTPUT_FILE_IDS = "./SurrenderChannelIDs.txt";
+	private static final CircularFifoQueue<String> oldLinks = new CircularFifoQueue<>(NUM_UPDATES);
 	
 	CheckSurrender() {
 		super(OUTPUT_FILE_IDS);
