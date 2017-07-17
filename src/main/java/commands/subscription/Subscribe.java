@@ -1,11 +1,12 @@
 package commands.subscription;
 
 import commands.Command;
+import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 /**
  * @author PatrickUbelhor
- * @version 6/25/2017
+ * @version 7/16/2017
  */
 public class Subscribe extends Command {
 	
@@ -34,19 +35,21 @@ public class Subscribe extends Command {
 	
 	@Override
 	public final void run(MessageReceivedEvent event, String[] args) {
+		MessageChannel channel = event.getChannel();
+		
 		if (args.length < 2) {
-			System.out.println("Too few args");
+			channel.sendMessage("Too few args").queue();
 			return;
 		}
 		
 		Service s = Service.getServices().get(args[1].toLowerCase());
 		
 		if (s == null) {
-			event.getChannel().sendMessage("Unknown or unavailable service");
+			channel.sendMessage("Unknown or unavailable service");
 			return;
 		}
 		
-		event.getChannel().sendMessage(s.subscribe(event, args)).queue();
+		channel.sendMessage(s.subscribe(event, args)).queue();
 	}
 	
 	@Override

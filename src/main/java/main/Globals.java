@@ -8,7 +8,7 @@ import java.util.Properties;
 
 /**
  * @author PatrickUbelhor
- * @version 06/31/2017
+ * @version 7/1/2017
  */
 public class Globals {
 	
@@ -19,6 +19,8 @@ public class Globals {
 	public static final String DISCORD_TOKEN;
 	public static final String TWITCH_CLIENT_ID;
 	public static final int MUSIC_VOLUME;
+	public static final long SURRENDER_DELAY;
+	public static final long TWITCH_DELAY;
 	
 	static {
 		
@@ -46,7 +48,9 @@ public class Globals {
 		// Initializes constants
 		DISCORD_TOKEN       = check("discord.token", "");
 		TWITCH_CLIENT_ID    = check("twitch.id", "");
-		MUSIC_VOLUME = Integer.parseInt(check("music.volume", "50"));
+		MUSIC_VOLUME        = Integer.parseInt(check("music.volume", "50"));
+		SURRENDER_DELAY     = Long.parseLong(check("delay.surrender", "10800000"));
+		TWITCH_DELAY        = Long.parseLong(check("delay.twitch", ""));
 		
 		// Put keys in config
 		try (FileWriter fw = new FileWriter(file)) {

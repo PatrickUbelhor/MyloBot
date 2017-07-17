@@ -7,14 +7,16 @@ import java.io.*;
 import java.net.URL;
 import java.util.LinkedList;
 
+import static main.Globals.SURRENDER_DELAY;
+import static main.Globals.logger;
+
 /**
  * @author PatrickUbelhor
- * @version 6/25/2017
+ * @version 7/1/2017
  */
 public class CheckSurrender extends Service {
 	
 	private static final int NUM_UPDATES = 3;
-	private static final long DELAY_TIME = 10800000; // Time between checks, in ms. 3 hours.
 	private static final String OUTPUT_FILE_LINKS = "./SurrenderUpdates.txt";
 	private static final String OUTPUT_FILE_IDS = "./SurrenderChannelIDs.txt";
 	private static final CircularFifoQueue<String> oldLinks = new CircularFifoQueue<>(NUM_UPDATES);
@@ -37,6 +39,7 @@ public class CheckSurrender extends Service {
 		BufferedReader br = null;
 		String line;
 
+		// TODO: Split file creation and reading into separate try blocks
 		try {
 
 			// Try to load all of the news links
@@ -51,7 +54,7 @@ public class CheckSurrender extends Service {
 
 		} catch (IOException e) {
 
-			e.printStackTrace();
+			logger.error(String.format("Failed to access '%s'", OUTPUT_FILE_LINKS), e);
 			return false;
 
 		} finally {
@@ -61,7 +64,7 @@ public class CheckSurrender extends Service {
 				try {
 					br.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					logger.error("Failed to close S@20 init BufferedReader.", e);
 				}
 			}
 		}
@@ -73,11 +76,11 @@ public class CheckSurrender extends Service {
 	private class CheckSurrenderThread extends CheckerThread {
 		
 		CheckSurrenderThread() {
-			super(CheckSurrender.class.getSimpleName(), DELAY_TIME);
+			super(CheckSurrender.class.getSimpleName(), SURRENDER_DELAY);
 		}
 		
 		
-		// FIXME: memory leak
+		// TODO: Split reading/writing values into separate try blocks
 		protected void check() {
 			
 			URL url;
@@ -122,8 +125,8 @@ public class CheckSurrender extends Service {
 				// Updates the old links
 				oldLinks.addAll(newLinks);
 				
-			} catch (IOException ioe) {
-				ioe.printStackTrace();
+			} catch (IOException e) {
+				logger.error("Failed to check S@20.", e);
 			} finally {
 				
 				// Close out buffered reader
@@ -131,7 +134,7 @@ public class CheckSurrender extends Service {
 					try {
 						br.close();
 					} catch (IOException e) {
-						e.printStackTrace();
+						logger.error("Failed to close S@20 BufferedReader.", e);
 					}
 				}
 				
@@ -140,7 +143,7 @@ public class CheckSurrender extends Service {
 					try {
 						fw.close();
 					} catch (IOException e) {
-						e.printStackTrace();
+						logger.error("Failed to close S@20 FileWriter.", e);
 					}
 				}
 			}

@@ -47,6 +47,7 @@ public class Bot extends ListenerAdapter {
 	private static final Unsubscribe unsub = new Unsubscribe();
 	
 	private static final String[] images = {
+		// TODO: move these to folder "AtEveryone". Search the folder for images.
 			"https://i.imgur.com/gjRp51B.gif",
 			"http://i3.kym-cdn.com/photos/images/original/001/242/548/f0f.jpg",
 	        "http://i2.kym-cdn.com/photos/images/original/001/243/406/73c.jpg",

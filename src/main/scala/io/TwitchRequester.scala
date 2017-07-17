@@ -4,7 +4,7 @@ import org.json.{JSONException, JSONObject}
 
 /**
   * @author PatrickUbelhor
-  * @version 06/24/2017
+  * @version 7/1/2017
   */
 class TwitchRequester(clientId: String) {
 	
@@ -13,6 +13,12 @@ class TwitchRequester(clientId: String) {
 	caller.addProperty("Accept", MimeType.TWITCH_JSON.get)
 	caller.addProperty("Client-ID", clientId)
 	
+	/**
+	  * Given the username of the streamer, returns the unique user ID of the streamer.
+	  *
+	  * @param username The display name of the streamer.
+	  * @return The unique user ID of the streamer.
+	  */
 	def getUserId(username: String): String = {
 		val response = caller.request(
 			RequestType.GET,
@@ -23,6 +29,13 @@ class TwitchRequester(clientId: String) {
 	}
 	
 	
+	/**
+	  * Given the ID of the streamer, returns an Option containing the link to the stream, or empty if
+	  * the stream is offline.
+	  *
+	  * @param userId The unique user ID of the streamer.
+	  * @return A link to the stream, or empty if it's offline.
+	  */
 	def getStream(userId: String): Option[String] = {
 		var result: Option[String] = Option.empty
 		

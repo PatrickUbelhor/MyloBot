@@ -2,7 +2,7 @@ package commands.subscription;
 
 /**
  * @author PatrickUbelhor
- * @version 06/24/2017
+ * @version 7/16/2017
  */
 abstract class CheckerThread extends Thread {
 	
@@ -22,9 +22,9 @@ abstract class CheckerThread extends Thread {
 		
 		while (isActive) {
 			
-			System.out.printf("%s running...", this.getName());
+			System.out.printf("%s running...\n", this.getName());
 			check();
-			System.out.printf("%s finished", this.getName());
+			System.out.printf("%s finished\n", this.getName());
 			
 			try {
 				Thread.sleep(delayTime);
