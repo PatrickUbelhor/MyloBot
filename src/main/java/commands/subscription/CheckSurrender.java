@@ -1,75 +1,87 @@
 package commands.subscription;
 
-import net.dv8tion.jda.core.entities.MessageChannel;
-import org.apache.commons.collections4.queue.CircularFifoQueue;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.LinkedList;
+import org.apache.commons.collections4.queue.CircularFifoQueue;
 
 import static main.Globals.SURRENDER_DELAY;
 import static main.Globals.logger;
 
 /**
  * @author PatrickUbelhor
- * @version 7/1/2017
+ * @version 7/30/2017
  */
 public class CheckSurrender extends Service {
 	
 	private static final int NUM_UPDATES = 3;
 	private static final String OUTPUT_FILE_LINKS = "./SurrenderUpdates.txt";
-	private static final String OUTPUT_FILE_IDS = "./SurrenderChannelIDs.txt";
+//	private static final String OUTPUT_FILE_IDS = "./SurrenderChannelIDs.txt";
 	private static final CircularFifoQueue<String> oldLinks = new CircularFifoQueue<>(NUM_UPDATES);
+	private static CheckSurrenderThread thread = null;
 	
 	CheckSurrender() {
-		super(OUTPUT_FILE_IDS);
-	}
-	
-	protected CheckerThread getNewCheckerThread() {
-		return new CheckSurrenderThread();
+		super("surrender");
 	}
 	
 	
-	protected String getName() {
-		return "surrender";
-	}
-	
-	
-	protected boolean loadData() {
-		BufferedReader br = null;
-		String line;
-
-		// TODO: Split file creation and reading into separate try blocks
+	@Override
+	protected boolean subInit() {
+		boolean fileCreated;
+		
+		// Create file
 		try {
-
-			// Try to load all of the news links
 			File links = new File(OUTPUT_FILE_LINKS);
-			if (!links.createNewFile()) {
+			fileCreated = links.createNewFile();
+			
+		} catch (IOException e) {
+			logger.error(String.format("Failed to create file: %s", OUTPUT_FILE_LINKS));
+			return false;
+		}
 
-				br = new BufferedReader(new FileReader(OUTPUT_FILE_LINKS));
+		
+		// Read file
+		if (!fileCreated) {
+			try (BufferedReader br = new BufferedReader(new FileReader(OUTPUT_FILE_LINKS))) {
+				
+				String line;
+	
+				// Try to load all of the news links
 				while ((line = br.readLine()) != null) {
 					oldLinks.add(line);
 				}
-			}
-
-		} catch (IOException e) {
-
-			logger.error(String.format("Failed to access '%s'", OUTPUT_FILE_LINKS), e);
-			return false;
-
-		} finally {
-
-			// Closes the BufferedReader
-			if (br != null) {
-				try {
-					br.close();
-				} catch (IOException e) {
-					logger.error("Failed to close S@20 init BufferedReader.", e);
-				}
+	
+			} catch (IOException e) {
+				logger.error(String.format("Failed to read file: '%s'", OUTPUT_FILE_LINKS), e);
+				return false;
 			}
 		}
 
 		return true;
+	}
+	
+	
+	@Override
+	protected boolean subEnd() {
+		return true;
+	}
+	
+	
+	@Override
+	protected void startThread() {
+		thread = new CheckSurrenderThread();
+		thread.start();
+	}
+	
+	
+	@Override
+	protected void endThread() throws IOException {
+		thread.interrupt();
 	}
 	
 	
@@ -151,11 +163,14 @@ public class CheckSurrender extends Service {
 			// Sends the new links to the subscribed channels
 			for (String result : newLinks) {
 				if (result != null) {
-					for (MessageChannel c : getActiveChannels()) {
-						c.sendMessage(result).queue();
-					}
+//					for (MessageChannel c : getActiveChannels()) {
+//						c.sendMessage(result).queue();
+//					}
+					
+					getMediaChannel().sendMessage(result).queue();
 				}
 			}
+		
 			
 		}
 		

@@ -1,14 +1,16 @@
 package main;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Properties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.*;
-import java.util.Properties;
-
 /**
  * @author PatrickUbelhor
- * @version 7/1/2017
+ * @version 7/30/2017
  */
 public class Globals {
 	
@@ -21,6 +23,7 @@ public class Globals {
 	public static final int MUSIC_VOLUME;
 	public static final long SURRENDER_DELAY;
 	public static final long TWITCH_DELAY;
+	public static final String MEDIA_CHANNEL_ID;
 	
 	static {
 		
@@ -51,6 +54,7 @@ public class Globals {
 		MUSIC_VOLUME        = Integer.parseInt(check("music.volume", "50"));
 		SURRENDER_DELAY     = Long.parseLong(check("delay.surrender", "10800000"));
 		TWITCH_DELAY        = Long.parseLong(check("delay.twitch", ""));
+		MEDIA_CHANNEL_ID    = check("media.channel.id", "");
 		
 		// Put keys in config
 		try (FileWriter fw = new FileWriter(file)) {

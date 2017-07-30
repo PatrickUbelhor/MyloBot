@@ -5,7 +5,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 /**
  * @author PatrickUbelhor
- * @version 6/24/2017
+ * @version 7/30/2017
  */
 public class Help extends Command {
 	
@@ -15,8 +15,10 @@ public class Help extends Command {
 		StringBuilder msg = new StringBuilder("```\n");
 		
 		for (Command c : Command.getCommandMap().values()) {
-			msg.append("\t*").append(c.getUsage()).append("*\n");
-			msg.append(c.getDescription()).append("\n\n");
+			msg.append(String.format(
+				"\t%s\n%s\n\n",
+				c.getUsage(),
+				c.getDescription()));
 		}
 		msg.append("```");
 		

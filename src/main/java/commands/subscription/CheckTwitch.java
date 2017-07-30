@@ -1,69 +1,61 @@
 package commands.subscription;
 
 import io.TwitchRequester;
-import main.Globals;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import scala.Option;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import main.Globals;
+import scala.Option;
 
 import static main.Globals.TWITCH_DELAY;
+import static main.Globals.logger;
 
 /**
  * @author PatrickUbelhor
- * @version 7/1/2017
+ * @version 7/30/2017
  */
 public class CheckTwitch extends Service {
 	
-	private static final String OUTPUT_FILE_IDS = "./TwitchChannelIds.txt";
+//	private static final String OUTPUT_FILE_IDS = "./TwitchChannelIds.txt";
 	private static final String OUTPUT_FILE_STREAMERS = "./TwitchStreamers.txt";
 	private static final LinkedHashMap<String, Boolean> statuses = new LinkedHashMap<>();
 	private static final TwitchRequester requester = new TwitchRequester(Globals.TWITCH_CLIENT_ID);
+	private static CheckTwitchThread thread = null;
 	
 	CheckTwitch() {
-		super(OUTPUT_FILE_IDS);
+		super("twitch");
 	}
 	
-	protected CheckerThread getNewCheckerThread() {
-		return new CheckTwitchThread();
-	}
 	
-	protected String getName() {
-		return "twitch";
-	}
-	
-	protected boolean loadData() {
-		BufferedReader br = null;
-		String line;
+	@Override
+	protected boolean subInit() {
+		boolean fileCreated;
 		
+		// Create file
 		try {
+			File file = new File(OUTPUT_FILE_STREAMERS);
+			fileCreated = file.createNewFile();
 			
-			// Load the Twitch IDs of all the subscribed streamers
-			File streamers = new File(OUTPUT_FILE_STREAMERS);
-			if (!streamers.createNewFile()) {
+		} catch (IOException e) {
+			logger.error(String.format("Failed to create file: %s", OUTPUT_FILE_STREAMERS));
+			return false;
+		}
+		
+		// Read file
+		if (!fileCreated) {
+			try (BufferedReader br = new BufferedReader(new FileReader(OUTPUT_FILE_STREAMERS))) {
 				
-				br = new BufferedReader(new FileReader(streamers));
+				// Load the Twitch IDs of all the subscribed streamers
+				String line;
 				while ((line = br.readLine()) != null) {
 					statuses.put(line, false);
 				}
-			}
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-			
-		} finally {
-			
-			if (br != null) {
-				try {
-					br.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				
+			} catch (IOException e) {
+				logger.error(String.format("Failed to read file: '%s'", OUTPUT_FILE_STREAMERS), e);
+				return false;
 			}
 		}
 		
@@ -72,23 +64,22 @@ public class CheckTwitch extends Service {
 	
 	
 	@Override
-	protected boolean containsSource(String source) {
-		return statuses.containsKey(source);
-	}
-	
-	
-	@Override
-	protected boolean addSource(String source) {
-		// FIXME: actually validate without exception handling
-		statuses.put(requester.getUserId(source), false);
+	protected boolean subEnd() {
+		// FIXME: save data
 		return true;
 	}
 	
 	
 	@Override
-	protected boolean removeSource(String source) {
-		statuses.remove(source);
-		return statuses.isEmpty();
+	protected void startThread() {
+		thread = new CheckTwitchThread();
+		thread.start();
+	}
+	
+	
+	@Override
+	protected void endThread() {
+		thread.interrupt();
 	}
 	
 	
@@ -115,9 +106,10 @@ public class CheckTwitch extends Service {
 					if (link.nonEmpty()) {
 						statuses.put(streamer, true);
 						
-						for (MessageChannel m : getActiveChannels()) {
-							m.sendMessage(link.get());
-						}
+//						for (MessageChannel m : getActiveChannels()) {
+//							m.sendMessage(link.get()).queue();
+//						}
+						getMediaChannel().sendMessage(link.get()).queue();
 					}
 				}
 			}

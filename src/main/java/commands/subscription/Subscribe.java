@@ -11,6 +11,11 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 public class Subscribe extends Command {
 	
 	
+	/**
+	 * Loads all the services.
+	 *
+	 * @return True if any single service was initialized. False if all failed.
+	 */
 	public boolean subInit() {
 		boolean passed = false;
 		
@@ -25,6 +30,11 @@ public class Subscribe extends Command {
 	}
 	
 	
+	/**
+	 * Safely ends all services.
+	 *
+	 * @return True.
+	 */
 	public boolean subEnd() {
 		for (Service s : Service.getServices().values().toArray(new Service[] {})) {
 			s.end();
@@ -45,7 +55,7 @@ public class Subscribe extends Command {
 		Service s = Service.getServices().get(args[1].toLowerCase());
 		
 		if (s == null) {
-			channel.sendMessage("Unknown or unavailable service");
+			channel.sendMessage("Unknown or unavailable service").queue();
 			return;
 		}
 		
