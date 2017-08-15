@@ -10,6 +10,7 @@ import main.Bot;
 import main.Globals;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import static main.Globals.logger;
 
@@ -66,15 +67,15 @@ public abstract class Service {
 	 * Subscribes a user to the pool of users to '@mention' when a source is updated. If this is the first subscriber
 	 * to this service, this service's update thread is initialized.
 	 *
+	 * @param event The message event that requested a subscription to a source.
 	 * @param source The source to subscribe to.
-	 * @param user The user that is subscribing.
 	 */
-	public void subscribe(String source, User user) {
+	public void subscribe(MessageReceivedEvent event, String source) {
 		boolean startThread = subscribers.isEmpty();
 		logger.debug("Calling service: " + this.getName());
 		
-		logger.debug(String.format("Putting source '%s' and user '%s' into map", source, user.getName()));
-		subscribers.put(source, user);
+		logger.debug(String.format("Putting source '%s' and user '%s' into map", source, event.getAuthor().getName()));
+		subscribers.put(source, event.getAuthor());
 		
 		if (startThread) {
 			startThread();
@@ -86,11 +87,11 @@ public abstract class Service {
 	 * Unsubscribes a user from the pool of users to '@mention' when a source is updated. If there are no subscribers
 	 * remaining in this service, the service's update thread is killed.
 	 *
+	 * @param event The message event that requested to cancel a subscription.
 	 * @param source The source to unsubscribe from.
-	 * @param user The user that is unsubscribing.
 	 */
-	public void unsubscribe(String source, User user) {
-		subscribers.remove(source, user);
+	public void unsubscribe(MessageReceivedEvent event, String source) {
+		subscribers.remove(source, event.getAuthor());
 		
 		if (subscribers.isEmpty()) {
 			endThread();

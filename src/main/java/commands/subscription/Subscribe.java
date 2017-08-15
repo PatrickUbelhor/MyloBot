@@ -65,7 +65,7 @@ public class Subscribe extends Command {
 			return;
 		}
 		
-		s.subscribe((args.length > 2) ? args[2] : null, event.getAuthor());
+		s.subscribe(event, (args.length > 2) ? args[2] : null);
 	}
 	
 	

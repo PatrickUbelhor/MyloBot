@@ -5,7 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import main.Globals;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import scala.Option;
 
 import static main.Globals.TWITCH_DELAY;
@@ -67,24 +67,28 @@ public class CheckTwitch extends Service {
 	
 	
 	@Override
-	public void subscribe(String source, User user) {
+	public void subscribe(MessageReceivedEvent event, String source) {
 		try {
-			statuses.putIfAbsent(requester.getUserId(source), false);
+			if (statuses.putIfAbsent(requester.getUserId(source), false) != null) {
+				thread.check();
+			}
+			
+			super.subscribe(event, source);
 		} catch (Exception e) {
-			logger.error("Error getting Twitch streamer");
+			logger.error(String.format("Could not find Twitch streamer '%s'", source));
+			event.getTextChannel().sendMessage(String.format("Could not find Twitch streamer '%s'", source)).queue();
 		}
-		
-		super.subscribe(source, user);
 	}
 	
 	
 	@Override
-	public void unsubscribe(String source, User user) {
+	public void unsubscribe(MessageReceivedEvent event, String source) {
 		try {
 			statuses.remove(requester.getUserId(source));
-			super.unsubscribe(source, user);
+			super.unsubscribe(event, source);
 		} catch (Exception e) {
-			logger.error("Error getting Twitch streamer");
+			logger.error(String.format("Could not find Twitch streamer '%s'", source));
+			event.getTextChannel().sendMessage(String.format("Could not find Twitch streamer '%s'", source)).queue();
 		}
 	}
 	
