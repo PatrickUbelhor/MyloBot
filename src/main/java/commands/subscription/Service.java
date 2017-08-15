@@ -54,6 +54,8 @@ public abstract class Service {
 	
 	
 	public void end() {
+		endThread();
+		
 		if (!subEnd()) {
 			logger.error(String.format("Module %s failed to shut down properly!", name));
 		}
@@ -91,11 +93,7 @@ public abstract class Service {
 		subscribers.remove(source, user);
 		
 		if (subscribers.isEmpty()) {
-			try {
-				endThread();
-			} catch (IOException e) {
-				logger.error(String.format("Could not end %s CheckerThread", name), e);
-			}
+			endThread();
 		}
 	}
 	
@@ -169,6 +167,6 @@ public abstract class Service {
 	protected abstract boolean subInit();
 	protected abstract boolean subEnd();
 	protected abstract void startThread();
-	protected abstract void endThread() throws IOException;
+	protected abstract void endThread();
 	
 }

@@ -24,17 +24,19 @@ abstract class CheckerThread extends Thread {
 		
 		while (isActive) {
 			
-			logger.info(String.format("%s running...\n", this.getName()));
+			logger.info(String.format("%s running...", this.getName()));
 			check();
-			logger.info(String.format("%s finished\n", this.getName()));
+			logger.info(String.format("%s finished", this.getName()));
 			
 			try {
 				Thread.sleep(delayTime);
 			} catch (InterruptedException e) {
-				logger.info(String.format("%s update thread killed", this.getName()));
+				logger.debug(String.format("%s update thread interrupted", this.getName()));
 				isActive = false;
 			}
 		}
+		
+		logger.info(String.format("%s update thread killed", this.getName()));
 	}
 	
 }

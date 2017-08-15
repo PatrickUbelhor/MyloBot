@@ -40,6 +40,9 @@ public class CheckTwitch extends Service {
 			for (String line : lines) {
 				statuses.put(line, false);
 			}
+			
+			thread = new CheckTwitchThread();
+			thread.start();
 		}
 		
 		return true;
@@ -77,8 +80,12 @@ public class CheckTwitch extends Service {
 	
 	@Override
 	public void unsubscribe(String source, User user) {
-		statuses.remove(source);
-		super.unsubscribe(source, user);
+		try {
+			statuses.remove(requester.getUserId(source));
+			super.unsubscribe(source, user);
+		} catch (Exception e) {
+			logger.error("Error getting Twitch streamer");
+		}
 	}
 	
 	
@@ -91,7 +98,9 @@ public class CheckTwitch extends Service {
 	
 	@Override
 	protected void endThread() {
-		thread.interrupt();
+		if (thread != null && thread.isAlive()) {
+			thread.interrupt();
+		}
 	}
 	
 	
@@ -120,9 +129,7 @@ public class CheckTwitch extends Service {
 					if (link.nonEmpty()) {
 						statuses.put(streamer, true);
 						getMediaChannel().sendMessage(link.get()).queue();
-					} else {
-						logger.error("Empty link?");
-					}
+					} // Else streamer is offline
 				}
 			}
 		}

@@ -74,7 +74,7 @@ public class Bot extends ListenerAdapter {
 			jda.addEventListener(new Bot());
 			
 		} catch (Exception e) {
-			logger.error("Couldn't initialize bot", e);
+			logger.fatal("Couldn't initialize bot", e);
 		}
 		
 	}

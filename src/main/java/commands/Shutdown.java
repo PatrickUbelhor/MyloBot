@@ -21,7 +21,7 @@ public class Shutdown extends Command {
 		logger.info("Shutting down...");
 		for (Command command : getCommandMap().values()) {
 			command.end();
-			logger.info(String.format("\tKilled %s\n", command.getName()));
+			logger.info(String.format("\tKilled %s", command.getName()));
 		}
 		logger.info("All commands killed");
 		event.getJDA().shutdown();

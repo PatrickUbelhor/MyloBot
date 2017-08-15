@@ -40,6 +40,8 @@ public class CheckSurrender extends Service {
 			if (lines == null) return false;
 			
 			oldLinks.addAll(Arrays.asList(lines));
+			thread = new CheckSurrenderThread();
+			thread.start();
 		}
 			
 		return true;
@@ -59,9 +61,12 @@ public class CheckSurrender extends Service {
 	}
 	
 	
+	// TODO: Move ifIsAlive() to parent class
 	@Override
-	protected void endThread() throws IOException {
-		thread.interrupt();
+	protected void endThread() {
+		if (thread != null && thread.isAlive()) {
+			thread.interrupt();
+		}
 	}
 	
 	
