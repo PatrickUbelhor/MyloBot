@@ -6,7 +6,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 /**
  * @author PatrickUbelhor
- * @version 7/16/2017
+ * @version 8/15/2017
  */
 public class Subscribe extends Command {
 	
@@ -14,11 +14,17 @@ public class Subscribe extends Command {
 	private static final CheckSurrender surrender = new CheckSurrender();
 	
 	
+	public Subscribe() {
+		super("sub");
+	}
+	
+	
 	/**
 	 * Loads all the services.
 	 *
 	 * @return True if any single service was initialized. False if all failed.
 	 */
+	@Override
 	public boolean subInit() {
 		
 		for (Service s : Service.getServiceMap().values().toArray(new Service[] {})) {
@@ -34,6 +40,7 @@ public class Subscribe extends Command {
 	 *
 	 * @return True.
 	 */
+	@Override
 	public boolean subEnd() {
 		for (Service s : Service.getServiceMap().values().toArray(new Service[] {})) {
 			s.end();
@@ -61,10 +68,12 @@ public class Subscribe extends Command {
 		s.subscribe((args.length > 2) ? args[2] : null, event.getAuthor());
 	}
 	
+	
 	@Override
 	public final String getUsage() {
-		return "sub <serviceName>";
+		return getName() + " <serviceName>";
 	}
+	
 	
 	@Override
 	public String getDescription() {

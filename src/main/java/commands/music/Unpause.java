@@ -4,9 +4,13 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 /**
  * @author PatrickUbelhor
- * @version 6/18/2017
+ * @version 8/15/2017
  */
 public class Unpause extends Music {
+	
+	public Unpause() {
+		super("unpause");
+	}
 	
 	
 	@Override
@@ -16,11 +20,12 @@ public class Unpause extends Music {
 	
 	@Override
 	public String getUsage() {
-		return "unpause";
+		return getName();
 	}
 	
 	@Override
 	public String getDescription() {
 		return "Continues playing a paused track";
 	}
+	
 }

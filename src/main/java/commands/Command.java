@@ -6,15 +6,17 @@ import java.util.LinkedHashMap;
 
 /**
  * @author PatrickUbelhor
- * @version 06/21/2017
+ * @version 8/15/2017
  * @noinspection WeakerAccess
  */
 public abstract class Command {
 	
 	private static final LinkedHashMap<String, Command> commandMap = new LinkedHashMap<>(12, 1f);
+	private final String name;
 	
-	protected Command() {
-		commandMap.put(this.getName(), this);
+	protected Command(String name) {
+		this.name = name.toLowerCase();
+		commandMap.put(name, this);
 	}
 	
 	
@@ -80,7 +82,7 @@ public abstract class Command {
 	 * @return The command name
 	 */
 	public String getName() {
-		return this.getUsage().split(" ")[0];
+		return name;
 	}
 	
 	

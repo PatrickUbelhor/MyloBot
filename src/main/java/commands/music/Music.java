@@ -9,7 +9,7 @@ import main.Globals;
 
 /**
  * @author PatrickUbelhor
- * @version 06/30/2017
+ * @version 8/15/2017
  *
  * TODO: Add responses to user interaction
  */
@@ -19,6 +19,11 @@ abstract class Music extends Command {
 	static AudioPlayer player = playerManager.createPlayer();
 	static TrackScheduler trackScheduler = new TrackScheduler(player);
 	private static boolean hasInit = false;
+	
+	protected Music(String name) {
+		super(name);
+	}
+	
 	
 	@Override
 	protected boolean subInit() {
@@ -31,6 +36,7 @@ abstract class Music extends Command {
 		hasInit = true;
 		return true;
 	}
+	
 	
 	@Override
 	protected final boolean subEnd() {

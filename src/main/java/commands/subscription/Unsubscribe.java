@@ -5,9 +5,13 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 /**
  * @author PatrickUbelhor
- * @version 06/25/2017
+ * @version 8/15/2017
  */
 public class Unsubscribe extends Command {
+	
+	public Unsubscribe() {
+		super("unsub");
+	}
 	
 	
 	@Override
@@ -29,8 +33,9 @@ public class Unsubscribe extends Command {
 	
 	@Override
 	public final String getUsage() {
-		return "unsub <serviceName>";
+		return getName() + " <serviceName>";
 	}
+	
 	
 	@Override
 	public String getDescription() {

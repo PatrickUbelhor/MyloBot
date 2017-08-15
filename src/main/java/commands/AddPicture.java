@@ -9,11 +9,16 @@ import java.util.List;
 
 /**
  * @author PatrickUbelhor
- * @version 02/17/2017
+ * @version 8/15/2017
  */
 public class AddPicture extends Command {
 	
 	private static final String PATH = "/Users/Patrick/Desktop/";
+	
+	public AddPicture() {
+		super("pic");
+	}
+	
 	
 	public void run(MessageReceivedEvent event, String[] args) {
 		
@@ -50,11 +55,13 @@ public class AddPicture extends Command {
 	}
 	
 	
+	@Override
 	public String getUsage() {
-		return "pic <folder> {file}";
+		return getName() + " <folder> {file}";
 	}
 	
 	
+	@Override
 	public String getDescription() {
 		return "Saves the attached image into the group's Drive folder";
 	}

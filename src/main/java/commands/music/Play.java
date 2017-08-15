@@ -4,11 +4,9 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.managers.AudioManager;
 
-import java.io.File;
-
 /**
  * @author PatrickUbelhor
- * @version 05/29/2017
+ * @version 8/15/2017
  *
  * TODO: Make bot leave voice channel after some period of inactivity
  */
@@ -17,9 +15,10 @@ public final class Play extends Music {
 	private boolean active;
 	
 	public Play() {
-		super();
+		super("play");
 		active = false;
 	}
+	
 	
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
@@ -51,13 +50,12 @@ public final class Play extends Music {
 		
 		
 		playerManager.loadItem(args[1], new MyAudioLoadResultHandler(trackScheduler)); // queues the track
-		
 	}
 	
 	
 	@Override
 	public String getUsage() {
-		return "play <url>";
+		return getName() + " <url>";
 	}
 	
 	

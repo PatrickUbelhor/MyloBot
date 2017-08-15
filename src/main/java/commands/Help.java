@@ -5,11 +5,16 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 /**
  * @author PatrickUbelhor
- * @version 7/30/2017
+ * @version 8/15/2017
  */
 public class Help extends Command {
 	
+	public Help() {
+		super("help");
+	}
 	
+	
+	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
 		MessageChannel channel = event.getChannel();
 		StringBuilder msg = new StringBuilder("```\n");
@@ -26,11 +31,13 @@ public class Help extends Command {
 	}
 	
 	
+	@Override
 	public String getUsage() {
-		return "help";
+		return getName();
 	}
 	
 	
+	@Override
 	public String getDescription() {
 		return "Prints a message containing all bot commands and their descriptions";
 	}

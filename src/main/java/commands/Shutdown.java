@@ -2,30 +2,40 @@ package commands;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
+import static main.Globals.logger;
+
 /**
  * @author PatrickUbelhor
- * @version 6/21/2017
+ * @version 8/15/2017
  */
 public class Shutdown extends Command {
 	
+	public Shutdown() {
+		super("shutdown");
+	}
+	
+	
+	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
 		
-		System.out.println("Shutting down...");
+		logger.info("Shutting down...");
 		for (Command command : getCommandMap().values()) {
 			command.end();
-			System.out.printf("\tKilled %s\n", command.getName());
+			logger.info(String.format("\tKilled %s\n", command.getName()));
 		}
-		System.out.println("All commands killed");
+		logger.info("All commands killed");
 		event.getJDA().shutdown();
-		System.out.println("Shutdown complete");
+		logger.info("Shutdown complete");
 	}
 	
 	
+	@Override
 	public String getUsage() {
-		return "shutdown";
+		return getName();
 	}
 	
 	
+	@Override
 	public String getDescription() {
 		return "Safely shuts down the bot";
 	}

@@ -8,15 +8,23 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+import static main.Globals.logger;
+
 /**
  * @author PatrickUbelhor
- * @version 6/11/2017
+ * @version 8/15/2017
  */
 public class ClearText extends Command {
 	
 	private static final int MAX_MESSAGE_COUNT = 100; // JDA throws exception after this point
 	
 	
+	public ClearText() {
+		super("clear");
+	}
+	
+	
+	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
 		TextChannel channel = event.getTextChannel();
 		
@@ -30,7 +38,7 @@ public class ClearText extends Command {
 			int num = Integer.parseInt(args[1]);
 			MessageHistory messageHistory = new MessageHistory(channel);
 			
-			System.out.println("Retrieving and deleting message history...");
+			logger.info("Retrieving and deleting message history...");
 			while (num > 0) {
 				
 				messageHistory.retrievePast(num % MAX_MESSAGE_COUNT).complete();
@@ -58,7 +66,7 @@ public class ClearText extends Command {
 				
 				num -= MAX_MESSAGE_COUNT; // It's okay if we deleted less than this, it'll still finish properly
 			}
-			System.out.println("Message history deleted.");
+			logger.info("Message history deleted.");
 			
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
@@ -67,6 +75,12 @@ public class ClearText extends Command {
 	}
 	
 	
+	/**
+	 * Checks if a message is at least two weeks old.
+	 *
+	 * @param m The message to check.
+	 * @return True if the message at least two weeks old.
+	 */
 	private boolean isTwoWeeksOld(Message m) {
 		OffsetDateTime now = OffsetDateTime.now();
 		OffsetDateTime then = m.getCreationTime();
@@ -78,10 +92,13 @@ public class ClearText extends Command {
 	}
 	
 	
+	@Override
 	public String getUsage() {
-		return "clear <num>";
+		return getName() + " <num>";
 	}
 	
+	
+	@Override
 	public String getDescription() {
 		return "Deletes 'num' amount of messages from the chat";
 	}
