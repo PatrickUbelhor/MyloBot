@@ -1,9 +1,7 @@
 package commands.subscription;
 
 import io.TwitchRequester;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import main.Globals;
@@ -31,31 +29,16 @@ public class CheckTwitch extends Service {
 	
 	@Override
 	protected boolean subInit() {
-		boolean fileCreated;
+		String[] lines;
 		
-		// Create file
-		try {
-			File file = new File(OUTPUT_FILE_STREAMERS);
-			fileCreated = file.createNewFile();
+		// Create save file if it doesn't exist, and parse save file if it does
+		if (!createFile(OUTPUT_FILE_STREAMERS)) {
+			lines = getLines(OUTPUT_FILE_STREAMERS);
 			
-		} catch (IOException e) {
-			logger.error(String.format("Failed to create file: %s", OUTPUT_FILE_STREAMERS));
-			return false;
-		}
-		
-		// Read file
-		if (!fileCreated) {
-			try (BufferedReader br = new BufferedReader(new FileReader(OUTPUT_FILE_STREAMERS))) {
-				
-				// Load the Twitch IDs of all the subscribed streamers
-				String line;
-				while ((line = br.readLine()) != null) {
-					statuses.put(line, false);
-				}
-				
-			} catch (IOException e) {
-				logger.error(String.format("Failed to read file: '%s'", OUTPUT_FILE_STREAMERS), e);
-				return false;
+			if (lines == null) return false;
+			
+			for (String line : lines) {
+				statuses.put(line, false);
 			}
 		}
 		
@@ -65,7 +48,17 @@ public class CheckTwitch extends Service {
 	
 	@Override
 	protected boolean subEnd() {
-		// FIXME: save data
+		try (FileWriter fw = new FileWriter(OUTPUT_FILE_STREAMERS, false)){
+			
+			for (String s : statuses.keySet()) {
+				fw.append(s);
+				fw.append('\n');
+			}
+			
+		} catch (IOException e) {
+			logger.error("Failed to save streamers", e);
+		}
+		
 		return true;
 	}
 	
@@ -79,6 +72,13 @@ public class CheckTwitch extends Service {
 		}
 		
 		super.subscribe(source, user);
+	}
+	
+	
+	@Override
+	public void unsubscribe(String source, User user) {
+		statuses.remove(source);
+		super.unsubscribe(source, user);
 	}
 	
 	
@@ -104,10 +104,11 @@ public class CheckTwitch extends Service {
 		
 		
 		protected void check() {
+			logger.debug("Checking twitch");
 			
 			// If streamer was offline last time and is now online, post message
 			for (String streamer : statuses.keySet()) {
-				logger.debug("Found streamer: " + streamer);
+				logger.debug(String.format("Found streamer: '%s'", streamer));
 				Option<String> link = requester.getStream(streamer);
 				
 				if (statuses.get(streamer)) {

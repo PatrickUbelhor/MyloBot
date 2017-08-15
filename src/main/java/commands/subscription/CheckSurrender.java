@@ -1,12 +1,11 @@
 package commands.subscription;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.LinkedList;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 
@@ -15,13 +14,12 @@ import static main.Globals.logger;
 
 /**
  * @author PatrickUbelhor
- * @version 7/30/2017
+ * @version 8/15/2017
  */
 public class CheckSurrender extends Service {
 	
 	private static final int NUM_UPDATES = 3;
 	private static final String OUTPUT_FILE_LINKS = "./SurrenderUpdates.txt";
-//	private static final String OUTPUT_FILE_IDS = "./SurrenderChannelIDs.txt";
 	private static final CircularFifoQueue<String> oldLinks = new CircularFifoQueue<>(NUM_UPDATES);
 	private static CheckSurrenderThread thread = null;
 	
@@ -32,36 +30,18 @@ public class CheckSurrender extends Service {
 	
 	@Override
 	protected boolean subInit() {
-		boolean fileCreated;
+		String[] lines;
 		
-		// Create file
-		try {
-			File links = new File(OUTPUT_FILE_LINKS);
-			fileCreated = links.createNewFile();
+		// TODO: Move this logic into Service.java and make an abstract parseLines() method
+		// Create save file if it doesn't exist. Parse save file if it does.
+		if (!createFile(OUTPUT_FILE_LINKS)) {
+			lines = getLines(OUTPUT_FILE_LINKS);
 			
-		} catch (IOException e) {
-			logger.error(String.format("Failed to create file: %s", OUTPUT_FILE_LINKS));
-			return false;
+			if (lines == null) return false;
+			
+			oldLinks.addAll(Arrays.asList(lines));
 		}
-
-		
-		// Read file
-		if (!fileCreated) {
-			try (BufferedReader br = new BufferedReader(new FileReader(OUTPUT_FILE_LINKS))) {
-				
-				String line;
-	
-				// Try to load all of the news links
-				while ((line = br.readLine()) != null) {
-					oldLinks.add(line);
-				}
-	
-			} catch (IOException e) {
-				logger.error(String.format("Failed to read file: '%s'", OUTPUT_FILE_LINKS), e);
-				return false;
-			}
-		}
-
+			
 		return true;
 	}
 	
@@ -163,9 +143,6 @@ public class CheckSurrender extends Service {
 			// Sends the new links to the subscribed channels
 			for (String result : newLinks) {
 				if (result != null) {
-//					for (MessageChannel c : getActiveChannels()) {
-//						c.sendMessage(result).queue();
-//					}
 					logger.debug(result);
 					getMediaChannel().sendMessage(result).queue();
 				}

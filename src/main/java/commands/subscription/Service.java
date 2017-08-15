@@ -1,6 +1,9 @@
 package commands.subscription;
 
 import com.google.common.collect.LinkedListMultimap;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import main.Bot;
@@ -38,21 +41,21 @@ public abstract class Service {
 	public void init() {
 		if (mediaChannel == null) {
 			mediaChannel = Bot.getJDA().getTextChannelById(Globals.MEDIA_CHANNEL_ID);
-			logger.debug("Found media channel: " + mediaChannel.getName());
+			logger.info("Found media channel: " + mediaChannel.getName());
 		}
 		
 		if (!subInit()) {
 			serviceMap.remove(name);
-			System.err.printf("\tFailed to initialize !%s\n", name);
+			logger.error(String.format("\tFailed to initialize !%s\n", name));
 		} else {
-			System.out.printf("\tInitialized !%s\n", name);
+			logger.info(String.format("\tInitialized !%s\n", name));
 		}
 	}
 	
 	
 	public void end() {
 		if (!subEnd()) {
-			System.out.printf("Module %s failed to shut down properly!", name);
+			logger.error(String.format("Module %s failed to shut down properly!", name));
 		}
 	}
 	
@@ -74,7 +77,6 @@ public abstract class Service {
 		if (startThread) {
 			startThread();
 		}
-		
 	}
 	
 	
@@ -119,6 +121,48 @@ public abstract class Service {
 	 */
 	protected LinkedListMultimap<String, User> getSubscribers() {
 		return subscribers;
+	}
+	
+	
+	/**
+	 * Creates a file with the given path. Name is specified as part of the path. Used to create save file.
+	 *
+	 * @param path The path of the file to create.
+	 * @return True if the file was successfully created.
+	 */
+	protected boolean createFile(String path) {
+		try {
+			File file = new File(path);
+			return file.createNewFile();
+			
+		} catch (IOException e) {
+			logger.error(String.format("Failed to create file: %s", path));
+			return false;
+		}
+	}
+	
+	
+	/**
+	 * Gets an array in which each entry is a line from the file at the specified path.
+	 *
+	 * @param path The path of the file to read.
+	 * @return An array of lines within the file.
+	 */
+	protected String[] getLines(String path) {
+		try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+			
+			// Load the Twitch IDs of all the subscribed streamers
+			String line;
+			StringBuilder sum = new StringBuilder();
+			while ((line = br.readLine()) != null) {
+				if (!line.isEmpty()) sum.append(line).append('\n');
+			}
+			
+			return sum.toString().split("\n");
+		} catch (IOException e) {
+			logger.error(String.format("Failed to read file: '%s'", path), e);
+			return null;
+		}
 	}
 	
 	

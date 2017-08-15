@@ -1,8 +1,10 @@
 package commands.subscription;
 
+import static main.Globals.logger;
+
 /**
  * @author PatrickUbelhor
- * @version 7/16/2017
+ * @version 8/15/2017
  */
 abstract class CheckerThread extends Thread {
 	
@@ -22,18 +24,17 @@ abstract class CheckerThread extends Thread {
 		
 		while (isActive) {
 			
-			System.out.printf("%s running...\n", this.getName());
+			logger.info(String.format("%s running...\n", this.getName()));
 			check();
-			System.out.printf("%s finished\n", this.getName());
+			logger.info(String.format("%s finished\n", this.getName()));
 			
 			try {
 				Thread.sleep(delayTime);
 			} catch (InterruptedException e) {
-				System.out.printf("%s update thread killed", this.getName());
+				logger.info(String.format("%s update thread killed", this.getName()));
 				isActive = false;
 			}
 		}
-		
 	}
 	
 }
