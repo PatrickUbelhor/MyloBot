@@ -5,22 +5,27 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import main.Bot;
 import main.Globals;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 
 import static main.Globals.logger;
 
 /**
  * @author PatrickUbelhor
- * @version 07/30/2017
+ * @version 8/15/2017
  */
 public abstract class Service {
 	
 	private static final LinkedHashMap<String, Service> serviceMap = new LinkedHashMap<>();
-	private static TextChannel mediaChannel;
+	private static MessageChannel mediaChannel;
 	
 	private final LinkedListMultimap<String, User> subscribers = LinkedListMultimap.create();
 	private final String name;
+	
+	
+	public static LinkedHashMap<String, Service> getServiceMap() {
+		return serviceMap;
+	}
 	
 	
 	Service(String name) {
@@ -31,8 +36,9 @@ public abstract class Service {
 	
 	// TODO: make init a static method
 	public void init() {
-		if (mediaChannel != null) {
+		if (mediaChannel == null) {
 			mediaChannel = Bot.getJDA().getTextChannelById(Globals.MEDIA_CHANNEL_ID);
+			logger.debug("Found media channel: " + mediaChannel.getName());
 		}
 		
 		if (!subInit()) {
@@ -60,7 +66,9 @@ public abstract class Service {
 	 */
 	public void subscribe(String source, User user) {
 		boolean startThread = subscribers.isEmpty();
+		logger.debug("Calling service: " + this.getName());
 		
+		logger.debug(String.format("Putting source '%s' and user '%s' into map", source, user.getName()));
 		subscribers.put(source, user);
 		
 		if (startThread) {
@@ -101,8 +109,16 @@ public abstract class Service {
 	/**
 	 * @return The guild's text channel onto which updates should be posted.
 	 */
-	protected TextChannel getMediaChannel() {
+	protected MessageChannel getMediaChannel() {
 		return mediaChannel;
+	}
+	
+	
+	/**
+	 * @return The mapping of sources to the list of subscribed users for said source.
+	 */
+	protected LinkedListMultimap<String, User> getSubscribers() {
+		return subscribers;
 	}
 	
 	

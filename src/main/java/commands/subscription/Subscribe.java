@@ -10,6 +10,9 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
  */
 public class Subscribe extends Command {
 	
+	private static final CheckTwitch twitch = new CheckTwitch();
+	private static final CheckSurrender surrender = new CheckSurrender();
+	
 	
 	/**
 	 * Loads all the services.
@@ -17,16 +20,12 @@ public class Subscribe extends Command {
 	 * @return True if any single service was initialized. False if all failed.
 	 */
 	public boolean subInit() {
-		boolean passed = false;
 		
-		for (Service s : Service.getServices().values().toArray(new Service[] {})) {
-			if (!s.loadSubscribers() || !s.loadData()) {
-				Service.getServices().remove(s.getName());
-			} else {
-				passed = true;
-			}
+		for (Service s : Service.getServiceMap().values().toArray(new Service[] {})) {
+			s.init();
 		}
-		return passed;
+		
+		return true;
 	}
 	
 	
@@ -36,7 +35,7 @@ public class Subscribe extends Command {
 	 * @return True.
 	 */
 	public boolean subEnd() {
-		for (Service s : Service.getServices().values().toArray(new Service[] {})) {
+		for (Service s : Service.getServiceMap().values().toArray(new Service[] {})) {
 			s.end();
 		}
 		return true;
@@ -52,14 +51,14 @@ public class Subscribe extends Command {
 			return;
 		}
 		
-		Service s = Service.getServices().get(args[1].toLowerCase());
+		Service s = Service.getServiceMap().get(args[1].toLowerCase());
 		
 		if (s == null) {
 			channel.sendMessage("Unknown or unavailable service").queue();
 			return;
 		}
 		
-		channel.sendMessage(s.subscribe(event, args)).queue();
+		s.subscribe((args.length > 2) ? args[2] : null, event.getAuthor());
 	}
 	
 	@Override

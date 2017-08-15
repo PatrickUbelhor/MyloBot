@@ -166,7 +166,7 @@ public class CheckSurrender extends Service {
 //					for (MessageChannel c : getActiveChannels()) {
 //						c.sendMessage(result).queue();
 //					}
-					
+					logger.debug(result);
 					getMediaChannel().sendMessage(result).queue();
 				}
 			}

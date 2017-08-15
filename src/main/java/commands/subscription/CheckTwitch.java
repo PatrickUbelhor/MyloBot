@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import main.Globals;
+import net.dv8tion.jda.core.entities.User;
 import scala.Option;
 
 import static main.Globals.TWITCH_DELAY;
@@ -14,11 +15,10 @@ import static main.Globals.logger;
 
 /**
  * @author PatrickUbelhor
- * @version 7/30/2017
+ * @version 8/15/2017
  */
 public class CheckTwitch extends Service {
 	
-//	private static final String OUTPUT_FILE_IDS = "./TwitchChannelIds.txt";
 	private static final String OUTPUT_FILE_STREAMERS = "./TwitchStreamers.txt";
 	private static final LinkedHashMap<String, Boolean> statuses = new LinkedHashMap<>();
 	private static final TwitchRequester requester = new TwitchRequester(Globals.TWITCH_CLIENT_ID);
@@ -71,6 +71,18 @@ public class CheckTwitch extends Service {
 	
 	
 	@Override
+	public void subscribe(String source, User user) {
+		try {
+			statuses.putIfAbsent(requester.getUserId(source), false);
+		} catch (Exception e) {
+			logger.error("Error getting Twitch streamer");
+		}
+		
+		super.subscribe(source, user);
+	}
+	
+	
+	@Override
 	protected void startThread() {
 		thread = new CheckTwitchThread();
 		thread.start();
@@ -87,7 +99,7 @@ public class CheckTwitch extends Service {
 		
 		
 		CheckTwitchThread() {
-			super(CheckSurrender.class.getSimpleName(), TWITCH_DELAY);
+			super(CheckTwitch.class.getSimpleName(), TWITCH_DELAY);
 		}
 		
 		
@@ -95,6 +107,7 @@ public class CheckTwitch extends Service {
 			
 			// If streamer was offline last time and is now online, post message
 			for (String streamer : statuses.keySet()) {
+				logger.debug("Found streamer: " + streamer);
 				Option<String> link = requester.getStream(streamer);
 				
 				if (statuses.get(streamer)) {
@@ -105,11 +118,9 @@ public class CheckTwitch extends Service {
 				} else {
 					if (link.nonEmpty()) {
 						statuses.put(streamer, true);
-						
-//						for (MessageChannel m : getActiveChannels()) {
-//							m.sendMessage(link.get()).queue();
-//						}
 						getMediaChannel().sendMessage(link.get()).queue();
+					} else {
+						logger.error("Empty link?");
 					}
 				}
 			}

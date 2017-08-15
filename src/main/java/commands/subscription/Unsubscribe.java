@@ -17,14 +17,14 @@ public class Unsubscribe extends Command {
 			return;
 		}
 		
-		Service s = Service.getServices().get(args[1]);
+		Service s = Service.getServiceMap().get(args[1]);
 		
 		if (s == null) {
 			event.getChannel().sendMessage("Unknown or unavailable service");
 			return;
 		}
 		
-		event.getChannel().sendMessage(s.unsubscribe(event, args)).queue();
+		s.unsubscribe((args.length > 2) ? args[2] : null, event.getAuthor());
 	}
 	
 	@Override
