@@ -9,9 +9,11 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import static main.Globals.logger;
+
 /**
  * @author PatrickUbelhor
- * @version 05/29/2017
+ * @version 8/15/2017
  */
 class TrackScheduler extends AudioEventAdapter {
 	
@@ -25,15 +27,15 @@ class TrackScheduler extends AudioEventAdapter {
 	
 	void queue(AudioTrack track) {
 		if (!player.startTrack(track, true)) {
-			System.out.println("Adding to queue");
+			logger.info("Adding to queue");
 			queue.offer(track);
 		}
 	}
 	
 	void playNext() {
-		System.out.print("Playing next track: ");
+		logger.info("Playing next track: ");
 		AudioTrack next = queue.poll();
-		System.out.println(next == null ? "end of queue" : next.getInfo().title);
+		logger.info(next == null ? "end of queue" : next.getInfo().title);
 		player.startTrack(next, false);
 	}
 	
@@ -56,13 +58,13 @@ class TrackScheduler extends AudioEventAdapter {
 	
 	@Override
 	public void onTrackStart(AudioPlayer player, AudioTrack track) {
-		System.out.println("Track has begun");
+		logger.info("Track has begun");
 		player.getPlayingTrack().setPosition(0);
 	}
 	
 	@Override
 	public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
-		System.out.println("Ended");
+		logger.info("Ended");
 		
 		if (endReason.mayStartNext) {
 			playNext();
@@ -79,12 +81,13 @@ class TrackScheduler extends AudioEventAdapter {
 	@Override
 	public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception) {
 		// An already playing track threw an exception (track end event will still be received separately)
-		System.out.println("Threw exception");
+		logger.warn("Threw exception");
 	}
 	
 	@Override
 	public void onTrackStuck(AudioPlayer player, AudioTrack track, long thresholdMs) {
-		System.out.println("Track is stuck");
+		logger.warn("Track is stuck");
 		playNext();
 	}
+	
 }

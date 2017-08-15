@@ -14,8 +14,8 @@ gradlew
 gradlew.bat
 
 # Saved data
-*ChannelIDs.txt
-*Updates.txt
+SurrenderUpdates.txt
+TwitchStreamers.txt
 mylobot.properties
 
 # Will add later; empty and useless right now

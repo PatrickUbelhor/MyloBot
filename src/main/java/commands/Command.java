@@ -4,6 +4,8 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.util.LinkedHashMap;
 
+import static main.Globals.logger;
+
 /**
  * @author PatrickUbelhor
  * @version 8/15/2017
@@ -36,9 +38,9 @@ public abstract class Command {
 	public final void init() {
 		if (!subInit()) {
 			commandMap.remove(this.getName());
-			System.err.printf("\tFailed to initialize !%s\n", this.getName());
+			logger.error(String.format("\tFailed to initialize !%s", this.getName()));
 		} else {
-			System.out.printf("\tInitialized !%s\n", this.getName());
+			logger.info(String.format("\tInitialized !%s", this.getName()));
 		}
 	}
 	
@@ -60,7 +62,7 @@ public abstract class Command {
 	 */
 	public final void end() {
 		if (!subEnd()) {
-			System.out.printf("Module %s failed to shut down properly!", this.getName());
+			logger.error(String.format("Module %s failed to shut down properly!", this.getName()));
 		}
 	}
 	

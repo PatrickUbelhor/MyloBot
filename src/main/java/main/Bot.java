@@ -74,7 +74,7 @@ public class Bot extends ListenerAdapter {
 			jda.addEventListener(new Bot());
 			
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Couldn't initialize bot", e);
 		}
 		
 	}
@@ -147,25 +147,25 @@ public class Bot extends ListenerAdapter {
 	
 	@Override
 	public void onReconnect(ReconnectedEvent event) {
-		System.out.println("Reconnected");
+		logger.info("Reconnected");
 	}
 	
 	
 	@Override
 	public void onReady(ReadyEvent event) {
-		System.out.println("Ready");
+		logger.info("Ready");
 	}
 	
 	
 	@Override
 	public void onResume(ResumedEvent event) {
-		System.out.println("Resumed");
+		logger.info("Resumed");
 	}
 	
 	
 	@Override
 	public void onDisconnect(DisconnectEvent event) {
-		System.out.println("Disconnected");
+		logger.info("Disconnected");
 	}
 	
 }

@@ -46,9 +46,9 @@ public abstract class Service {
 		
 		if (!subInit()) {
 			serviceMap.remove(name);
-			logger.error(String.format("\tFailed to initialize !%s\n", name));
+			logger.error(String.format("\tFailed to initialize !%s", name));
 		} else {
-			logger.info(String.format("\tInitialized !%s\n", name));
+			logger.info(String.format("\tInitialized !%s", name));
 		}
 	}
 	
