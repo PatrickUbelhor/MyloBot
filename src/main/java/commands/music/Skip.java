@@ -4,9 +4,14 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 /**
  * @author PatrickUbelhor
- * @version 05/28/2017
+ * @version 8/15/2017
  */
 public final class Skip extends Music {
+	
+	public Skip() {
+		super("skip");
+	}
+	
 	
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
@@ -14,12 +19,10 @@ public final class Skip extends Music {
 		trackScheduler.playNext();
 	}
 	
-	
 	@Override
 	public String getUsage() {
-		return "skip";
+		return getName();
 	}
-	
 	
 	@Override
 	public String getDescription() {

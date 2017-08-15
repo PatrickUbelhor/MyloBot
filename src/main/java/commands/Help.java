@@ -5,31 +5,41 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 /**
  * @author PatrickUbelhor
- * @version 05/28/2017
+ * @version 8/15/2017
  */
 public class Help extends Command {
 	
+	public Help() {
+		super("help");
+	}
 	
+	
+	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
 		MessageChannel channel = event.getChannel();
-		String msg = "```\n";
+		StringBuilder msg = new StringBuilder("```\n");
 		
-		for (Command c : Command.getCommandList()) {
-			msg += c.getUsage() + "\n\t" + c.getDescription() + "\n";
+		for (Command c : Command.getCommandMap().values()) {
+			msg.append(String.format(
+				"\t%s\n%s\n\n",
+				c.getUsage(),
+				c.getDescription()));
 		}
-		msg += "```";
+		msg.append("```");
 		
-		channel.sendMessage(msg).queue();
+		channel.sendMessage(msg.toString()).queue();
 	}
 	
 	
+	@Override
 	public String getUsage() {
-		return "help";
+		return getName();
 	}
 	
 	
+	@Override
 	public String getDescription() {
-		return "Prints a message containing all bot commands and their\n\tdescriptions";
+		return "Prints a message containing all bot commands and their descriptions";
 	}
 	
 }

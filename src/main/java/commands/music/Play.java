@@ -6,7 +6,7 @@ import net.dv8tion.jda.core.managers.AudioManager;
 
 /**
  * @author PatrickUbelhor
- * @version 05/29/2017
+ * @version 8/15/2017
  *
  * TODO: Make bot leave voice channel after some period of inactivity
  */
@@ -15,13 +15,17 @@ public final class Play extends Music {
 	private boolean active;
 	
 	public Play() {
-		super();
+		super("play");
 		active = false;
 	}
+	
 	
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
 		
+		if (args.length != 2) return;
+		
+		// Joins the voice channel if not in one
 		if (!active) {
 			AudioManager am = event.getGuild().getAudioManager();
 			VoiceChannel vc = null;
@@ -44,14 +48,14 @@ public final class Play extends Music {
 			am.openAudioConnection(vc);
 		}
 		
-		playerManager.loadItem(args[1], new MyAudioLoadResultHandler(trackScheduler)); // queues the track
 		
+		playerManager.loadItem(args[1], new MyAudioLoadResultHandler(trackScheduler)); // queues the track
 	}
 	
 	
 	@Override
 	public String getUsage() {
-		return "play <url>";
+		return getName() + " <url>";
 	}
 	
 	

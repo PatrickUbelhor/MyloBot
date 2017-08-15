@@ -14,9 +14,12 @@ gradlew
 gradlew.bat
 
 # Saved data
-ChannelIDs.txt
 SurrenderUpdates.txt
+TwitchStreamers.txt
+mylobot.properties
 
 # Will add later; empty and useless right now
 src/test/
-src/main/resources/
+src/main/resources/*.gif
+src/main/resources/*.jpg
+src/main/resources/*.png
