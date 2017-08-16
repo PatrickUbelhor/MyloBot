@@ -5,7 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
@@ -24,32 +24,19 @@ public class CheckSurrender extends Service {
 	private static final CircularFifoQueue<String> oldLinks = new CircularFifoQueue<>(NUM_UPDATES);
 	
 	CheckSurrender() {
-		super("surrender", SURRENDER_DELAY);
+		super("surrender", SURRENDER_DELAY, OUTPUT_FILE_LINKS);
 	}
 	
 	
 	@Override
-	protected boolean subInit() {
-		String[] lines;
-		
-		// TODO: Move this logic into Service.java and make an abstract parseLines() method
-		// Create save file if it doesn't exist. Parse save file if it does.
-		if (!createFile(OUTPUT_FILE_LINKS)) {
-			lines = getLines(OUTPUT_FILE_LINKS);
-			
-			if (lines == null) return false;
-			
-			oldLinks.addAll(Arrays.asList(lines));
-			startThread(); // TODO: Only do this if there are subscribers
-		}
-			
-		return true;
+	protected void parse(String line) {
+		oldLinks.add(line);
 	}
 	
 	
 	@Override
-	protected boolean subEnd() {
-		return true;
+	protected Collection<String> getLines() {
+		return oldLinks;
 	}
 	
 	
@@ -122,13 +109,6 @@ public class CheckSurrender extends Service {
 			}
 		}
 		
-		// Sends the new links to the subscribed channels
-//		for (String result : newLinks) {
-//			if (result != null) {
-//				logger.debug(result);
-//				getMediaChannel().sendMessage(result).queue();
-//			}
-//		}
 		return newLinks;
 	}
 	

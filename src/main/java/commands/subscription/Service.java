@@ -4,7 +4,9 @@ import com.google.common.collect.LinkedListMultimap;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,7 +43,7 @@ public abstract class Service {
 		services.add(new CheckSurrender());
 		
 		for (Service s : services) {
-			if (s.subInit()) {
+			if (s.load()) {
 				serviceMap.put(s.name, s);
 				logger.info(String.format("\tInitialized service: %s", s.name));
 			} else {
@@ -57,7 +59,7 @@ public abstract class Service {
 		for (Service s : serviceMap.values()) {
 			s.endThread();
 			
-			if (!s.subEnd()) {
+			if (!s.save()) {
 				logger.error(String.format("Module %s failed to shut down properly!", s.name));
 			}
 		}
@@ -67,13 +69,14 @@ public abstract class Service {
 	private final LinkedListMultimap<String, User> subscribers = LinkedListMultimap.create();
 	private final String name;
 	private final long delayTime;
+	private final String saveFilePath;
 	private CheckerThread thread = null;
 	
 	
-	Service(String name, long delayTime) {
+	Service(String name, long delayTime, String saveFilePath) {
 		this.name = name;
 		this.delayTime = delayTime;
-		serviceMap.put(name, this);
+		this.saveFilePath = saveFilePath;
 	}
 	
 	
@@ -130,48 +133,6 @@ public abstract class Service {
 	
 	
 	/**
-	 * Creates a file with the given path. Name is specified as part of the path. Used to create save file.
-	 *
-	 * @param path The path of the file to create.
-	 * @return True if the file was successfully created.
-	 */
-	protected boolean createFile(String path) {
-		try {
-			File file = new File(path);
-			return file.createNewFile();
-			
-		} catch (IOException e) {
-			logger.error(String.format("Failed to create file: %s", path));
-			return false;
-		}
-	}
-	
-	
-	/**
-	 * Gets an array in which each entry is a line from the file at the specified path.
-	 *
-	 * @param path The path of the file to read.
-	 * @return An array of lines within the file.
-	 */
-	protected String[] getLines(String path) {
-		try (BufferedReader br = new BufferedReader(new FileReader(path))) {
-			
-			// Load the Twitch IDs of all the subscribed streamers
-			String line;
-			StringBuilder sum = new StringBuilder();
-			while ((line = br.readLine()) != null) {
-				if (!line.isEmpty()) sum.append(line).append('\n');
-			}
-			
-			return sum.toString().split("\n");
-		} catch (IOException e) {
-			logger.error(String.format("Failed to read file: '%s'", path), e);
-			return null;
-		}
-	}
-	
-	
-	/**
 	 * Starts the thread that checks for updates.
 	 */
 	protected final void startThread() {
@@ -204,8 +165,73 @@ public abstract class Service {
 	}
 	
 	
-	protected abstract boolean subInit();
-	protected abstract boolean subEnd();
+	/**
+	 * Parses the save file for subscribers.
+	 *
+	 * @return True if the file is successfully parsed.
+	 */
+	protected final boolean load() {
+		boolean isFreshFile;
+		
+		// Attempt to create save file if it doesn't exist
+		try {
+			File file = new File(saveFilePath);
+			isFreshFile = file.createNewFile();
+		} catch (IOException e) {
+			logger.error(String.format("Failed to create file: %s", saveFilePath));
+			return false;
+		}
+		
+		// If this file wasn't just created, parse it and start thread
+		if (!isFreshFile) {
+			try (BufferedReader br = new BufferedReader(new FileReader(saveFilePath))) {
+				
+				String line;
+				while ((line = br.readLine()) != null) {
+					if (!line.isEmpty()) {
+						parse(line);
+					}
+				}
+				
+			} catch (IOException e) {
+				logger.error(String.format("Failed to read file: '%s'", saveFilePath), e);
+				return false;
+			}
+			
+			
+			if (!getSubscribers().isEmpty()) {
+				startThread();
+			}
+		}
+		
+		return true;
+	}
+	
+	
+	/**
+	 * Save data to file.
+	 *
+	 * @return True if data was successfully saved.
+	 */
+	protected final boolean save() {
+		try (FileWriter fw = new FileWriter(saveFilePath, false)){
+			
+			for (String s : getLines()) {
+				fw.append(s);
+				fw.append('\n');
+			}
+			
+		} catch (IOException e) {
+			logger.error("Failed to save streamers", e);
+			return false;
+		}
+		
+		return true;
+	}
+	
+	
+	protected abstract void parse(String line);
+	protected abstract Collection<String> getLines();
 	protected abstract List<String> check();
 	
 }

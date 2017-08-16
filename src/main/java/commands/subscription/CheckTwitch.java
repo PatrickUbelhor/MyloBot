@@ -1,8 +1,7 @@
 package commands.subscription;
 
 import io.TwitchRequester;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,47 +23,21 @@ public class CheckTwitch extends Service {
 	private static final TwitchRequester requester = new TwitchRequester(Globals.TWITCH_CLIENT_ID);
 	
 	CheckTwitch() {
-		super("twitch", TWITCH_DELAY);
+		super("twitch", TWITCH_DELAY, OUTPUT_FILE_STREAMERS);
 	}
 	
 	
 	@Override
-	protected boolean subInit() {
-		String[] lines;
-		
-		// Create save file if it doesn't exist, and parse save file if it does
-		if (!createFile(OUTPUT_FILE_STREAMERS)) {
-			lines = getLines(OUTPUT_FILE_STREAMERS);
-			
-			if (lines == null) return false;
-			
-			for (String line : lines) {
-				if (!line.isEmpty()) {
-					statuses.put(line, false);
-				}
-			}
-			
-			startThread();
+	protected void parse(String line) {
+		if (!line.isEmpty()) {
+			statuses.put(line, false);
 		}
-		
-		return true;
 	}
 	
 	
 	@Override
-	protected boolean subEnd() {
-		try (FileWriter fw = new FileWriter(OUTPUT_FILE_STREAMERS, false)){
-			
-			for (String s : statuses.keySet()) {
-				fw.append(s);
-				fw.append('\n');
-			}
-			
-		} catch (IOException e) {
-			logger.error("Failed to save streamers", e);
-		}
-		
-		return true;
+	protected Collection<String> getLines() {
+		return statuses.keySet();
 	}
 	
 	
