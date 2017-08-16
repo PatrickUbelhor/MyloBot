@@ -4,6 +4,8 @@ import io.TwitchRequester;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import main.Globals;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import scala.Option;
@@ -13,17 +15,16 @@ import static main.Globals.logger;
 
 /**
  * @author PatrickUbelhor
- * @version 8/15/2017
+ * @version 8/16/2017
  */
 public class CheckTwitch extends Service {
 	
 	private static final String OUTPUT_FILE_STREAMERS = "./TwitchStreamers.txt";
 	private static final LinkedHashMap<String, Boolean> statuses = new LinkedHashMap<>();
 	private static final TwitchRequester requester = new TwitchRequester(Globals.TWITCH_CLIENT_ID);
-	private static CheckTwitchThread thread = null;
 	
 	CheckTwitch() {
-		super("twitch");
+		super("twitch", TWITCH_DELAY);
 	}
 	
 	
@@ -38,11 +39,12 @@ public class CheckTwitch extends Service {
 			if (lines == null) return false;
 			
 			for (String line : lines) {
-				statuses.put(line, false);
+				if (!line.isEmpty()) {
+					statuses.put(line, false);
+				}
 			}
 			
-			thread = new CheckTwitchThread();
-			thread.start();
+			startThread();
 		}
 		
 		return true;
@@ -70,7 +72,7 @@ public class CheckTwitch extends Service {
 	public void subscribe(MessageReceivedEvent event, String source) {
 		try {
 			if (statuses.putIfAbsent(requester.getUserId(source), false) != null) {
-				thread.check();
+				check();
 			}
 			
 			super.subscribe(event, source);
@@ -94,50 +96,30 @@ public class CheckTwitch extends Service {
 	
 	
 	@Override
-	protected void startThread() {
-		thread = new CheckTwitchThread();
-		thread.start();
-	}
-	
-	
-	@Override
-	protected void endThread() {
-		if (thread != null && thread.isAlive()) {
-			thread.interrupt();
-		}
-	}
-	
-	
-	private class CheckTwitchThread extends CheckerThread {
+	protected List<String> check() {
+		List<String> links = new LinkedList<>();
 		
+		logger.debug("Checking twitch");
 		
-		CheckTwitchThread() {
-			super(CheckTwitch.class.getSimpleName(), TWITCH_DELAY);
-		}
-		
-		
-		protected void check() {
-			logger.debug("Checking twitch");
+		// If streamer was offline last time and is now online, post message
+		for (String streamer : statuses.keySet()) {
+			logger.debug(String.format("Found streamer: '%s'", streamer));
+			Option<String> link = requester.getStream(streamer);
 			
-			// If streamer was offline last time and is now online, post message
-			for (String streamer : statuses.keySet()) {
-				logger.debug(String.format("Found streamer: '%s'", streamer));
-				Option<String> link = requester.getStream(streamer);
-				
-				if (statuses.get(streamer)) {
-					if (link.isEmpty()) {
-						statuses.put(streamer, false);
-					}
-					
-				} else {
-					if (link.nonEmpty()) {
-						statuses.put(streamer, true);
-						getMediaChannel().sendMessage(link.get()).queue();
-					} // Else streamer is offline
+			if (statuses.get(streamer)) {
+				if (link.isEmpty()) {
+					statuses.put(streamer, false);
 				}
+				
+			} else {
+				if (link.nonEmpty()) {
+					statuses.put(streamer, true);
+					links.add(link.get());
+				} // Else streamer is offline
 			}
 		}
-	
+		
+		return links;
 	}
 	
 }

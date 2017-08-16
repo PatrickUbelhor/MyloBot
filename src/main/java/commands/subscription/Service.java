@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import main.Bot;
 import main.Globals;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -16,15 +18,13 @@ import static main.Globals.logger;
 
 /**
  * @author PatrickUbelhor
- * @version 8/15/2017
+ * @version 8/16/2017
+ * @noinspection WeakerAccess
  */
 public abstract class Service {
 	
 	private static final LinkedHashMap<String, Service> serviceMap = new LinkedHashMap<>();
 	private static MessageChannel mediaChannel;
-	
-	private final LinkedListMultimap<String, User> subscribers = LinkedListMultimap.create();
-	private final String name;
 	
 	
 	public static LinkedHashMap<String, Service> getServiceMap() {
@@ -32,34 +32,48 @@ public abstract class Service {
 	}
 	
 	
-	Service(String name) {
+	public static boolean init() {
+		mediaChannel = Bot.getJDA().getTextChannelById(Globals.MEDIA_CHANNEL_ID);
+		logger.info("Found media channel: " + mediaChannel.getName());
+		
+		List<Service> services = new LinkedList<>();
+		services.add(new CheckTwitch());
+		services.add(new CheckSurrender());
+		
+		for (Service s : services) {
+			if (s.subInit()) {
+				serviceMap.put(s.name, s);
+				logger.info(String.format("\tInitialized service: %s", s.name));
+			} else {
+				logger.error(String.format("\tFailed to initialize service: %s", s.name));
+			}
+		}
+		
+		return !serviceMap.isEmpty();
+	}
+	
+	
+	public static void end() {
+		for (Service s : serviceMap.values()) {
+			s.endThread();
+			
+			if (!s.subEnd()) {
+				logger.error(String.format("Module %s failed to shut down properly!", s.name));
+			}
+		}
+	}
+	
+	
+	private final LinkedListMultimap<String, User> subscribers = LinkedListMultimap.create();
+	private final String name;
+	private final long delayTime;
+	private CheckerThread thread = null;
+	
+	
+	Service(String name, long delayTime) {
 		this.name = name;
+		this.delayTime = delayTime;
 		serviceMap.put(name, this);
-	}
-	
-	
-	// TODO: make init a static method
-	public void init() {
-		if (mediaChannel == null) {
-			mediaChannel = Bot.getJDA().getTextChannelById(Globals.MEDIA_CHANNEL_ID);
-			logger.info("Found media channel: " + mediaChannel.getName());
-		}
-		
-		if (!subInit()) {
-			serviceMap.remove(name);
-			logger.error(String.format("\tFailed to initialize !%s", name));
-		} else {
-			logger.info(String.format("\tInitialized !%s", name));
-		}
-	}
-	
-	
-	public void end() {
-		endThread();
-		
-		if (!subEnd()) {
-			logger.error(String.format("Module %s failed to shut down properly!", name));
-		}
 	}
 	
 	
@@ -104,14 +118,6 @@ public abstract class Service {
 	 */
 	public final String getName() {
 		return name;
-	}
-	
-	
-	/**
-	 * @return The guild's text channel onto which updates should be posted.
-	 */
-	protected MessageChannel getMediaChannel() {
-		return mediaChannel;
 	}
 	
 	
@@ -165,9 +171,41 @@ public abstract class Service {
 	}
 	
 	
+	/**
+	 * Starts the thread that checks for updates.
+	 */
+	protected final void startThread() {
+		if (thread != null && thread.isAlive()) {
+			logger.warn("Tried to start CheckerThread when one was already active!");
+			return;
+		}
+		
+		thread = new CheckerThread(this.getClass().getSimpleName(), delayTime, this::check, mediaChannel);
+		thread.start();
+	}
+	
+	
+	/**
+	 * Kills the thread that checks for updates.
+	 */
+	protected final void endThread() {
+		if (thread == null) {
+			logger.warn("Cannot kill null CheckerThread: " + name);
+			return;
+		}
+		
+		if (!thread.isAlive()) {
+			logger.warn("Cannot kill dead CheckerThread: " + name);
+			return;
+		}
+		
+		thread.interrupt();
+		thread = null;
+	}
+	
+	
 	protected abstract boolean subInit();
 	protected abstract boolean subEnd();
-	protected abstract void startThread();
-	protected abstract void endThread();
+	protected abstract List<String> check();
 	
 }

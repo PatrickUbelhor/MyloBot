@@ -30,7 +30,7 @@ public class Unsubscribe extends Command {
 			return;
 		}
 		
-		s.unsubscribe((args.length > 2) ? args[2] : null, event.getAuthor());
+		s.unsubscribe(event, (args.length > 2) ? args[2] : null);
 	}
 	
 	@Override
