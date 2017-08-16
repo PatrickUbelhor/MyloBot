@@ -1,7 +1,5 @@
 package io
 
-import java.io.IOException
-
 import org.json.{JSONException, JSONObject}
 
 /**

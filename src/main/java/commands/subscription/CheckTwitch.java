@@ -19,7 +19,7 @@ import static main.Globals.logger;
 public class CheckTwitch extends Service {
 	
 	private static final String OUTPUT_FILE_STREAMERS = "./TwitchStreamers.txt";
-	private static final LinkedHashMap<String, Boolean> statuses = new LinkedHashMap<>();
+	private static final LinkedHashMap<String, StreamerInfo> statuses = new LinkedHashMap<>();
 	private static final TwitchRequester requester = new TwitchRequester(Globals.TWITCH_CLIENT_ID);
 	
 	CheckTwitch() {
@@ -30,21 +30,29 @@ public class CheckTwitch extends Service {
 	@Override
 	protected void parse(String line) {
 		if (!line.isEmpty()) {
-			statuses.put(line, false);
+			String[] tokens = line.split(",");
+			statuses.put(tokens[0], new StreamerInfo(tokens[1], false));
 		}
 	}
 	
 	
 	@Override
 	protected Collection<String> getLines() {
-		return statuses.keySet();
+		List<String> lines = new LinkedList<>();
+		
+		for (String name : statuses.keySet()) {
+			lines.add(name + "," + statuses.get(name).id);
+		}
+		
+		return lines;
 	}
 	
 	
 	@Override
 	public void subscribe(MessageReceivedEvent event, String source) {
 		try {
-			if (statuses.putIfAbsent(requester.getUserId(source), false) != null) {
+			if (!statuses.containsKey(source)) {
+				statuses.put(source, new StreamerInfo(requester.getUserId(source), false));
 				check();
 			}
 			
@@ -75,24 +83,36 @@ public class CheckTwitch extends Service {
 		logger.debug("Checking twitch");
 		
 		// If streamer was offline last time and is now online, post message
-		for (String streamer : statuses.keySet()) {
-			logger.debug(String.format("Found streamer: '%s'", streamer));
-			Option<String> link = requester.getStream(streamer);
+		for (StreamerInfo stream : statuses.values()) {
+			logger.debug(String.format("Found streamer: '%s'", stream.id));
+			Option<String> link = requester.getStream(stream.id);
 			
-			if (statuses.get(streamer)) {
+			if (stream.status) { // If the stream was last online and now isn't, set status to false
 				if (link.isEmpty()) {
-					statuses.put(streamer, false);
+					stream.status = false;
 				}
 				
-			} else {
+			} else { // If the stream was last offline and now isn't, set status to true
 				if (link.nonEmpty()) {
-					statuses.put(streamer, true);
+					stream.status = true;
 					links.add(link.get());
-				} // Else streamer is offline
+				}
 			}
 		}
 		
 		return links;
+	}
+	
+	
+	private class StreamerInfo {
+		
+		private final String id;
+		private boolean status;
+		
+		private StreamerInfo(String id, boolean status) {
+			this.id = id;
+			this.status = status;
+		}
 	}
 	
 }

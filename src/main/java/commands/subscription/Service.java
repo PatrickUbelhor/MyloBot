@@ -66,6 +66,7 @@ public abstract class Service {
 	}
 	
 	
+	// TODO: Move source maps to this file (replace 'subscribers' map)
 	private final LinkedListMultimap<String, User> subscribers = LinkedListMultimap.create();
 	private final String name;
 	private final long delayTime;
@@ -183,6 +184,7 @@ public abstract class Service {
 		}
 		
 		// If this file wasn't just created, parse it and start thread
+		boolean hasActiveSource = false;
 		if (!isFreshFile) {
 			try (BufferedReader br = new BufferedReader(new FileReader(saveFilePath))) {
 				
@@ -190,6 +192,7 @@ public abstract class Service {
 				while ((line = br.readLine()) != null) {
 					if (!line.isEmpty()) {
 						parse(line);
+						hasActiveSource = true;
 					}
 				}
 				
@@ -199,7 +202,7 @@ public abstract class Service {
 			}
 			
 			
-			if (!getSubscribers().isEmpty()) {
+			if (hasActiveSource) {
 				startThread();
 			}
 		}
