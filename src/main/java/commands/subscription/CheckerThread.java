@@ -2,7 +2,9 @@ package commands.subscription;
 
 import java.util.List;
 import java.util.function.Supplier;
+import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.User;
 
 import static main.Globals.logger;
 
@@ -13,10 +15,10 @@ import static main.Globals.logger;
 final class CheckerThread extends Thread {
 	
 	private final long delayTime;
-	private final Supplier<List<String>> checkFunction;
+	private final Supplier<List<MessageContent>> checkFunction;
 	private final MessageChannel mediaChannel;
 	
-	CheckerThread(String name, long delayTime, Supplier<List<String>> checkFunction, MessageChannel mediaChannel) {
+	CheckerThread(String name, long delayTime, Supplier<List<MessageContent>> checkFunction, MessageChannel mediaChannel) {
 		super(name);
 		this.delayTime = delayTime;
 		this.checkFunction = checkFunction;
@@ -31,9 +33,17 @@ final class CheckerThread extends Thread {
 			
 			logger.info(String.format("%s running...", this.getName()));
 			
-			List<String> responses = checkFunction.get();
-			for (String s : responses) {
-				mediaChannel.sendMessage(s).queue(); // Send message to channel
+			List<MessageContent> responses = checkFunction.get();
+			for (MessageContent mc : responses) {
+				MessageBuilder messageBuilder = new MessageBuilder();
+				messageBuilder.append(mc.getLink());
+				messageBuilder.append("\n");
+				
+				for (User u : mc.getSubscribers()) {
+					messageBuilder.append(u);
+				}
+				
+				mediaChannel.sendMessage(messageBuilder.build()).queue(); // Send message to channel
 			}
 			
 			logger.info(String.format("%s finished", this.getName()));

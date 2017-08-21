@@ -5,7 +5,9 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import main.Bot;
 import main.Globals;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import scala.Option;
 
@@ -14,13 +16,14 @@ import static main.Globals.logger;
 
 /**
  * @author PatrickUbelhor
- * @version 8/16/2017
+ * @version 8/21/2017
  */
 public class CheckTwitch extends Service {
 	
 	private static final String OUTPUT_FILE_STREAMERS = "./TwitchStreamers.txt";
-	private static final LinkedHashMap<String, StreamerInfo> statuses = new LinkedHashMap<>();
 	private static final TwitchRequester requester = new TwitchRequester(Globals.TWITCH_CLIENT_ID);
+	
+	private final LinkedHashMap<String, StreamerInfo> statuses = new LinkedHashMap<>();
 	
 	CheckTwitch() {
 		super("twitch", TWITCH_DELAY, OUTPUT_FILE_STREAMERS);
@@ -30,8 +33,17 @@ public class CheckTwitch extends Service {
 	@Override
 	protected void parse(String line) {
 		if (!line.isEmpty()) {
-			String[] tokens = line.split(",");
-			statuses.put(tokens[0], new StreamerInfo(tokens[1], false));
+			
+			String[] sections = line.split("\\|");
+			String[] streamInfo = sections[0].split(",");
+			String[] subscribers = sections[1].split(",");
+			
+			StreamerInfo info = new StreamerInfo(streamInfo[1], false);
+			for (String id : subscribers) {
+				info.addSubscriber(Bot.getJDA().getUserById(id));
+			}
+			
+			statuses.put(streamInfo[0], info);
 		}
 	}
 	
@@ -41,22 +53,44 @@ public class CheckTwitch extends Service {
 		List<String> lines = new LinkedList<>();
 		
 		for (String name : statuses.keySet()) {
-			lines.add(name + "," + statuses.get(name).id);
+			StringBuilder line = new StringBuilder();
+			
+			line.append(name);
+			line.append(',');
+			line.append(statuses.get(name).id);
+			line.append('|');
+			
+			for (User u : statuses.get(name).getSubscribers()) {
+				line.append(u.getId());
+				line.append(',');
+			}
+			line.deleteCharAt(line.length() - 1); // Deletes dangling comma
+			
+			lines.add(line.toString());
 		}
 		
 		return lines;
 	}
 	
 	
+	// TODO: Tell user if they are already subscribed
 	@Override
 	public void subscribe(MessageReceivedEvent event, String source) {
 		try {
+			boolean startThread = statuses.isEmpty();
+			
 			if (!statuses.containsKey(source)) {
-				statuses.put(source, new StreamerInfo(requester.getUserId(source), false));
-				check();
+				StreamerInfo info = new StreamerInfo(requester.getUserId(source), false);
+				info.addSubscriber(event.getAuthor());
+				statuses.put(source, info);
+				
+				if (startThread) {
+					startThread();
+				} else {
+					check();
+				}
 			}
 			
-			super.subscribe(event, source);
 		} catch (Exception e) {
 			logger.error(String.format("Could not find Twitch streamer '%s'", source));
 			event.getTextChannel().sendMessage(String.format("Could not find Twitch streamer '%s'", source)).queue();
@@ -64,21 +98,26 @@ public class CheckTwitch extends Service {
 	}
 	
 	
+	// TODO: Tell user if they are already unsubbed
 	@Override
 	public void unsubscribe(MessageReceivedEvent event, String source) {
-		try {
-			statuses.remove(requester.getUserId(source));
-			super.unsubscribe(event, source);
-		} catch (Exception e) {
-			logger.error(String.format("Could not find Twitch streamer '%s'", source));
-			event.getTextChannel().sendMessage(String.format("Could not find Twitch streamer '%s'", source)).queue();
+		if (statuses.containsKey(source)) {
+			statuses.get(source).removeSubscriber(event.getAuthor());
+			
+			if (statuses.get(source).getSubscribers().isEmpty()) {
+				statuses.remove(source);
+			}
+		}
+		
+		if (statuses.isEmpty()) {
+			endThread();
 		}
 	}
 	
 	
 	@Override
-	protected List<String> check() {
-		List<String> links = new LinkedList<>();
+	protected List<MessageContent> check() {
+		List<MessageContent> messageContents = new LinkedList<>();
 		
 		logger.debug("Checking twitch");
 		
@@ -95,16 +134,16 @@ public class CheckTwitch extends Service {
 			} else { // If the stream was last offline and now isn't, set status to true
 				if (link.nonEmpty()) {
 					stream.status = true;
-					links.add(link.get());
+					messageContents.add(new MessageContent(link.get(), stream.getSubscribers()));
 				}
 			}
 		}
 		
-		return links;
+		return messageContents;
 	}
 	
 	
-	private class StreamerInfo {
+	private class StreamerInfo extends SourceInfo {
 		
 		private final String id;
 		private boolean status;

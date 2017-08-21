@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 
 import static main.Globals.SURRENDER_DELAY;
@@ -15,13 +16,14 @@ import static main.Globals.logger;
 
 /**
  * @author PatrickUbelhor
- * @version 8/16/2017
+ * @version 8/21/2017
  */
 public class CheckSurrender extends Service {
 	
 	private static final int NUM_UPDATES = 3;
 	private static final String OUTPUT_FILE_LINKS = "./SurrenderUpdates.txt";
 	private static final CircularFifoQueue<String> oldLinks = new CircularFifoQueue<>(NUM_UPDATES);
+	private static final SourceInfo sourceInfo = new SourceInfo();
 	
 	CheckSurrender() {
 		super("surrender", SURRENDER_DELAY, OUTPUT_FILE_LINKS);
@@ -40,9 +42,33 @@ public class CheckSurrender extends Service {
 	}
 	
 	
+	// TODO: Tell user if already subbed
+	@Override
+	public void subscribe(MessageReceivedEvent event, String source) {
+		boolean startThread = sourceInfo.getSubscribers().isEmpty();
+		
+		sourceInfo.addSubscriber(event.getAuthor());
+		
+		if (startThread) {
+			startThread();
+		}
+	}
+	
+	
+	// TODO: Tell user if already unsubbed
+	@Override
+	public void unsubscribe(MessageReceivedEvent event, String source) {
+		sourceInfo.removeSubscriber(event.getAuthor());
+		
+		if (sourceInfo.getSubscribers().isEmpty()) {
+			endThread();
+		}
+	}
+	
+	
 	// TODO: Split reading/writing values into separate try blocks
 	@Override
-	protected List<String> check() {
+	protected List<MessageContent> check() {
 		
 		URL url;
 		BufferedReader br = null;
@@ -109,7 +135,13 @@ public class CheckSurrender extends Service {
 			}
 		}
 		
-		return newLinks;
+		
+		List<MessageContent> messageContents = new LinkedList<>();
+		for (String s : newLinks) {
+			messageContents.add(new MessageContent(s, sourceInfo.getSubscribers()));
+		}
+		
+		return messageContents;
 	}
 	
 }
