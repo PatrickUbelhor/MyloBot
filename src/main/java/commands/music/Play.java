@@ -5,23 +5,29 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.managers.AudioManager;
 
 /**
- * @author PatrickUbelhor
- * @version 05/29/2017
+ * @author Patrick Ubelhor
+ * @version 12/15/2017
  *
  * TODO: Make bot leave voice channel after some period of inactivity
+ * TODO: Ability to loop
+ * TODO: Create playlist
  */
 public final class Play extends Music {
 	
 	private boolean active;
 	
 	public Play() {
-		super();
+		super("play");
 		active = false;
 	}
+	
 	
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
 		
+		if (args.length < 2 || args.length > 4) return;
+		
+		// Joins the voice channel if not in one
 		if (!active) {
 			AudioManager am = event.getGuild().getAudioManager();
 			VoiceChannel vc = null;
@@ -36,7 +42,7 @@ public final class Play extends Music {
 			
 			// Refuses to play if user is not in a voice channel
 			if (vc == null) {
-				event.getTextChannel().sendMessage("Must be in a voice channel to begin playing music.").queue();
+				event.getTextChannel().sendMessage("You must be in a voice channel to begin playing music.").queue();
 				return;
 			}
 			
@@ -44,14 +50,53 @@ public final class Play extends Music {
 			am.openAudioConnection(vc);
 		}
 		
-		playerManager.loadItem(args[1], new MyAudioLoadResultHandler(trackScheduler)); // queues the track
+		if (args.length == 3) {
+			switch (args[1]) {
+				case "album":
+					if (!albums.containsKey(args[2])) {
+						event.getTextChannel().sendMessage("I can't find that album on my computer, sorry!").queue();
+						return;
+					}
+					
+					for (String song : albums.get(args[2])) {
+						System.out.println(song);
+						playerManager.loadItem(song, new MyAudioLoadResultHandler(trackScheduler));
+					}
+					
+					break;
+				case "song":
+					if (!songs.containsKey(args[2])) {
+						event.getTextChannel().sendMessage("I can't find that song on my computer, sorry!").queue();
+						return;
+					}
+					
+					playerManager.loadItem(songs.get(args[2]), new MyAudioLoadResultHandler(trackScheduler));
+					break;
+				default:
+					event.getTextChannel().sendMessage("Unknown argument for 'play'").queue();
+					return;
+			}
+			
+			return;
+		}
 		
+		
+		if (args[1].startsWith("http") || args[1].startsWith("www")) {
+			playerManager.loadItem(args[1], new MyAudioLoadResultHandler(trackScheduler));
+		} else {
+			if (!songs.containsKey(args[1])) {
+				event.getTextChannel().sendMessage("I can't find that song on my computer, sorry!").queue();
+				return;
+			}
+			
+			playerManager.loadItem(songs.get(args[1]), new MyAudioLoadResultHandler(trackScheduler));
+		}
 	}
 	
 	
 	@Override
 	public String getUsage() {
-		return "play <url>";
+		return getName() + " <url>";
 	}
 	
 	

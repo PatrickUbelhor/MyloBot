@@ -5,30 +5,78 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import commands.Command;
+import java.io.File;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import main.Globals;
+
+import static main.Globals.logger;
 
 /**
- * @author PatrickUbelhor
- * @version 06/10/2017
+ * @author Patrick Ubelhor
+ * @version 12/17/2017
  *
  * TODO: Add responses to user interaction
+ * TODO: Only add files with given file extensions
  */
 abstract class Music extends Command {
 	
 	static AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
 	static AudioPlayer player = playerManager.createPlayer();
 	static TrackScheduler trackScheduler = new TrackScheduler(player);
+	protected static File musicFolder = new File("music");
+	protected static HashMap<String, String> songs = new HashMap<>();
+	protected static LinkedHashMap<String, LinkedList<String>> albums = new LinkedHashMap<>();
 	private static boolean hasInit = false;
+	
+	protected Music(String name) {
+		super(name);
+	}
+	
 	
 	@Override
 	protected boolean subInit() {
 		if (!hasInit) {
+			hasInit = true;
 			AudioSourceManagers.registerRemoteSources(playerManager);
 			AudioSourceManagers.registerLocalSource(playerManager);
+			player.setVolume(Globals.MUSIC_VOLUME);
 			player.addListener(trackScheduler);
+			
+			if (!musicFolder.exists() || !musicFolder.isDirectory()) {
+				logger.error("Could not find music directory");
+				return false;
+			}
+			
+			File[] files = musicFolder.listFiles();
+			if (files == null) return true;
+//			Arrays.parallelSort(files);
+			
+			for (File file : files) {
+				if (file.isDirectory()) {
+					albums.put(file.getName(), new LinkedList<>());
+					
+					File[] albumSongs = file.listFiles();
+					if (file.listFiles() == null) continue;
+//					Arrays.parallelSort(albumSongs);
+					
+					for (File song : albumSongs) {
+						String name = song.getName().split("\\.")[0]; // Removes extension
+						albums.get(file.getName()).add(song.getAbsolutePath());
+						songs.put(name, song.getAbsolutePath());
+						logger.info("Found song: " + song);
+					}
+				} else {
+					songs.put(file.getName().split("\\.")[0], file.getAbsolutePath());
+				}
+			}
+			
 		}
-		hasInit = true;
 		return true;
 	}
+	
 	
 	@Override
 	protected final boolean subEnd() {

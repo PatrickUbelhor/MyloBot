@@ -2,37 +2,30 @@ package commands;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
+
+import static main.Globals.logger;
 
 /**
- * @author PatrickUbelhor
- * @version 06/10/2017
+ * @author Patrick Ubelhor
+ * @version 8/15/2017
  * @noinspection WeakerAccess
  */
 public abstract class Command {
 	
-	private static final LinkedList<Command> commandList = new LinkedList<>(); // Used to manually order the commands for 'help'
-	private static final HashMap<String, Command> commandMap = new HashMap<>(12, 1f);
+	private static final LinkedHashMap<String, Command> commandMap = new LinkedHashMap<>(12, 1f);
+	private final String name;
 	
-	protected Command() {
-		commandList.add(this);
-		commandMap.put(this.getName(), this);
-	}
-	
-	
-	/**
-	 * @return A LinkedList containing all active commands
-	 */
-	public static LinkedList<Command> getCommandList() {
-		return commandList;
+	protected Command(String name) {
+		this.name = name.toLowerCase();
+		commandMap.put(name, this);
 	}
 	
 	
 	/**
 	 * @return A HashMap containing all active commands, referenced by their first required argument
 	 */
-	public static HashMap<String, Command> getCommandMap() {
+	public static LinkedHashMap<String, Command> getCommandMap() {
 		return commandMap;
 	}
 	
@@ -44,11 +37,10 @@ public abstract class Command {
 	 */
 	public final void init() {
 		if (!subInit()) {
-			commandList.remove(this);
 			commandMap.remove(this.getName());
-			System.err.printf("\tFailed to initialize !%s\n", this.getName());
+			logger.error(String.format("\tFailed to initialize !%s", this.getName()));
 		} else {
-			System.out.printf("\tInitialized !%s\n", this.getName());
+			logger.info(String.format("\tInitialized !%s", this.getName()));
 		}
 	}
 	
@@ -70,7 +62,7 @@ public abstract class Command {
 	 */
 	public final void end() {
 		if (!subEnd()) {
-			System.out.printf("Module %s failed to shut down properly!", this.getName());
+			logger.error(String.format("Module %s failed to shut down properly!", this.getName()));
 		}
 	}
 	
@@ -92,7 +84,7 @@ public abstract class Command {
 	 * @return The command name
 	 */
 	public String getName() {
-		return this.getUsage().split(" ")[0];
+		return name;
 	}
 	
 	

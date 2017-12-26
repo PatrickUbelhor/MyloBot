@@ -5,9 +5,11 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
+import static main.Globals.logger;
+
 /**
- * @author PatrickUbelhor
- * @version 05/27/2017
+ * @author Patrick Ubelhor
+ * @version 8/15/2017
  */
 class MyAudioLoadResultHandler implements AudioLoadResultHandler {
 	private final TrackScheduler trackScheduler;
@@ -18,13 +20,13 @@ class MyAudioLoadResultHandler implements AudioLoadResultHandler {
 	
 	@Override
 	public void trackLoaded(AudioTrack track) {
-		System.out.println("Loaded track");
+		logger.info("Loaded track");
 		trackScheduler.queue(track);
 	}
 	
 	@Override
 	public void playlistLoaded(AudioPlaylist playlist) {
-		System.out.println("Loaded playlist");
+		logger.info("Loaded playlist");
 		for (AudioTrack track : playlist.getTracks()) {
 			trackScheduler.queue(track);
 		}
@@ -33,15 +35,14 @@ class MyAudioLoadResultHandler implements AudioLoadResultHandler {
 	@Override
 	public void noMatches() {
 		// Notify the user that we've got nothing
-		System.out.println("No matches!");
+		logger.info("No matches!");
 	}
 	
 	@Override
 	public void loadFailed(FriendlyException throwable) {
 		// Notify the user that everything exploded
-		System.out.println("Load failed!");
-		System.out.println(throwable.severity.name());
-		System.out.println(throwable.getMessage());
-//		throwable.printStackTrace();
+		logger.error("Load failed!");
+		logger.error(throwable.severity.name());
+		logger.error(throwable.getMessage());
 	}
 }

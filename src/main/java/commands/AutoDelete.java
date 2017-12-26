@@ -1,4 +1,4 @@
-package commands.music;
+package commands;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
@@ -6,26 +6,28 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
  * @author Patrick Ubelhor
  * @version 8/15/2017
  */
-public class Unpause extends Music {
+public class AutoDelete extends Command {
 	
-	public Unpause() {
-		super("unpause");
+	public AutoDelete() {
+		super("autodelete");
 	}
 	
 	
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
-		trackScheduler.unpause();
+		// TODO: fill
 	}
+	
 	
 	@Override
 	public String getUsage() {
-		return getName();
+		return getName() + " [save]";
 	}
+	
 	
 	@Override
 	public String getDescription() {
-		return "Continues playing a paused track";
+		return "Automatically deletes messages from this channel. Can optionally save embedded content.";
 	}
 	
 }
