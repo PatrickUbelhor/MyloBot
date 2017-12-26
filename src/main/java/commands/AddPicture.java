@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author PatrickUbelhor
+ * @author Patrick Ubelhor
  * @version 8/15/2017
  */
 public class AddPicture extends Command {

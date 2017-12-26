@@ -8,7 +8,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import static main.Globals.logger;
 
 /**
- * @author PatrickUbelhor
+ * @author Patrick Ubelhor
  * @version 8/15/2017
  */
 class MyAudioLoadResultHandler implements AudioLoadResultHandler {

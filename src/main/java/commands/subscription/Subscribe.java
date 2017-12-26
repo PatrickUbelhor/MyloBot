@@ -5,7 +5,7 @@ import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 /**
- * @author PatrickUbelhor
+ * @author Patrick Ubelhor
  * @version 8/16/2017
  */
 public class Subscribe extends Command {

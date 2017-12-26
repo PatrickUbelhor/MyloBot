@@ -9,7 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * @author PatrickUbelhor
+ * @author Patrick Ubelhor
  * @version 7/30/2017
  */
 public class Globals {

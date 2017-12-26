@@ -12,7 +12,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import static main.Globals.logger;
 
 /**
- * @author PatrickUbelhor
+ * @author Patrick Ubelhor
  * @version 8/15/2017
  */
 class TrackScheduler extends AudioEventAdapter {

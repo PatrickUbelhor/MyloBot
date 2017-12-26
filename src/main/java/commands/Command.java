@@ -7,7 +7,7 @@ import java.util.LinkedHashMap;
 import static main.Globals.logger;
 
 /**
- * @author PatrickUbelhor
+ * @author Patrick Ubelhor
  * @version 8/15/2017
  * @noinspection WeakerAccess
  */

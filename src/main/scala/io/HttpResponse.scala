@@ -3,7 +3,7 @@ package io
 import java.util.LinkedHashMap
 
 /**
-  * @author PatrickUbelhor
+  * @author Patrick Ubelhor
   * @version 06/23/2017
   */
 private class HttpResponse(code: Int, message: String, content: String, headerProperties: LinkedHashMap[String, String]) {

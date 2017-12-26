@@ -17,7 +17,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import static main.Globals.logger;
 
 /**
- * @author PatrickUbelhor
+ * @author Patrick Ubelhor
  * @version 8/21/2017
  * @noinspection WeakerAccess
  */

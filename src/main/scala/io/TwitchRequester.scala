@@ -3,7 +3,7 @@ package io
 import org.json.{JSONException, JSONObject}
 
 /**
-  * @author PatrickUbelhor
+  * @author Patrick Ubelhor
   * @version 7/1/2017
   */
 class TwitchRequester(clientId: String) {

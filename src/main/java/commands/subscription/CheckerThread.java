@@ -9,7 +9,7 @@ import net.dv8tion.jda.core.entities.User;
 import static main.Globals.logger;
 
 /**
- * @author PatrickUbelhor
+ * @author Patrick Ubelhor
  * @version 8/16/2017
  */
 final class CheckerThread extends Thread {

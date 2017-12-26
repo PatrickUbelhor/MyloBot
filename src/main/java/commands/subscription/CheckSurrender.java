@@ -15,7 +15,7 @@ import static main.Globals.SURRENDER_DELAY;
 import static main.Globals.logger;
 
 /**
- * @author PatrickUbelhor
+ * @author Patrick Ubelhor
  * @version 8/21/2017
  */
 public class CheckSurrender extends Service {

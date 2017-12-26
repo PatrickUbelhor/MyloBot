@@ -41,6 +41,7 @@ private class RestCaller() {
 			
 			// Apply all the request properties
 			// TODO: Find a less disgusting way to iterate over a set. Maybe don't use Java.util data structures
+			// TODO: Or in the meantime, just cast from Array[Object] to Array[String]
 			for (key <- headerProperties.keySet().toArray(new Array[String](0))) {
 				connection.setRequestProperty(key, headerProperties.get(key))
 			}
