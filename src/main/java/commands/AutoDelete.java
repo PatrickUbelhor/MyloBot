@@ -3,7 +3,7 @@ package commands;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 /**
- * @author PatrickUbelhor
+ * @author Patrick Ubelhor
  * @version 8/15/2017
  */
 public class AutoDelete extends Command {

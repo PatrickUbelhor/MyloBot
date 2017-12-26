@@ -1,7 +1,7 @@
 package io;
 
 /**
- * @author PatrickUbelhor
+ * @author Patrick Ubelhor
  * @version 06/23/2017
  */
 enum RequestType {

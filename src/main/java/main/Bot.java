@@ -4,6 +4,7 @@ import commands.*;
 import commands.music.*;
 import commands.subscription.Subscribe;
 import commands.subscription.Unsubscribe;
+import java.io.File;
 import net.dv8tion.jda.core.*;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -24,8 +25,8 @@ import static main.Globals.DISCORD_TOKEN;
 import static main.Globals.logger;
 
 /**
- * @author PatrickUbelhor
- * @version 6/30/2017
+ * @author Patrick Ubelhor
+ * @version 12/17/2017
  * TODO: On Twitch startup, verify token is valid
  */
 public class Bot extends ListenerAdapter {
@@ -46,14 +47,18 @@ public class Bot extends ListenerAdapter {
 	private static final Subscribe sub = new Subscribe();
 	private static final Unsubscribe unsub = new Unsubscribe();
 	
-	private static final String[] images = {
-		// TODO: move these to folder "AtEveryone". Search the folder for images.
-			"https://i.imgur.com/gjRp51B.gif",
-			"http://i3.kym-cdn.com/photos/images/original/001/242/548/f0f.jpg",
-	        "http://i2.kym-cdn.com/photos/images/original/001/243/406/73c.jpg",
-	        "https://i.ytimg.com/vi/pAcf_VV8KmI/maxresdefault.jpg",
-	        "https://i.redditmedia.com/xpQhnmEXXTecqj4sItzLz3KcCnnX-U64lZm_fo4-gF0.png?w=320&s=2348e46110cc92a1c32be25c2bf69c5d"
-	};
+	static {
+		File pics = new File("AtEveryone");
+		if (!pics.exists() && !pics.mkdir()) {
+			logger.error("Could not create 'AtEveryone' directory!");
+		}
+		
+		File music = new File("Music");
+		if (!music.exists() && !music.mkdir()) {
+			logger.error("Could not create 'Music' directory!");
+		}
+	}
+	
 	
 	private static JDA jda;
 
@@ -97,11 +102,15 @@ public class Bot extends ListenerAdapter {
 		// TODO: could possibly make this a subscription service?
 		if (message.mentionsEveryone()) {
 			// Post atEveryone meme
-			String image = images[new Random().nextInt(images.length)];
+			File[] pics = new File("AtEveryone").listFiles();
 			
-			MessageBuilder mb = new MessageBuilder().setEmbed(new EmbedBuilder().setImage(image).build());
-			Message m = mb.build();
-			channel.sendMessage(m).queue();
+			if (pics == null || pics.length == 0) {
+				channel.sendMessage("reeeeEEEEEEEEEEEE E E E E E E E E E E E E E").queue();
+				return;
+			}
+			
+			channel.sendFile(pics[new Random().nextInt(pics.length)]).queue();
+			
 			return;
 		}
 		

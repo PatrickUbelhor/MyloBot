@@ -5,14 +5,10 @@ import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 /**
- * @author PatrickUbelhor
- * @version 8/15/2017
+ * @author Patrick Ubelhor
+ * @version 8/16/2017
  */
 public class Subscribe extends Command {
-	
-	private static final CheckTwitch twitch = new CheckTwitch();
-	private static final CheckSurrender surrender = new CheckSurrender();
-	
 	
 	public Subscribe() {
 		super("sub");
@@ -26,12 +22,7 @@ public class Subscribe extends Command {
 	 */
 	@Override
 	public boolean subInit() {
-		
-		for (Service s : Service.getServiceMap().values().toArray(new Service[] {})) {
-			s.init();
-		}
-		
-		return true;
+		return Service.init();
 	}
 	
 	
@@ -42,9 +33,7 @@ public class Subscribe extends Command {
 	 */
 	@Override
 	public boolean subEnd() {
-		for (Service s : Service.getServiceMap().values().toArray(new Service[] {})) {
-			s.end();
-		}
+		Service.end();
 		return true;
 	}
 	
