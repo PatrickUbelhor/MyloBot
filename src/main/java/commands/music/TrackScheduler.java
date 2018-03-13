@@ -13,7 +13,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/15/2017
+ * @version 1/26/2018
  */
 class TrackScheduler extends AudioEventAdapter {
 	
@@ -47,6 +47,10 @@ class TrackScheduler extends AudioEventAdapter {
 	
 	void unpause() {
 		player.setPaused(false);
+	}
+	
+	int getQueueLength() {
+		return queue.size();
 	}
 	
 	

@@ -1,11 +1,20 @@
 package main;
 
-import commands.*;
-import commands.music.*;
+import commands.AddPicture;
+import commands.ClearText;
+import commands.Command;
+import commands.Help;
+import commands.Reverse;
+import commands.Shutdown;
+import commands.music.Pause;
+import commands.music.Play;
+import commands.music.Skip;
+import commands.music.Unpause;
 import commands.subscription.Subscribe;
 import commands.subscription.Unsubscribe;
-import java.io.File;
-import net.dv8tion.jda.core.*;
+import net.dv8tion.jda.core.AccountType;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -17,6 +26,7 @@ import net.dv8tion.jda.core.events.ResumedEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
+import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 import java.util.Random;
@@ -26,7 +36,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 12/17/2017
+ * @version 3/13/2018
  * TODO: On Twitch startup, verify token is valid
  */
 public class Bot extends ListenerAdapter {
@@ -97,7 +107,7 @@ public class Bot extends ListenerAdapter {
 		Message message = event.getMessage();
 		MessageChannel channel = event.getChannel();
 		TextChannel ch = event.getTextChannel();
-		String msg = message.getContent().trim();
+		String msg = message.getContentDisplay().trim();
 		
 		// TODO: could possibly make this a subscription service?
 		if (message.mentionsEveryone()) {

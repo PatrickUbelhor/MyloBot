@@ -4,17 +4,53 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/15/2017
+ * @version 1/26/2018
  */
 public final class Skip extends Music {
 	
 	public Skip() {
-		super("skip");
+		super("skip [all|number]");
 	}
 	
 	
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
+		
+		if (trackScheduler.getQueueLength() == 0) {
+			event.getTextChannel().sendMessage("Queue is already empty").queue();
+			return;
+		}
+		
+		// Clear all songs or a certain number from queue.
+		if (args.length > 1) {
+			if (args[1].equals("all")) {
+				event.getTextChannel().sendMessage("Clearing the queue.").queue();
+				
+				for (int i = 0; i < trackScheduler.getQueueLength(); i++) {
+					trackScheduler.playNext();
+				}
+				
+			} else {
+				try {
+					int count = Integer.parseInt(args[1]);
+					
+					if (count < 1) {
+						event.getTextChannel().sendMessage("Please give a positive integer.").queue();
+					}
+					
+					while (count > 0) {
+						trackScheduler.playNext();
+						count--;
+					}
+				} catch (NumberFormatException e) {
+					event.getTextChannel().sendMessage("Please enter a valid number.").queue();
+				}
+			}
+			
+			
+			return;
+		}
+		
 		event.getTextChannel().sendMessage("Skipping...").queue();
 		trackScheduler.playNext();
 	}
