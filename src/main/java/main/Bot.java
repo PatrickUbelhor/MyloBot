@@ -36,7 +36,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 3/13/2018
+ * @version 3/17/2018
  * TODO: On Twitch startup, verify token is valid
  */
 public class Bot extends ListenerAdapter {
@@ -129,7 +129,7 @@ public class Bot extends ListenerAdapter {
 		FIXME: Checking for '!' here makes David's autodelete code useless. Check afterwards to fix, but maybe not until
 		we complete the 'TODO' below
 		 */
-		if ((msg.length() > 0 && msg.charAt(0) != KEY) || author.isBot()) return; // Checking isBot() prevents user from spamming a !reverse
+		if ((msg.length() > 1 && msg.charAt(0) != KEY) || author.isBot()) return; // Checking isBot() prevents user from spamming a !reverse
 
 		
 		switch (event.getChannelType()) {
@@ -154,9 +154,24 @@ public class Bot extends ListenerAdapter {
 		String[] args = msg.substring(1).split(" ");
 		args[0] = args[0].toLowerCase();
 		
-		// Runs the command, if it exists. Otherwise prints an error message
+		// Runs the command, if it exists and the user has valid permission levels. Otherwise prints an error message
 		if (commands.containsKey(args[0])) {
-			commands.get(args[0]).run(event, args);
+			Command command = commands.get(args[0]);
+			
+			// TODO: Check for proper permission level
+			switch (command.getPerm()) {
+				case DISABLED:
+					channel.sendMessage("That command has been disabled by the bot admin, sorry!").queue();
+					break;
+				case USER:
+					// Check for USER role
+					break;
+				case MOD:
+					// Check for MOD role
+					break;
+			}
+			
+			command.run(event, args);
 		} else {
 			channel.sendMessage("Unknown or unavailable command").queue();
 		}

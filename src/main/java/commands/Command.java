@@ -1,5 +1,6 @@
 package commands;
 
+import main.Permission;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.util.LinkedHashMap;
@@ -8,16 +9,23 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/15/2017
+ * @version 3/17/2018
  * @noinspection WeakerAccess
  */
 public abstract class Command {
 	
 	private static final LinkedHashMap<String, Command> commandMap = new LinkedHashMap<>(12, 1f);
 	private final String name;
+	private final Permission perm;
 	
 	protected Command(String name) {
+		this(name, Permission.USER);
+	}
+
+	
+	protected Command(String name, Permission perm) {
 		this.name = name.toLowerCase();
+		this.perm = perm;
 		commandMap.put(name, this);
 	}
 	
@@ -79,12 +87,20 @@ public abstract class Command {
 	
 	/**
 	 * Gets the String the user calls (minus the prefix) to invoke this command.
-	 * For example, the name in "!clear 100" is "clear"
+	 * For example, the name in "!clear 100" is "clear".
 	 *
 	 * @return The command name
 	 */
 	public String getName() {
 		return name;
+	}
+	
+	
+	/**
+	 * @return The permission level required to call this command.
+	 */
+	public Permission getPerm() {
+		return perm;
 	}
 	
 	
