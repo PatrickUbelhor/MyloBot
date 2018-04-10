@@ -4,12 +4,12 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 /**
  * @author Patrick Ubelhor
- * @version 1/26/2018
+ * @version 4/10/2018
  */
 public final class Skip extends Music {
 	
 	public Skip() {
-		super("skip [all|number]");
+		super("skip");
 	}
 	
 	
@@ -57,7 +57,7 @@ public final class Skip extends Music {
 	
 	@Override
 	public String getUsage() {
-		return getName();
+		return getName() + " [all|number]";
 	}
 	
 	@Override

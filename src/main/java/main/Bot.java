@@ -36,7 +36,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 3/17/2018
+ * @version 4/10/2018
  * TODO: On Twitch startup, verify token is valid
  */
 public class Bot extends ListenerAdapter {
@@ -110,7 +110,7 @@ public class Bot extends ListenerAdapter {
 		String msg = message.getContentDisplay().trim();
 		
 		// TODO: could possibly make this a subscription service?
-		if (message.mentionsEveryone()) {
+		if (msg.length() > 0 && message.mentionsEveryone()) {
 			// Post atEveryone meme
 			File[] pics = new File("AtEveryone").listFiles();
 			
