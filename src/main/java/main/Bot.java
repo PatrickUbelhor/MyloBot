@@ -110,7 +110,7 @@ public class Bot extends ListenerAdapter {
 		String msg = message.getContentDisplay().trim();
 		
 		// TODO: could possibly make this a subscription service?
-		if (msg.length() > 0 && message.mentionsEveryone()) {
+		if (message.mentionsEveryone()) {
 			// Post atEveryone meme
 			File[] pics = new File("AtEveryone").listFiles();
 			
@@ -129,7 +129,7 @@ public class Bot extends ListenerAdapter {
 		FIXME: Checking for '!' here makes David's autodelete code useless. Check afterwards to fix, but maybe not until
 		we complete the 'TODO' below
 		 */
-		if ((msg.length() > 1 && msg.charAt(0) != KEY) || author.isBot()) return; // Checking isBot() prevents user from spamming a !reverse
+		if (msg.length() < 1 || msg.charAt(0) != KEY || author.isBot()) return; // Checking isBot() prevents user from spamming a !reverse
 
 		
 		switch (event.getChannelType()) {
