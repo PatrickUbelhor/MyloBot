@@ -16,10 +16,11 @@ public final class Skip extends Music {
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
 		
-		if (trackScheduler.getQueueLength() == 0) {
-			event.getTextChannel().sendMessage("Queue is already empty").queue();
-			return;
-		}
+		// If there's a song playing but nothing in the queue, it will not skip
+//		if (trackScheduler.getQueueLength() == 0 && trackScheduler.) {
+//			event.getTextChannel().sendMessage("Queue is already empty").queue();
+//			return;
+//		}
 		
 		// Clear all songs or a certain number from queue.
 		if (args.length > 1) {

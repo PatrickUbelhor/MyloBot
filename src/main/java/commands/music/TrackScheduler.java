@@ -26,6 +26,7 @@ class TrackScheduler extends AudioEventAdapter {
 	}
 	
 	void queue(AudioTrack track) {
+		
 		if (!player.startTrack(track, true)) {
 			logger.info("Adding to queue");
 			queue.offer(track);
@@ -52,7 +53,6 @@ class TrackScheduler extends AudioEventAdapter {
 	int getQueueLength() {
 		return queue.size();
 	}
-	
 	
 	@Override
 	public void onPlayerPause(AudioPlayer player) {}
