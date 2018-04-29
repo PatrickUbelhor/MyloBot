@@ -17,6 +17,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.DisconnectEvent;
@@ -28,6 +29,7 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import java.io.File;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
@@ -36,7 +38,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 4/10/2018
+ * @version 4/29/2018
  * TODO: On Twitch startup, verify token is valid
  */
 public class Bot extends ListenerAdapter {
@@ -157,21 +159,35 @@ public class Bot extends ListenerAdapter {
 		// Runs the command, if it exists and the user has valid permission levels. Otherwise prints an error message
 		if (commands.containsKey(args[0])) {
 			Command command = commands.get(args[0]);
+			Role userRole = event.getGuild().getRoleById(Globals.USER_GROUP_NAME);
+			Role modRole = event.getGuild().getRoleById(Globals.MOD_GROUP_NAME);
+			List<Role> authorRoles = event.getMember().getRoles();
 			
-			// TODO: Check for proper permission level
 			switch (command.getPerm()) {
 				case DISABLED:
 					channel.sendMessage("That command has been disabled by the bot admin, sorry!").queue();
 					break;
 				case USER:
 					// Check for USER role
+					if (authorRoles.contains(userRole) || authorRoles.contains(modRole)) {
+						command.run(event, args);
+					} else {
+						channel.sendMessage("You do not have permission to use that command, sorry!").queue();
+//						author.openPrivateChannel().complete().sendMessage("You do not have permission to use that command, sorry!").queue();
+						// TODO: use member.getPermissions to check for delete permissions in command instead?
+					}
 					break;
 				case MOD:
 					// Check for MOD role
+					if (authorRoles.contains(modRole)) {
+						command.run(event, args);
+					} else {
+						channel.sendMessage("You do not have permission to use that command, sorry!").queue();
+					}
 					break;
 			}
 			
-			command.run(event, args);
+//			command.run(event, args);
 		} else {
 			channel.sendMessage("Unknown or unavailable command").queue();
 		}

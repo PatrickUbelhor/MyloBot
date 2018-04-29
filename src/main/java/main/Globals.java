@@ -24,7 +24,7 @@ public class Globals {
 	public static final long SURRENDER_DELAY;
 	public static final long TWITCH_DELAY;
 	public static final String MEDIA_CHANNEL_ID;
-	public static final String USER_GROUP_NAME; // Group name for basic guild members; TODO: Check if empty string allows @everybody
+	public static final String USER_GROUP_NAME; // Group name for basic guild members; TODO: Make empty string allow @everybody
 	public static final String MOD_GROUP_NAME;
 	
 	static {

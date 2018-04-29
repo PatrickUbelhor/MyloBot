@@ -9,14 +9,14 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 3/17/2018
+ * @version 4/29/2018
  * @noinspection WeakerAccess
  */
 public abstract class Command {
 	
 	private static final LinkedHashMap<String, Command> commandMap = new LinkedHashMap<>(12, 1f);
 	private final String name;
-	private final Permission perm;
+	private Permission perm;
 	
 	protected Command(String name) {
 		this(name, Permission.USER);
@@ -101,6 +101,16 @@ public abstract class Command {
 	 */
 	public Permission getPerm() {
 		return perm;
+	}
+
+
+	/**
+	 * Sets the permission level required to call this command.
+	 *
+	 * @param perm The permission level
+	 */
+	public void setPerm(Permission perm) {
+		this.perm = perm;
 	}
 	
 	

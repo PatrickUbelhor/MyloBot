@@ -24,7 +24,7 @@ dependencies {
     compile group: 'org.scala-lang',            name: 'scala-library',  version: '2.12.6'
     compile group: 'com.sedmelluq',             name: 'lavaplayer',     version: '1.2.63'
     compile group: 'net.dv8tion',               name: 'JDA',            version: '3.6.0_359'
-    compile group: 'org.json',                   name: 'json',           version: '20170516'
+    compile group: 'org.json',                  name: 'json',           version: '20170516'
     compile group: 'org.apache.logging.log4j',  name: 'log4j-api',      version: '2.11.0'
     compile group: 'org.apache.logging.log4j',  name: 'log4j-core',     version: '2.11.0'
 }
@@ -42,5 +42,4 @@ jar {
     from {
         configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
     }
-
 }
