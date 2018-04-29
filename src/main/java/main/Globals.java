@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 7/30/2017
+ * @version 3/17/2018
  */
 public class Globals {
 	
@@ -24,6 +24,8 @@ public class Globals {
 	public static final long SURRENDER_DELAY;
 	public static final long TWITCH_DELAY;
 	public static final String MEDIA_CHANNEL_ID;
+	public static final String USER_GROUP_NAME; // Group name for basic guild members; TODO: Check if empty string allows @everybody
+	public static final String MOD_GROUP_NAME;
 	
 	static {
 		
@@ -55,6 +57,8 @@ public class Globals {
 		SURRENDER_DELAY     = Long.parseLong(check("delay.surrender", "10800000"));
 		TWITCH_DELAY        = Long.parseLong(check("delay.twitch", ""));
 		MEDIA_CHANNEL_ID    = check("media.channel.id", "");
+		USER_GROUP_NAME     = check("user.group.name", "");
+		MOD_GROUP_NAME      = check("mod.group.name", "");
 		
 		// Put keys in config
 		try (FileWriter fw = new FileWriter(file)) {

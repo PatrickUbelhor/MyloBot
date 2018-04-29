@@ -20,6 +20,7 @@ import static main.Globals.logger;
  *
  * TODO: Add responses to user interaction
  * TODO: Only add files with given file extensions
+ * TODO: Play albums and playlists in order
  */
 abstract class Music extends Command {
 	

@@ -13,7 +13,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/15/2017
+ * @version 1/26/2018
  */
 class TrackScheduler extends AudioEventAdapter {
 	
@@ -26,6 +26,7 @@ class TrackScheduler extends AudioEventAdapter {
 	}
 	
 	void queue(AudioTrack track) {
+		
 		if (!player.startTrack(track, true)) {
 			logger.info("Adding to queue");
 			queue.offer(track);
@@ -49,6 +50,9 @@ class TrackScheduler extends AudioEventAdapter {
 		player.setPaused(false);
 	}
 	
+	int getQueueLength() {
+		return queue.size();
+	}
 	
 	@Override
 	public void onPlayerPause(AudioPlayer player) {}
