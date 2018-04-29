@@ -1,11 +1,20 @@
 package main;
 
-import commands.*;
-import commands.music.*;
+import commands.AddPicture;
+import commands.ClearText;
+import commands.Command;
+import commands.Help;
+import commands.Reverse;
+import commands.Shutdown;
+import commands.music.Pause;
+import commands.music.Play;
+import commands.music.Skip;
+import commands.music.Unpause;
 import commands.subscription.Subscribe;
 import commands.subscription.Unsubscribe;
-import java.io.File;
-import net.dv8tion.jda.core.*;
+import net.dv8tion.jda.core.AccountType;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -17,6 +26,7 @@ import net.dv8tion.jda.core.events.ResumedEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
+import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 import java.util.Random;
@@ -26,7 +36,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 12/17/2017
+ * @version 4/10/2018
  * TODO: On Twitch startup, verify token is valid
  */
 public class Bot extends ListenerAdapter {
@@ -97,7 +107,7 @@ public class Bot extends ListenerAdapter {
 		Message message = event.getMessage();
 		MessageChannel channel = event.getChannel();
 		TextChannel ch = event.getTextChannel();
-		String msg = message.getContent().trim();
+		String msg = message.getContentDisplay().trim();
 		
 		// TODO: could possibly make this a subscription service?
 		if (message.mentionsEveryone()) {
@@ -119,7 +129,7 @@ public class Bot extends ListenerAdapter {
 		FIXME: Checking for '!' here makes David's autodelete code useless. Check afterwards to fix, but maybe not until
 		we complete the 'TODO' below
 		 */
-		if ((msg.length() > 0 && msg.charAt(0) != KEY) || author.isBot()) return; // Checking isBot() prevents user from spamming a !reverse
+		if (msg.length() < 1 || msg.charAt(0) != KEY || author.isBot()) return; // Checking isBot() prevents user from spamming a !reverse
 
 		
 		switch (event.getChannelType()) {
@@ -144,9 +154,24 @@ public class Bot extends ListenerAdapter {
 		String[] args = msg.substring(1).split(" ");
 		args[0] = args[0].toLowerCase();
 		
-		// Runs the command, if it exists. Otherwise prints an error message
+		// Runs the command, if it exists and the user has valid permission levels. Otherwise prints an error message
 		if (commands.containsKey(args[0])) {
-			commands.get(args[0]).run(event, args);
+			Command command = commands.get(args[0]);
+			
+			// TODO: Check for proper permission level
+			switch (command.getPerm()) {
+				case DISABLED:
+					channel.sendMessage("That command has been disabled by the bot admin, sorry!").queue();
+					break;
+				case USER:
+					// Check for USER role
+					break;
+				case MOD:
+					// Check for MOD role
+					break;
+			}
+			
+			command.run(event, args);
 		} else {
 			channel.sendMessage("Unknown or unavailable command").queue();
 		}
