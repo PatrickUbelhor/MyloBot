@@ -38,7 +38,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 4/29/2018
+ * @version 4/30/2018
  * TODO: On Twitch startup, verify token is valid
  */
 public class Bot extends ListenerAdapter {
@@ -48,7 +48,7 @@ public class Bot extends ListenerAdapter {
 	
 	// Even though we don't use these variables, this still adds them to the HashMap
 	private static final Help help = new Help();
-	private static final ClearText clearText = new ClearText();
+	private static final ClearText clearText = new ClearText(Permission.MOD);
 	private static final Play play = new Play();
 	private static final Skip skip = new Skip();
 	private static final Pause pause = new Pause();

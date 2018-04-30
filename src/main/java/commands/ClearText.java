@@ -1,5 +1,6 @@
 package commands;
 
+import main.Permission;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageHistory;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -12,7 +13,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/15/2017
+ * @version 4/30/2018
  */
 public class ClearText extends Command {
 	
@@ -21,6 +22,11 @@ public class ClearText extends Command {
 	
 	public ClearText() {
 		super("clear");
+	}
+
+
+	public ClearText(Permission perm) {
+		super("clear", perm);
 	}
 	
 	
@@ -84,10 +90,12 @@ public class ClearText extends Command {
 	private boolean isTwoWeeksOld(Message m) {
 		OffsetDateTime now = OffsetDateTime.now();
 		OffsetDateTime then = m.getCreationTime();
-		
-		int today = (now.getYear() - 2014) * now.getDayOfYear();
-		int creationDay = (then.getYear() - 2014) * then.getDayOfYear();
-		
+
+		// We know there won't be any Discord messages from pre-2014
+		// Convert the instant into the number of days since 1/1/2014
+		int today = (now.getYear() - 2014) * 365 + now.getDayOfYear();
+		int creationDay = (then.getYear() - 2014) * 365 + then.getDayOfYear();
+
 		return (today - creationDay) > 12; // Day of padding just in case
 	}
 	
