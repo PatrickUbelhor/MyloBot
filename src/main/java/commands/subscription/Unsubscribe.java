@@ -7,7 +7,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/15/2017
+ * @version 4/30/2018
  */
 public class Unsubscribe extends Command {
 	
@@ -41,7 +41,7 @@ public class Unsubscribe extends Command {
 	
 	@Override
 	public String getDescription() {
-		return "Unsubscribes a channel from a checker service, like Twitch or S@20.";
+		return "Unsubscribes a channel from a checker service, like Twitch or S@20";
 	}
 	
 }

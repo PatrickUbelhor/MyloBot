@@ -1,19 +1,20 @@
 package commands;
 
+import main.Permission;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/15/2017
+ * @version 4/30/2018
  */
 public class Shutdown extends Command {
-	
-	public Shutdown() {
-		super("shutdown");
+
+	public Shutdown(Permission perm) {
+		super("shutdown", perm);
 	}
-	
+
 	
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {

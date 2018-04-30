@@ -19,12 +19,6 @@ public class ClearText extends Command {
 	
 	private static final int MAX_MESSAGE_COUNT = 100; // JDA throws exception after this point
 	
-	
-	public ClearText() {
-		super("clear");
-	}
-
-
 	public ClearText(Permission perm) {
 		super("clear", perm);
 	}
@@ -41,7 +35,7 @@ public class ClearText extends Command {
 		
 		
 		try {
-			int num = Integer.parseInt(args[1]);
+			int num = Integer.parseInt(args[1]) + 1; // Plus one to delete the command itself too
 			MessageHistory messageHistory = new MessageHistory(channel);
 			
 			logger.info("Retrieving and deleting message history...");

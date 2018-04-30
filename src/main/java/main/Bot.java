@@ -53,9 +53,9 @@ public class Bot extends ListenerAdapter {
 	private static final Skip skip = new Skip();
 	private static final Pause pause = new Pause();
 	private static final Unpause unpause = new Unpause();
-	private static final AddPicture picture = new AddPicture();
+	private static final AddPicture picture = new AddPicture(Permission.DISABLED);
 	private static final Reverse reverse = new Reverse();
-	private static final Shutdown shutdown = new Shutdown();
+	private static final Shutdown shutdown = new Shutdown(Permission.MOD);
 	private static final Subscribe sub = new Subscribe();
 	private static final Unsubscribe unsub = new Unsubscribe();
 	
@@ -73,6 +73,8 @@ public class Bot extends ListenerAdapter {
 	
 	
 	private static JDA jda;
+	private static Role userRole;
+	private static Role modRole;
 
 	public static void main(String[] args) {
 		
@@ -87,7 +89,12 @@ public class Bot extends ListenerAdapter {
 				c.init();
 			}
 			logger.info("Initialization finished.");
-			
+
+			logger.info("Getting roles...");
+			userRole = jda.getRoleById(Globals.USER_GROUP_NAME);
+			modRole = jda.getRoleById(Globals.MOD_GROUP_NAME);
+			logger.info("Got roles.");
+
 			jda.addEventListener(new Bot());
 			
 		} catch (Exception e) {
@@ -159,22 +166,21 @@ public class Bot extends ListenerAdapter {
 		// Runs the command, if it exists and the user has valid permission levels. Otherwise prints an error message
 		if (commands.containsKey(args[0])) {
 			Command command = commands.get(args[0]);
-			Role userRole = event.getGuild().getRoleById(Globals.USER_GROUP_NAME);
-			Role modRole = event.getGuild().getRoleById(Globals.MOD_GROUP_NAME);
 			List<Role> authorRoles = event.getMember().getRoles();
-			
+
+			String response;
 			switch (command.getPerm()) {
 				case DISABLED:
-					channel.sendMessage("That command has been disabled by the bot admin, sorry!").queue();
+					response = String.format("``%s`` has been disabled by the bot admin, sorry!", args[0]);
+					author.openPrivateChannel().complete().sendMessage(response).queue();
 					break;
 				case USER:
 					// Check for USER role
 					if (authorRoles.contains(userRole) || authorRoles.contains(modRole)) {
 						command.run(event, args);
 					} else {
-						channel.sendMessage("You do not have permission to use that command, sorry!").queue();
-//						author.openPrivateChannel().complete().sendMessage("You do not have permission to use that command, sorry!").queue();
-						// TODO: use member.getPermissions to check for delete permissions in command instead?
+						response = String.format("You do not have permission to use ``%s``, sorry!", args[0]);
+						author.openPrivateChannel().complete().sendMessage(response).queue();
 					}
 					break;
 				case MOD:
@@ -182,12 +188,12 @@ public class Bot extends ListenerAdapter {
 					if (authorRoles.contains(modRole)) {
 						command.run(event, args);
 					} else {
-						channel.sendMessage("You do not have permission to use that command, sorry!").queue();
+						response = String.format("You do not have permission to use ``%s``, sorry!", args[0]);
+						author.openPrivateChannel().complete().sendMessage(response).queue();
 					}
 					break;
 			}
-			
-//			command.run(event, args);
+
 		} else {
 			channel.sendMessage("Unknown or unavailable command").queue();
 		}

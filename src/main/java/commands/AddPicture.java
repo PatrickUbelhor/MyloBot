@@ -1,5 +1,6 @@
 package commands;
 
+import main.Permission;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
@@ -9,17 +10,17 @@ import java.util.List;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/15/2017
+ * @version 4/30/2018
  */
 public class AddPicture extends Command {
 	
 	private static final String PATH = "/Users/Patrick/Desktop/";
 	
-	public AddPicture() {
+	public AddPicture(Permission perm) {
 		super("pic");
 	}
-	
-	
+
+
 	public void run(MessageReceivedEvent event, String[] args) {
 		
 		List<Message.Attachment> attachments = event.getMessage().getAttachments();

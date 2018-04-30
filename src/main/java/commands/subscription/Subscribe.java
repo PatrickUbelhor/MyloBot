@@ -6,7 +6,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/16/2017
+ * @version 4/30/2018
  */
 public class Subscribe extends Command {
 	
@@ -66,7 +66,7 @@ public class Subscribe extends Command {
 	
 	@Override
 	public String getDescription() {
-		return "Subscribes a channel to a checker service, like Twitch or S@20.";
+		return "Subscribes a channel to a checker service, like Twitch or S@20";
 	}
 	
 }

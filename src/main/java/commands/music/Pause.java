@@ -4,7 +4,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/15/2017
+ * @version 4/30/2018
  */
 public class Pause extends Music {
 	
@@ -24,7 +24,7 @@ public class Pause extends Music {
 	
 	@Override
 	public String getDescription() {
-		return "Pauses the current track. Can be continued\n\twith '!continue'";
+		return "Pauses the current track. Can be continued with '!continue'";
 	}
 	
 }
