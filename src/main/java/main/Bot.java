@@ -1,7 +1,7 @@
 package main;
 
 import commands.AddPicture;
-import commands.ClearText;
+import commands.admin.ClearText;
 import commands.Command;
 import commands.Help;
 import commands.Reverse;
@@ -29,6 +29,7 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import java.io.File;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -73,8 +74,8 @@ public class Bot extends ListenerAdapter {
 	
 	
 	private static JDA jda;
-	private static Role userRole;
-	private static Role modRole;
+	private static List<Role> userRoles;
+	private static List<Role> modRoles;
 
 	public static void main(String[] args) {
 		
@@ -91,8 +92,17 @@ public class Bot extends ListenerAdapter {
 			logger.info("Initialization finished.");
 
 			logger.info("Getting roles...");
-			userRole = jda.getRoleById(Globals.USER_GROUP_NAME);
-			modRole = jda.getRoleById(Globals.MOD_GROUP_NAME);
+			String[] userRoleIds = Globals.USER_GROUP_IDS.split(",");
+			userRoles = new LinkedList<>();
+			for (String s : userRoleIds) {
+				userRoles.add(jda.getRoleById(s));
+			}
+
+			String[] modRoleIds = Globals.MOD_GROUP_IDS.split(",");
+			modRoles = new LinkedList<>();
+			for (String s : modRoleIds) {
+				modRoles.add(jda.getRoleById(s));
+			}
 			logger.info("Got roles.");
 
 			jda.addEventListener(new Bot());
@@ -168,6 +178,22 @@ public class Bot extends ListenerAdapter {
 			Command command = commands.get(args[0]);
 			List<Role> authorRoles = event.getMember().getRoles();
 
+			boolean isUser = false;
+			for (Role r : userRoles) {
+				if (authorRoles.contains(r)) {
+					isUser = true;
+					break;
+				}
+			}
+
+			boolean isMod = false;
+			for (Role r : modRoles) {
+				if (authorRoles.contains(r)) {
+					isMod = true;
+					break;
+				}
+			}
+
 			String response;
 			switch (command.getPerm()) {
 				case DISABLED:
@@ -175,8 +201,7 @@ public class Bot extends ListenerAdapter {
 					author.openPrivateChannel().complete().sendMessage(response).queue();
 					break;
 				case USER:
-					// Check for USER role
-					if (authorRoles.contains(userRole) || authorRoles.contains(modRole)) {
+					if (isUser || isMod) {
 						command.run(event, args);
 					} else {
 						response = String.format("You do not have permission to use ``%s``, sorry!", args[0]);
@@ -184,8 +209,7 @@ public class Bot extends ListenerAdapter {
 					}
 					break;
 				case MOD:
-					// Check for MOD role
-					if (authorRoles.contains(modRole)) {
+					if (isMod) {
 						command.run(event, args);
 					} else {
 						response = String.format("You do not have permission to use ``%s``, sorry!", args[0]);

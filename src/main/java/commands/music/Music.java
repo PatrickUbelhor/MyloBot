@@ -6,7 +6,6 @@ import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import commands.Command;
 import java.io.File;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -16,7 +15,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 12/17/2017
+ * @version 5/1/2018
  *
  * TODO: Add responses to user interaction
  * TODO: Only add files with given file extensions
@@ -60,7 +59,7 @@ abstract class Music extends Command {
 					albums.put(file.getName(), new LinkedList<>());
 					
 					File[] albumSongs = file.listFiles();
-					if (file.listFiles() == null) continue;
+					if (albumSongs == null) continue;
 //					Arrays.parallelSort(albumSongs);
 					
 					for (File song : albumSongs) {

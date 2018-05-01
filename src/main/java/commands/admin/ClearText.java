@@ -1,5 +1,6 @@
-package commands;
+package commands.admin;
 
+import commands.Command;
 import main.Permission;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageHistory;

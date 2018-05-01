@@ -24,8 +24,8 @@ public class Globals {
 	public static final long SURRENDER_DELAY;
 	public static final long TWITCH_DELAY;
 	public static final String MEDIA_CHANNEL_ID;
-	public static final String USER_GROUP_NAME; // Group name for basic guild members; TODO: Make empty string allow @everybody
-	public static final String MOD_GROUP_NAME;
+	public static final String USER_GROUP_IDS; // Group name for basic guild members; TODO: Make empty string allow @everybody
+	public static final String MOD_GROUP_IDS;
 	
 	static {
 		
@@ -57,8 +57,8 @@ public class Globals {
 		SURRENDER_DELAY     = Long.parseLong(check("delay.surrender", "10800000"));
 		TWITCH_DELAY        = Long.parseLong(check("delay.twitch", ""));
 		MEDIA_CHANNEL_ID    = check("media.channel.id", "");
-		USER_GROUP_NAME     = check("user.group.name", "");
-		MOD_GROUP_NAME      = check("mod.group.name", "");
+		USER_GROUP_IDS = check("user.group.name", "");
+		MOD_GROUP_IDS = check("mod.group.name", "");
 		
 		// Put keys in config
 		try (FileWriter fw = new FileWriter(file)) {
