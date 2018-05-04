@@ -6,8 +6,8 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import static main.Globals.logger;
 
@@ -18,11 +18,11 @@ import static main.Globals.logger;
 class TrackScheduler extends AudioEventAdapter {
 	
 	private final AudioPlayer player;
-	private final BlockingQueue<AudioTrack> queue;
+	private final BlockingDeque<AudioTrack> queue;
 	
 	TrackScheduler(AudioPlayer player) {
 		this.player = player;
-		this.queue = new LinkedBlockingQueue<>();
+		this.queue = new LinkedBlockingDeque<>();
 	}
 	
 	void queue(AudioTrack track) {
@@ -30,6 +30,13 @@ class TrackScheduler extends AudioEventAdapter {
 		if (!player.startTrack(track, true)) {
 			logger.info("Adding to queue");
 			queue.offer(track);
+		}
+	}
+
+	void queueNext(AudioTrack track) {
+		if(!player.startTrack(track, true)) {
+			logger.info("Adding to front of queue");
+			queue.offerFirst(track);
 		}
 	}
 	
