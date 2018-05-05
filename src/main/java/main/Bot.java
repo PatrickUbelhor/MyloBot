@@ -149,6 +149,7 @@ public class Bot extends ListenerAdapter {
 		we complete the 'TODO' below
 		 */
 		if (msg.length() < 1 || msg.charAt(0) != KEY || author.isBot()) return; // Checking isBot() prevents user from spamming a !reverse
+		logger.info("Received: '" + msg + "'");
 
 		
 		switch (event.getChannelType()) {
