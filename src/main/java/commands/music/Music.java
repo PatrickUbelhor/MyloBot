@@ -26,7 +26,7 @@ abstract class Music extends Command {
 	static AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
 	static AudioPlayer player = playerManager.createPlayer();
 	static TrackScheduler trackScheduler = new TrackScheduler(player);
-	protected static File musicFolder = new File("music");
+	protected static File musicFolder = new File("music"); // FIXME: magic string is bad. Make a global variable
 	protected static HashMap<String, String> songs = new HashMap<>();
 	protected static LinkedHashMap<String, LinkedList<String>> albums = new LinkedHashMap<>();
 	private static boolean hasInit = false;
@@ -38,7 +38,7 @@ abstract class Music extends Command {
 	
 	@Override
 	protected boolean subInit() {
-		if (!hasInit) {
+		if (!hasInit) { // Each music command (play, skip, etc.) will call this. Only want to run it once.
 			hasInit = true;
 			AudioSourceManagers.registerRemoteSources(playerManager);
 			AudioSourceManagers.registerLocalSource(playerManager);
@@ -64,7 +64,7 @@ abstract class Music extends Command {
 					
 					for (File song : albumSongs) {
 						String name = song.getName().split("\\.")[0]; // Removes extension
-						albums.get(file.getName()).add(song.getAbsolutePath());
+						albums.get(file.getName()).add(song.getAbsolutePath()); // Uses intuitive song title
 						songs.put(name, song.getAbsolutePath());
 						logger.info("Found song: " + song);
 					}

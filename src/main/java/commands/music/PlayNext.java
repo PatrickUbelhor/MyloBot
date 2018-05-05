@@ -6,7 +6,7 @@ import net.dv8tion.jda.core.managers.AudioManager;
 
 /**
  * @author Patrick Ubelhor, Evan Perry Grove
- * @version 12/15/2017, 5/4/2018
+ * @version 5/5/2017, 5/4/2018
  *
  */
 public final class PlayNext extends Music {
@@ -79,7 +79,7 @@ public final class PlayNext extends Music {
 		
 		
 		if (args[1].startsWith("http") || args[1].startsWith("www")) {
-			playerManager.loadItem(args[1], new MyAudioLoadResultHandler(trackScheduler));
+			playerManager.loadItem(args[1], new MyQueueNextAudioLoadResultHandler(trackScheduler));
 		} else {
 			if (!songs.containsKey(args[1])) {
 				event.getTextChannel().sendMessage("I can't find that song on my computer, sorry!").queue();
