@@ -12,8 +12,8 @@ import java.util.concurrent.LinkedBlockingDeque;
 import static main.Globals.logger;
 
 /**
- * @author Patrick Ubelhor
- * @version 1/26/2018
+ * @author Patrick Ubelhor, Evan Perry Grove
+ * @version 5/5/2018, 5/4/2018
  */
 class TrackScheduler extends AudioEventAdapter {
 	
@@ -24,7 +24,13 @@ class TrackScheduler extends AudioEventAdapter {
 		this.player = player;
 		this.queue = new LinkedBlockingDeque<>();
 	}
-	
+
+
+	/**
+	 * Adds the track to the end of the playback queue.
+	 *
+	 * @param track The song to enqueue.
+	 */
 	void queue(AudioTrack track) {
 		
 		if (!player.startTrack(track, true)) {
@@ -33,46 +39,73 @@ class TrackScheduler extends AudioEventAdapter {
 		}
 	}
 
+
+	/**
+	 * Adds the track to the beginning of the playback queue.
+	 *
+	 * @param track The song to push onto the queue.
+	 */
 	void queueNext(AudioTrack track) {
 		if(!player.startTrack(track, true)) {
 			logger.info("Adding to front of queue");
 			queue.offerFirst(track);
 		}
 	}
-	
+
+
+	/**
+	 * Plays the next song in the queue, ending playback of the current active track if necessary.
+	 * If there are no more tracks left in the queue, this will terminate playback.
+	 */
 	void playNext() {
 		logger.info("Playing next track: ");
 		AudioTrack next = queue.poll();
 		logger.info(next == null ? "end of queue" : next.getInfo().title);
 		player.startTrack(next, false);
 	}
-	
+
+
+	/**
+	 * Pauses the current active track.
+	 */
 	void pause() {
 		if (player.getPlayingTrack() != null) {
 			player.setPaused(true);
 		}
 	}
-	
+
+
+	/**
+	 * Continues playback of the current active track.
+	 */
 	void unpause() {
 		player.setPaused(false);
 	}
-	
+
+
+	/**
+	 * @return The number of tracks remaining in the playback queue (excluding the active track).
+	 */
 	int getQueueLength() {
 		return queue.size();
 	}
-	
+
+
 	@Override
 	public void onPlayerPause(AudioPlayer player) {}
-	
+
+
 	@Override
 	public void onPlayerResume(AudioPlayer player) {}
-	
+
+
 	@Override
 	public void onTrackStart(AudioPlayer player, AudioTrack track) {
 		logger.info("Track has begun");
 		player.getPlayingTrack().setPosition(0);
 	}
-	
+
+
 	@Override
 	public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
 		logger.info("Ended");
@@ -88,13 +121,15 @@ class TrackScheduler extends AudioEventAdapter {
 		// endReason == CLEANUP: Player hasn't been queried for a while, if you want you can put a
 		//                       clone of this back to your queue
 	}
-	
+
+
 	@Override
 	public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception) {
 		// An already playing track threw an exception (track end event will still be received separately)
 		logger.warn("Threw exception");
 	}
-	
+
+
 	@Override
 	public void onTrackStuck(AudioPlayer player, AudioTrack track, long thresholdMs) {
 		logger.warn("Track is stuck");

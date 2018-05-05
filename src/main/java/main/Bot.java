@@ -8,6 +8,7 @@ import commands.Reverse;
 import commands.Shutdown;
 import commands.music.Pause;
 import commands.music.Play;
+import commands.music.PlayNext;
 import commands.music.Skip;
 import commands.music.Unpause;
 import commands.subscription.Subscribe;
@@ -39,7 +40,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 4/30/2018
+ * @version 5/5/2018
  * TODO: On Twitch startup, verify token is valid
  */
 public class Bot extends ListenerAdapter {
@@ -51,6 +52,7 @@ public class Bot extends ListenerAdapter {
 	private static final Help help = new Help();
 	private static final ClearText clearText = new ClearText(Permission.MOD);
 	private static final Play play = new Play();
+	private static final PlayNext playNext = new PlayNext();
 	private static final Skip skip = new Skip();
 	private static final Pause pause = new Pause();
 	private static final Unpause unpause = new Unpause();
