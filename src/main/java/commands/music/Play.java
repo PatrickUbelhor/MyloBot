@@ -1,12 +1,10 @@
 package commands.music;
 
-import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.managers.AudioManager;
 
 /**
  * @author Patrick Ubelhor
- * @version 12/15/2017
+ * @version 5/10/2018
  *
  * TODO: Make bot leave voice channel after some period of inactivity
  * TODO: Ability to loop
@@ -29,25 +27,9 @@ public final class Play extends Music {
 		
 		// Joins the voice channel if not in one
 		if (!active) {
-			AudioManager am = event.getGuild().getAudioManager();
-			VoiceChannel vc = null;
-			
-			// Finds the voice channel of the requester
-			for (VoiceChannel channel : event.getGuild().getVoiceChannels()) {
-				if (channel.getMembers().contains(event.getMember())) {
-					vc = channel;
-					break;
-				}
+			if (!joinAudioChannel(event)) {
+				return; // If we failed to join a voice channel, return
 			}
-			
-			// Refuses to play if user is not in a voice channel
-			if (vc == null) {
-				event.getTextChannel().sendMessage("You must be in a voice channel to begin playing music.").queue();
-				return;
-			}
-			
-			am.setSendingHandler(new AudioPlayerSendHandler(player));
-			am.openAudioConnection(vc);
 		}
 		
 		if (args.length == 3) {

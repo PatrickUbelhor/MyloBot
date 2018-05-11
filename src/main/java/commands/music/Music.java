@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import main.Globals;
+import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.managers.AudioManager;
 
 import static main.Globals.logger;
 
@@ -81,6 +84,31 @@ abstract class Music extends Command {
 	@Override
 	protected final boolean subEnd() {
 		playerManager.shutdown();
+		return true;
+	}
+
+
+	protected final boolean joinAudioChannel(MessageReceivedEvent event) {
+		AudioManager am = event.getGuild().getAudioManager();
+		VoiceChannel vc = null;
+
+		// Finds the voice channel of the requester
+		for (VoiceChannel channel : event.getGuild().getVoiceChannels()) {
+			if (channel.getMembers().contains(event.getMember())) {
+				vc = channel;
+				break;
+			}
+		}
+
+		// Refuses to play if user is not in a voice channel
+		if (vc == null) {
+			event.getTextChannel().sendMessage("You must be in a voice channel to begin playing music.").queue();
+			return false;
+		}
+
+		am.setSendingHandler(new AudioPlayerSendHandler(player));
+		am.openAudioConnection(vc);
+
 		return true;
 	}
 	
