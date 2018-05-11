@@ -14,7 +14,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 4/30/2018
+ * @version 5/10/2018
  */
 public class ClearText extends Command {
 	
@@ -34,48 +34,29 @@ public class ClearText extends Command {
 			return;
 		}
 		
-		
+		int num;
 		try {
-			int num = Integer.parseInt(args[1]) + 1; // Plus one to delete the command itself too
-			MessageHistory messageHistory = new MessageHistory(channel);
-			
-			logger.info("Retrieving and deleting message history...");
-			while (num > 0) {
-				
-				messageHistory.retrievePast(num % MAX_MESSAGE_COUNT).complete();
-				List<Message> messages = messageHistory.getRetrievedHistory();
-				
-				int i;
-				for (i = messages.size() - 1; i > 0; i--) {
-					
-					if (!isTwoWeeksOld(messages.get(i))) {
-						channel.deleteMessages(messages.subList(0, i + 1)).queue();
-						
-						for (int j = i + 1; j < messages.size(); j++) {
-							channel.deleteMessageById(messages.get(j).getId()).queue();
-						}
-						
-						break;
-					}
-				}
-				
-				if (i == 0) {
-					for (Message m : messages) {
-						channel.deleteMessageById(m.getId()).queue();
-					}
-				}
-				
-				num -= MAX_MESSAGE_COUNT; // It's okay if we deleted less than this, it'll still finish properly
-			}
-			logger.info("Message history deleted.");
-			
+			num = Integer.parseInt(args[1]) + 1; // Plus one to delete the command itself too
 		} catch (NumberFormatException e) {
-			e.printStackTrace();
+			channel.sendMessage("I think you specified an invalid number of messages to delete: '" + args[1] + "'").queue();
+			return;
 		}
-		
+
+		logger.info("Retrieving and deleting message history...");
+		MessageHistory messageHistory = new MessageHistory(channel);
+
+		// Retrieve the list of messages to delete
+		for (int i = 0; i < num / MAX_MESSAGE_COUNT; i++) {
+			messageHistory.retrievePast(MAX_MESSAGE_COUNT).complete();
+		}
+		messageHistory.retrievePast(num % MAX_MESSAGE_COUNT).complete();
+
+		delete(channel, messageHistory.getRetrievedHistory());
+		logger.info("Message history deleted.");
 	}
 	
-	
+
+	// TODO: Use java library to properly calculate elapsed time
 	/**
 	 * Checks if a message is at least two weeks old.
 	 *
@@ -105,5 +86,59 @@ public class ClearText extends Command {
 	public String getDescription() {
 		return "Deletes 'num' amount of messages from the chat";
 	}
-	
+
+
+	private void deleteSingly(TextChannel channel, List<Message> messages) {
+		if (messages.size() == 0) return;
+
+		for (Message msg : messages) {
+			channel.deleteMessageById(msg.getId()).queue();
+		}
+	}
+
+
+	private void deleteGroup(TextChannel channel, List<Message> messages) {
+		for (int i = 0; i < messages.size() / MAX_MESSAGE_COUNT; i++) {
+			List<Message> del = messages.subList(i * MAX_MESSAGE_COUNT, (i + 1) * MAX_MESSAGE_COUNT);
+			channel.deleteMessages(del).queue();
+		}
+
+		// Get remaining sublist
+		List<Message> del = messages.subList(messages.size() - (messages.size() % MAX_MESSAGE_COUNT), messages.size());
+
+		// Make sure the sublist is large enough to group delete. Else, singly delete.
+		if (del.size() > 2) {
+			channel.deleteMessages(del).queue();
+		} else {
+			deleteSingly(channel, del);
+		}
+	}
+
+
+	private void delete(TextChannel channel, List<Message> messages) {
+		if (messages.size() == 0) return;
+
+		logger.debug("Size of message list: " + messages.size());
+
+		// If all the messages are old, we have to singly delete the whole list
+		// This is just an optimization. Not logically necessary
+		if (isTwoWeeksOld(messages.get(0))) {
+			deleteSingly(channel, messages);
+			return;
+		}
+
+		// Find index of last 'young' message
+		int split = -1;
+		for (int i = messages.size() - 1; i > 0; i--) {
+			if (!isTwoWeeksOld(messages.get(i))) {
+				split = i;
+				break;
+			}
+		}
+
+		// Finally delete messages
+		deleteGroup(channel, messages.subList(0, split + 1)); // Group delete 'young' messages
+		deleteSingly(channel, messages.subList(split + 1, messages.size())); // Singly delete 'old' messages
+	}
+
 }

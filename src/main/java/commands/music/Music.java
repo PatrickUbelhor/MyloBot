@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import main.Globals;
+import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.managers.AudioManager;
 
 import static main.Globals.logger;
 
@@ -26,7 +29,7 @@ abstract class Music extends Command {
 	static AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
 	static AudioPlayer player = playerManager.createPlayer();
 	static TrackScheduler trackScheduler = new TrackScheduler(player);
-	protected static File musicFolder = new File("music");
+	protected static File musicFolder = new File("music"); // FIXME: magic string is bad. Make a global variable
 	protected static HashMap<String, String> songs = new HashMap<>();
 	protected static LinkedHashMap<String, LinkedList<String>> albums = new LinkedHashMap<>();
 	private static boolean hasInit = false;
@@ -38,7 +41,7 @@ abstract class Music extends Command {
 	
 	@Override
 	protected boolean subInit() {
-		if (!hasInit) {
+		if (!hasInit) { // Each music command (play, skip, etc.) will call this. Only want to run it once.
 			hasInit = true;
 			AudioSourceManagers.registerRemoteSources(playerManager);
 			AudioSourceManagers.registerLocalSource(playerManager);
@@ -64,7 +67,7 @@ abstract class Music extends Command {
 					
 					for (File song : albumSongs) {
 						String name = song.getName().split("\\.")[0]; // Removes extension
-						albums.get(file.getName()).add(song.getAbsolutePath());
+						albums.get(file.getName()).add(song.getAbsolutePath()); // Uses intuitive song title
 						songs.put(name, song.getAbsolutePath());
 						logger.info("Found song: " + song);
 					}
@@ -81,6 +84,31 @@ abstract class Music extends Command {
 	@Override
 	protected final boolean subEnd() {
 		playerManager.shutdown();
+		return true;
+	}
+
+
+	protected final boolean joinAudioChannel(MessageReceivedEvent event) {
+		AudioManager am = event.getGuild().getAudioManager();
+		VoiceChannel vc = null;
+
+		// Finds the voice channel of the requester
+		for (VoiceChannel channel : event.getGuild().getVoiceChannels()) {
+			if (channel.getMembers().contains(event.getMember())) {
+				vc = channel;
+				break;
+			}
+		}
+
+		// Refuses to play if user is not in a voice channel
+		if (vc == null) {
+			event.getTextChannel().sendMessage("You must be in a voice channel to begin playing music.").queue();
+			return false;
+		}
+
+		am.setSendingHandler(new AudioPlayerSendHandler(player));
+		am.openAudioConnection(vc);
+
 		return true;
 	}
 	
