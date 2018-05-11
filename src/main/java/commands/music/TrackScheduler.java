@@ -5,6 +5,8 @@ import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import main.Bot;
+import net.dv8tion.jda.core.entities.Game;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -13,7 +15,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 1/26/2018
+ * @version 5/1/2018
  */
 class TrackScheduler extends AudioEventAdapter {
 	
@@ -38,6 +40,9 @@ class TrackScheduler extends AudioEventAdapter {
 		AudioTrack next = queue.poll();
 		logger.info(next == null ? "end of queue" : next.getInfo().title);
 		player.startTrack(next, false);
+
+		Game status = (next == null) ? null : Game.playing("Playing " + next.getInfo().title);
+		Bot.getJDA().getPresence().setGame(status);
 	}
 	
 	void pause() {
