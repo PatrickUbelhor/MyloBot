@@ -1,13 +1,9 @@
 package commands.admin;
 
 import commands.Command;
-import main.Bot;
 import main.Permission;
-import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.requests.RequestFuture;
 
-import java.util.List;
 
 public class Kick extends Command {
 
@@ -18,7 +14,6 @@ public class Kick extends Command {
 
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
-
 
 	}
 
