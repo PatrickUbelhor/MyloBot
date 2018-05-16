@@ -9,7 +9,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/15/2017
+ * @version 5/11/2018
  */
 class MyQueueNextAudioLoadResultHandler implements AudioLoadResultHandler {
 	private final TrackScheduler trackScheduler;

@@ -6,7 +6,7 @@ import commands.Command;
 import commands.Help;
 import commands.Reverse;
 import commands.Shutdown;
-import commands.music.FlexPlay;
+import commands.admin.Kick;
 import commands.music.Pause;
 import commands.music.Play;
 import commands.music.PlayNext;
@@ -51,18 +51,19 @@ public class Bot extends ListenerAdapter {
 	
 	// Even though we don't use these variables, this still adds them to the HashMap
 	private static final Help help = new Help();
-	private static final ClearText clearText = new ClearText(Permission.MOD);
+	private static final AddPicture picture = new AddPicture(Permission.DISABLED);
 	private static final Play play = new Play();
-	private static final FlexPlay pplay = new FlexPlay();
 	private static final PlayNext playNext = new PlayNext();
 	private static final Skip skip = new Skip();
 	private static final Pause pause = new Pause();
 	private static final Unpause unpause = new Unpause();
-	private static final AddPicture picture = new AddPicture(Permission.DISABLED);
 	private static final Reverse reverse = new Reverse();
-	private static final Shutdown shutdown = new Shutdown(Permission.MOD);
 	private static final Subscribe sub = new Subscribe();
 	private static final Unsubscribe unsub = new Unsubscribe();
+	
+	private static final ClearText clearText = new ClearText(Permission.MOD);
+	private static final Kick kick = new Kick(Permission.MOD);
+	private static final Shutdown shutdown = new Shutdown(Permission.MOD);
 	
 	static {
 		File pics = new File("AtEveryone");
