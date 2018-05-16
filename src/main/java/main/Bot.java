@@ -1,6 +1,7 @@
 package main;
 
 import commands.AddPicture;
+import commands.admin.Ban;
 import commands.admin.ClearText;
 import commands.Command;
 import commands.Help;
@@ -41,7 +42,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 5/10/2018
+ * @version 5/15/2018
  * TODO: On Twitch startup, verify token is valid
  */
 public class Bot extends ListenerAdapter {
@@ -61,8 +62,9 @@ public class Bot extends ListenerAdapter {
 	private static final Subscribe sub = new Subscribe();
 	private static final Unsubscribe unsub = new Unsubscribe();
 	
-	private static final ClearText clearText = new ClearText(Permission.MOD);
 	private static final Kick kick = new Kick(Permission.MOD);
+	private static final Ban ban = new Ban(Permission.MOD);
+	private static final ClearText clearText = new ClearText(Permission.MOD);
 	private static final Shutdown shutdown = new Shutdown(Permission.MOD);
 	
 	static {
