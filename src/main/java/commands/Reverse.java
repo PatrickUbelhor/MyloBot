@@ -24,12 +24,6 @@ public class Reverse extends Command {
 			msg.append(args[i]);
 		}
 		
-//		StringBuilder result = new StringBuilder();
-//		for (char c : msg.toString().toCharArray()) {
-//			result.insert(0, c);
-//		}
-		
-//		channel.sendMessage(result.toString()).queue();
 		channel.sendMessage(msg.reverse().toString()).queue();
 	}
 	

@@ -58,6 +58,7 @@ public class Bot extends ListenerAdapter {
 	private static final Skip skip = new Skip();
 	private static final Pause pause = new Pause();
 	private static final Unpause unpause = new Unpause();
+	private static final commands.Random random = new commands.Random(); // TODO: fix naming collision
 	private static final Reverse reverse = new Reverse();
 	private static final Subscribe sub = new Subscribe();
 	private static final Unsubscribe unsub = new Unsubscribe();
