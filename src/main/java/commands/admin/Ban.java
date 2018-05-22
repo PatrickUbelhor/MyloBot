@@ -50,7 +50,7 @@ public class Ban extends Command {
 			
 			// Check if we are higher in the role hierarchy than the member. Can't kick members equal to or above us.
 			if (!self.canInteract(member)) {
-				logger.debug("Can't ban " + member.getEffectiveName() + "due to hierarchy restriction");
+				logger.debug("Can't ban " + member.getEffectiveName() + " due to hierarchy restriction");
 				channel.sendMessage("I'm not ranked high enough to ban ")
 						.append(member.getEffectiveName())
 						.append("!")

@@ -42,7 +42,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 5/15/2018
+ * @version 5/16/2018
  * TODO: On Twitch startup, verify token is valid
  */
 public class Bot extends ListenerAdapter {

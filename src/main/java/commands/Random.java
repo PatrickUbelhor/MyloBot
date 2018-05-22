@@ -20,16 +20,17 @@ public class Random extends Command {
 		TextChannel channel = event.getTextChannel();
 		
 		if (args.length < 2) {
-			event.getChannel().sendMessage("Usage: " + getUsage()).queue();
+			channel.sendMessage("Usage: " + getUsage()).queue();
 			return;
 		}
 		
+		// Make sure the second argument is a valid number
 		int num;
 		try {
 			num = Integer.parseInt(args[1]);
 		} catch (NumberFormatException e) {
 			logger.debug("User entered non-number: '" + args[1] + "'");
-			channel.sendMessage("I think you specified an invalid number: '" + args[1] + "'").queue();
+			channel.sendMessage("I think you specified an invalid integer: '" + args[1] + "'").queue();
 			return;
 		}
 		
@@ -54,7 +55,7 @@ public class Random extends Command {
 	
 	@Override
 	public String getDescription() {
-		return "Generates a random number between 0 (inclusive) and <num> (exclusive)";
+		return "Generates a random integer between 0 (inclusive) and <num> (exclusive)";
 	}
 	
 }
