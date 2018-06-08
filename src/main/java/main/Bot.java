@@ -8,6 +8,7 @@ import commands.Help;
 import commands.Reverse;
 import commands.Shutdown;
 import commands.admin.Kick;
+import commands.admin.WhoIs;
 import commands.music.Pause;
 import commands.music.Play;
 import commands.music.PlayNext;
@@ -42,7 +43,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 5/15/2018
+ * @version 6/8/2018
  * TODO: On Twitch startup, verify token is valid
  */
 public class Bot extends ListenerAdapter {
@@ -63,11 +64,14 @@ public class Bot extends ListenerAdapter {
 	private static final Subscribe sub = new Subscribe();
 	private static final Unsubscribe unsub = new Unsubscribe();
 	
+	// "Moderation" type commands
 	private static final Kick kick = new Kick(Permission.MOD);
 	private static final Ban ban = new Ban(Permission.MOD);
+	private static final WhoIs whois = new WhoIs(Permission.USER);
 	private static final ClearText clearText = new ClearText(Permission.MOD);
 	private static final Shutdown shutdown = new Shutdown(Permission.MOD);
 	
+	// Create 'AtEveryone' and 'Music' directories if not found
 	static {
 		File pics = new File("AtEveryone");
 		if (!pics.exists() && !pics.mkdir()) {
@@ -88,17 +92,19 @@ public class Bot extends ListenerAdapter {
 	public static void main(String[] args) {
 		
 		try {
-			
+			// Log into Discord account
 			jda = new JDABuilder(AccountType.BOT)
 				      .setToken(DISCORD_TOKEN)
 				      .buildBlocking();
 			
+			// Initialize commands
 			logger.info("Initializing commands...");
 			for (Command c : Command.getCommandMap().values().toArray(new Command[] {})) {
 				c.init();
 			}
 			logger.info("Initialization finished.");
-
+			
+			// Get Role object for 'user' and 'mod' (defined in config)
 			logger.info("Getting roles...");
 			String[] userRoleIds = Globals.USER_GROUP_IDS.split(",");
 			userRoles = new LinkedList<>();
@@ -203,6 +209,7 @@ public class Bot extends ListenerAdapter {
 				}
 			}
 
+			// Call the command, given the user has proper permissions
 			String response;
 			switch (command.getPerm()) {
 				case DISABLED:
