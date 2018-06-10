@@ -6,7 +6,7 @@ import net.dv8tion.jda.core.audio.AudioSendHandler;
 
 /**
  * @author Patrick Ubelhor
- * @version 05/27/2017
+ * @version 06/09/2017
  */
 class AudioPlayerSendHandler implements AudioSendHandler {
 	private final AudioPlayer audioPlayer;
@@ -24,7 +24,7 @@ class AudioPlayerSendHandler implements AudioSendHandler {
 	
 	@Override
 	public byte[] provide20MsAudio() {
-		return lastFrame.data;
+		return lastFrame.getData();
 	}
 	
 	@Override
