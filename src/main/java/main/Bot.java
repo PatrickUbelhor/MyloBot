@@ -8,6 +8,7 @@ import commands.Help;
 import commands.Reverse;
 import commands.Shutdown;
 import commands.admin.Kick;
+import commands.admin.Mute;
 import commands.admin.WhoIs;
 import commands.music.Pause;
 import commands.music.Play;
@@ -65,6 +66,7 @@ public class Bot extends ListenerAdapter {
 	private static final Unsubscribe unsub = new Unsubscribe();
 	
 	// "Moderation" type commands
+	private static final Mute mute = new Mute(Permission.MOD);
 	private static final Kick kick = new Kick(Permission.MOD);
 	private static final Ban ban = new Ban(Permission.MOD);
 	private static final WhoIs whois = new WhoIs(Permission.USER);
