@@ -10,6 +10,8 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.util.List;
 
+import static main.Globals.logger;
+
 /**
  * @author Patrick Ubelhor
  * @version 06/08/2018
@@ -28,7 +30,8 @@ public class WhoIs extends Command {
 		
 		// Make sure the user entered at least one @mention
 		if (members.isEmpty()) {
-			channel.sendMessage(getUsage()).queue();
+			logger.debug("Did not find any @mentions in message");
+			channel.sendMessage("You must @mention 1 or more users to identify!").queue();
 			return;
 		}
 		
@@ -96,6 +99,6 @@ public class WhoIs extends Command {
 
 	@Override
 	public String getDescription() {
-		return "Gives information about the target user";
+		return "Gives information about the target users";
 	}
 }
