@@ -80,7 +80,7 @@ public class Kick extends Command {
 	@Override
 	public String getUsage() {
 //		return "kick @user [reason]";
-		return "kick @user1, @user2, ...";
+		return "kick @user1 @user2 ...";
 	}
 
 
