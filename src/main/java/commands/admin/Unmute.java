@@ -14,10 +14,10 @@ import static main.Globals.logger;
  * @author Patrick Ubelhor
  * @version 06/09/2018
  */
-public class Mute extends Command {
+public class Unmute extends Command {
 	
-	public Mute(Permission perm) {
-		super("mute", perm);
+	public Unmute(Permission perm) {
+		super("unmute", perm);
 	}
 	
 	
@@ -29,7 +29,7 @@ public class Mute extends Command {
 		// Make sure the user entered at least one @mention
 		if (members.isEmpty()) {
 			logger.debug("Did not find any @mentions in message");
-			channel.sendMessage("You must @mention 1 or more users to mute!").queue();
+			channel.sendMessage("You must @mention 1 or more users to unmute!").queue();
 			return;
 		}
 		
@@ -37,15 +37,14 @@ public class Mute extends Command {
 		for (Member member : members) {
 			event.getGuild().getController().setMute(member, true).queue(
 					success -> {
-						logger.info("Successfully muted " + member.getEffectiveName());
-						channel.sendMessage("Successfully muted ").append(member.getEffectiveName()).append("!").queue();
+						logger.info("Successfully unmuted " + member.getEffectiveName());
+						channel.sendMessage("Successfully unmuted ").append(member.getEffectiveName()).append("!").queue();
 					},
 					
-					// FIXME: this doesn't actually do any exception handling
 					error -> {
-						String errorMsg = String.format("Error muting user: %s\n%s", member.getEffectiveName(), error.toString());
+						String errorMsg = String.format("Error unmuting user: %s\n%s", member.getEffectiveName(), error.toString());
 						logger.warn(errorMsg);
-						channel.sendMessage("Error muting user: ").append(member.getEffectiveName()).queue();
+						channel.sendMessage("Error unmuting user: ").append(member.getEffectiveName()).queue();
 					}
 			);
 		}
@@ -55,12 +54,12 @@ public class Mute extends Command {
 	
 	@Override
 	public String getUsage() {
-		return "mute @user1 @user2 ...";
+		return "unmute @user1 @user2 ...";
 	}
 	
 	
 	@Override
 	public String getDescription() {
-		return "Server mute the @mentioned users";
+		return "Server unmute the @mentioned users";
 	}
 }

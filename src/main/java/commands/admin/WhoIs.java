@@ -14,7 +14,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 06/08/2018
+ * @version 06/09/2018
  */
 public class WhoIs extends Command {
 
@@ -31,21 +31,22 @@ public class WhoIs extends Command {
 		// Make sure the user entered at least one @mention
 		if (members.isEmpty()) {
 			logger.debug("Did not find any @mentions in message");
-			channel.sendMessage("You must @mention 1 or more users to identify!").queue();
+			channel.sendMessage("You must @mention 1 or more users/roles to identify!").queue();
 			return;
 		}
 		
 		// String builder for final message. Format string for each users' information
 		StringBuilder sb = new StringBuilder();
 		String format =
-				"Name: %s#%s\n" +
-				"ID: %s\n" +
-				"Effective name: %s\n" +
-				"Joined Discord: %s\n" +
-				"Joined guild: %s\n" +
-				"Online status: %s\n" +
-				"Avatar URL: %s\n" +
-				"Roles: %s\n";
+				"```" +
+				"   User: %s#%s\n" +
+				"     ID: %s\n" +
+				"   Name: %s\n" +
+				"Created: %s\n" +
+				" Joined: %s\n" +
+				" Status: %s\n" +
+				" Avatar: %s\n" +
+				"  Roles: %s```\n";
 		
 		// Retrieve the information for each user @mentioned and append to msg string
 		for (Member member : members) {
