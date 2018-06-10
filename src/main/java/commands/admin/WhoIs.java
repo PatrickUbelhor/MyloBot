@@ -38,10 +38,9 @@ public class WhoIs extends Command {
 		// String builder for final message. Format string for each users' information
 		StringBuilder sb = new StringBuilder();
 		String format =
-				"Effective name: %s\n" +
+				"Name: %s#%s\n" +
 				"ID: %s\n" +
-				"Name: %s\n" +
-				"Nickname: %s\n" +
+				"Effective name: %s\n" +
 				"Joined Discord: %s\n" +
 				"Joined guild: %s\n" +
 				"Online status: %s\n" +
@@ -53,10 +52,9 @@ public class WhoIs extends Command {
 			User user = member.getUser();
 			
 			String msg = String.format(format,
-					member.getEffectiveName(),
+					user.getName(), user.getDiscriminator(),
 					user.getId(),
-					user.getName(),
-					member.getNickname(),
+					member.getEffectiveName(),
 					user.getCreationTime().toString(),
 					member.getJoinDate().toString(),
 					member.getOnlineStatus().getKey(),
@@ -86,6 +84,7 @@ public class WhoIs extends Command {
 			sb.append(role.getName());
 			sb.append(", ");
 		}
+		sb.delete(sb.length() - 2, sb.length());
 		
 		return sb.toString();
 	}
@@ -93,7 +92,7 @@ public class WhoIs extends Command {
 
 	@Override
 	public String getUsage() {
-		return "who @user1 @user2 ...";
+		return "whois @user1 @user2 ...";
 	}
 	
 
