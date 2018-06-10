@@ -1,5 +1,5 @@
 group 'DiscordBot'
-version '2.8.0'
+version '2.8.1'
 
 apply plugin: 'java'
 apply plugin: 'scala'
