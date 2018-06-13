@@ -14,7 +14,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 5/15/2018
+ * @version 6/12/2018
  */
 public class Ban extends Command {
 	
@@ -81,7 +81,7 @@ public class Ban extends Command {
 	@Override
 	public String getUsage() {
 //		return "ban @user [reason]";
-		return "ban @user1 @user2 ...";
+		return "ban @users";
 	}
 	
 	

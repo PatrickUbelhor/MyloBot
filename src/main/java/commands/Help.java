@@ -1,6 +1,7 @@
 package commands;
 
 import javafx.util.Pair;
+import main.Bot;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
@@ -9,9 +10,15 @@ import java.util.List;
 
 /**
  * @author Patrick Ubelhor
- * @version 6/10/2018
+ * @version 6/12/2018
  */
 public class Help extends Command {
+	
+	private static final int SIZE_OF_TAB = 4;
+	private static final int DESCRIPTION_WRAP_LENGTH = 64;
+	private static final int DESCRIPTION_WRAP_INDENT = 2;
+	private static final int MAX_MSG_LENGTH = 2000; // Defined by Discord TODO: see if there's a predefined constant for this
+	private static final String SEPARATOR = " : ";
 	
 	public Help() {
 		super("help");
@@ -31,11 +38,16 @@ public class Help extends Command {
 			entries.addLast(entry);
 		}
 
-		channel.sendMessage(format(entries)).queue();
+		// Send the messages to the channel
+		List<String> messages = format(entries);
+		for (String msg : messages) {
+			// TODO: Check if there is a race condition. If so, use callback with List iterator to send next messages
+			channel.sendMessage(msg).queue();
+		}
 	}
 	
 	
-	private String format(List<Pair<StringBuilder, StringBuilder>> entries) {
+	private List<String> format(List<Pair<StringBuilder, StringBuilder>> entries) {
 		int maxKeyLength = -1;
 		
 		// Find length of longest key
@@ -46,24 +58,11 @@ public class Help extends Command {
 			}
 		}
 		
-		
-		// Right-justify each 'usage' and wrap each 'description' TODO: remove '64' magic number
+		// Left-justify each 'usage' and wrap each 'description'
 		leftJustify(entries, maxKeyLength);
-		wrap(entries, maxKeyLength + 2, 64); // +2 comes from ": " after usage
+		wrap(entries, maxKeyLength + SEPARATOR.length(), DESCRIPTION_WRAP_LENGTH);
 		
-		// Construct message string
-		StringBuilder msg = new StringBuilder("```");
-		for (Pair<StringBuilder, StringBuilder> entry : entries) {
-			
-			// "key: value\n"
-			msg.append(entry.getKey());
-			msg.append(": ");
-			msg.append(entry.getValue());
-			msg.append('\n');
-		}
-		msg.append("```");
-		
-		return msg.toString();
+		return compile(entries);
 	}
 	
 	
@@ -86,14 +85,45 @@ public class Help extends Command {
 			
 			// Break overflow into new lines, then add left padding
 			for (int i = length; i < val.length(); i += length + leftPadding) { // Start at 'length' because first line is padded by 'usage'
-				val.insert(i, '\n');
+				int lastSpace = val.lastIndexOf(" ", i);
+				val.setCharAt(lastSpace, '\n');
 				
-				// Insert left padding
-				for (int j = 1; j <= leftPadding; j++) { // Start at 1 to insert after newline
-					val.insert(i + j, ' ');
+				// Insert left padding (tabs)
+				for (int j = 1; j <= (leftPadding + DESCRIPTION_WRAP_INDENT) / SIZE_OF_TAB; j++) {
+					val.insert(lastSpace + j, '\t');
+				}
+				
+				// Insert left padding (spaces)
+				for (int j = 1; j <= (leftPadding + DESCRIPTION_WRAP_INDENT) % SIZE_OF_TAB; j++) {
+					val.insert(lastSpace + j, ' ');
 				}
 			}
 		}
+	}
+	
+	
+	private List<String> compile(List<Pair<StringBuilder, StringBuilder>> entries) {
+		LinkedList<String> messages = new LinkedList<>();
+		
+		StringBuilder msg = new StringBuilder("```");
+		for (Pair<StringBuilder, StringBuilder> entry : entries) {
+			int entryLength = entry.getKey().length() + SEPARATOR.length() + entry.getValue().length();
+			
+			if (msg.length() + entryLength + 3 > MAX_MSG_LENGTH) { // +3 for "```" terminator
+				msg.append("```");
+				messages.addLast(msg.toString());
+				msg = new StringBuilder();
+			}
+			
+			msg.append(entry.getKey());
+			msg.append(SEPARATOR);
+			msg.append(entry.getValue());
+			msg.append('\n');
+		}
+		msg.append("```");
+		messages.addLast(msg.toString());
+		
+		return messages;
 	}
 	
 	

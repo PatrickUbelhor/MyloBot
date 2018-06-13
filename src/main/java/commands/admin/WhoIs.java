@@ -14,7 +14,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 06/09/2018
+ * @version 06/12/2018
  */
 public class WhoIs extends Command {
 
@@ -93,7 +93,7 @@ public class WhoIs extends Command {
 
 	@Override
 	public String getUsage() {
-		return "whois @user1 @user2 ...";
+		return "whois @users";
 	}
 	
 
