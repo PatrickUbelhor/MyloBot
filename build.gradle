@@ -6,7 +6,7 @@ apply plugin: 'application'
 
 sourceCompatibility = 1.10
 targetCompatibility = 1.10
-mainClassName = 'main.Bot'
+mainClassName = 'main.Bot' // TODO: try deleting this
 
 repositories {
     mavenCentral()
