@@ -9,7 +9,6 @@ import main.Bot;
 import main.Globals;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import scala.Option;
 
 import static main.Globals.TWITCH_DELAY;
 import static main.Globals.logger;
@@ -132,9 +131,9 @@ public class CheckTwitch extends Service {
 				}
 				
 			} else { // If the stream was last offline and now isn't, set status to true
-				if (link.nonEmpty()) {
+				if (link != null) {
 					stream.status = true;
-					messageContents.add(new MessageContent(link.get(), stream.getSubscribers()));
+					messageContents.add(new MessageContent(link, stream.getSubscribers()));
 				}
 			}
 		}
