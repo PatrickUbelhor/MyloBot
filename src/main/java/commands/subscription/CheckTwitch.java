@@ -124,10 +124,10 @@ public class CheckTwitch extends Service {
 		// If streamer was offline last time and is now online, post message
 		for (StreamerInfo stream : statuses.values()) {
 			logger.debug(String.format("Found streamer: '%s'", stream.id));
-			Option<String> link = requester.getStream(stream.id);
+			String link = requester.getStream(stream.id);
 			
 			if (stream.status) { // If the stream was last online and now isn't, set status to false
-				if (link.isEmpty()) {
+				if (link == null) {
 					stream.status = false;
 				}
 				
