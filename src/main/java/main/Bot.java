@@ -90,6 +90,7 @@ public class Bot extends ListenerAdapter {
 	
 	
 	private static JDA jda;
+	private static Lexer lexer;
 	private static List<Role> userRoles;
 	private static List<Role> modRoles;
 
@@ -166,7 +167,9 @@ public class Bot extends ListenerAdapter {
 		FIXME: Checking for '!' here makes David's autodelete code useless. Check afterwards to fix, but maybe not until
 		we complete the 'TODO' below
 		 */
-		if (msg.length() < 1 || msg.charAt(0) != KEY || author.isBot()) return; // Checking isBot() prevents user from spamming a !reverse
+		List<Token> tokens = lexer.lex(msg);
+		if (tokens.isEmpty() || tokens.get(0).getType() != TokenType.COMMAND || author.isBot()) return; // Checking isBot() prevents user from spamming a !reverse
+//		if (msg.length() < 1 || msg.charAt(0) != KEY || author.isBot()) return; // Checking isBot() prevents user from spamming a !reverse
 		logger.info("Received: '" + msg + "'");
 
 		
@@ -189,8 +192,11 @@ public class Bot extends ListenerAdapter {
 				return;
 		}
 		
-		String[] args = msg.substring(1).split(" ");
-		args[0] = args[0].toLowerCase();
+		String[] args = new String[tokens.size()];
+		for (int i = 0; i < args.length; i++) {
+			args[i] = tokens.get(i).getData();
+		}
+		args[0] = args[0].substring(1).toLowerCase();
 		
 		// Runs the command, if it exists and the user has valid permission levels. Otherwise prints an error message
 		if (commands.containsKey(args[0])) {
