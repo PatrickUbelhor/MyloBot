@@ -100,7 +100,10 @@ public class Bot extends ListenerAdapter {
 			jda = new JDABuilder(AccountType.BOT)
 					.setToken(DISCORD_TOKEN)
 					.build()
-					.awaitReady();
+					.awaitReady(); // TODO: make this happen asynchronously
+			
+			// Initialize lexer
+			lexer = new Lexer(); // TODO: make a singleton
 			
 			// Initialize commands
 			logger.info("Initializing commands...");
@@ -147,9 +150,8 @@ public class Bot extends ListenerAdapter {
 		TextChannel ch = event.getTextChannel();
 		String msg = message.getContentDisplay().trim();
 		
-		// TODO: could possibly make this a subscription service?
+		// Post @everyone meme
 		if (message.mentionsEveryone()) {
-			// Post atEveryone meme
 			File[] pics = new File("AtEveryone").listFiles();
 			
 			if (pics == null || pics.length == 0) {
@@ -163,26 +165,14 @@ public class Bot extends ListenerAdapter {
 		}
 		
 		
-		/*
-		FIXME: Checking for '!' here makes David's autodelete code useless. Check afterwards to fix, but maybe not until
-		we complete the 'TODO' below
-		 */
 		List<Token> tokens = lexer.lex(msg);
 		if (tokens.isEmpty() || tokens.get(0).getType() != TokenType.COMMAND || author.isBot()) return; // Checking isBot() prevents user from spamming a !reverse
-//		if (msg.length() < 1 || msg.charAt(0) != KEY || author.isBot()) return; // Checking isBot() prevents user from spamming a !reverse
 		logger.info("Received: '" + msg + "'");
 
 		
 		switch (event.getChannelType()) {
 			case TEXT:
-				// TODO: delete messages after a qualified period of time
-				// TODO: make autodelete a subscription service
-				if (Objects.equals(ch.getName(), "patricks_taxes") ||
-				    Objects.equals(ch.getName(), "twitch_streams")) {
-					
-					message.delete().queue();
-				}
-				
+				// Do nothing here (for now)
 				break;
 			case PRIVATE:
 				// If from a DM, do special stuff here
