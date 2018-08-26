@@ -16,8 +16,6 @@ import commands.music.Play;
 import commands.music.PlayNext;
 import commands.music.Skip;
 import commands.music.Unpause;
-import commands.subscription.Subscribe;
-import commands.subscription.Unsubscribe;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -34,10 +32,10 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 
 import static main.Globals.DISCORD_TOKEN;
@@ -49,30 +47,8 @@ import static main.Globals.logger;
  */
 public class Bot extends ListenerAdapter {
 	
-	private static final char KEY = '!';
-	private static final LinkedHashMap<String, Command> commands = Command.getCommandMap();
+	private static final LinkedHashMap<String, Command> commands = new LinkedHashMap<>();
 	
-	// Even though we don't use these variables, this still adds them to the HashMap
-	private static final Help help = new Help();
-	private static final AddPicture picture = new AddPicture(Permission.DISABLED);
-	private static final Play play = new Play();
-	private static final PlayNext playNext = new PlayNext();
-	private static final Skip skip = new Skip();
-	private static final Pause pause = new Pause();
-	private static final Unpause unpause = new Unpause();
-	private static final commands.Random random = new commands.Random(); // TODO: fix naming collision
-	private static final Reverse reverse = new Reverse();
-	private static final Subscribe sub = new Subscribe();
-	private static final Unsubscribe unsub = new Unsubscribe();
-	
-	// "Moderation" type commands
-	private static final Mute mute = new Mute(Permission.MOD);
-	private static final Unmute unmute = new Unmute(Permission.MOD);
-	private static final Kick kick = new Kick(Permission.MOD);
-	private static final Ban ban = new Ban(Permission.MOD);
-	private static final WhoIs whois = new WhoIs(Permission.USER);
-	private static final ClearText clearText = new ClearText(Permission.MOD);
-	private static final Shutdown shutdown = new Shutdown(Permission.MOD);
 	
 	// Create 'AtEveryone' and 'Music' directories if not found
 	static {
@@ -92,7 +68,7 @@ public class Bot extends ListenerAdapter {
 	private static Lexer lexer;
 	private static List<Role> userRoles;
 	private static List<Role> modRoles;
-
+	
 	public static void main(String[] args) {
 		
 		try {
@@ -105,12 +81,36 @@ public class Bot extends ListenerAdapter {
 			// Initialize lexer
 			lexer = new Lexer(); // TODO: make a singleton
 			
+			
+			// Instantiate commands
+			Command[] preInitCommands = {
+					new Help(),
+					new AddPicture(Permission.DISABLED),
+					new Play(),
+					new PlayNext(),
+					new Skip(),
+					new Pause(),
+					new Unpause(),
+					new commands.Random(), // TODO: fix naming collision
+					new Reverse(),
+					new WhoIs(Permission.USER),
+					new ClearText(Permission.MOD),
+					new Kick(Permission.MOD),
+					new Ban(Permission.MOD),
+					new Mute(Permission.MOD),
+					new Unmute(Permission.MOD),
+					new Shutdown(Permission.MOD)
+			};
+			
+			
 			// Initialize commands
 			logger.info("Initializing commands...");
-			for (Command c : Command.getCommandMap().values().toArray(new Command[] {})) {
-				c.init();
-			}
+			Arrays.stream(preInitCommands)
+					.parallel()
+					.filter(command -> command.init())
+					.forEachOrdered(command -> commands.put(command.getName(), command));
 			logger.info("Initialization finished.");
+			
 			
 			// Get Role object for 'user' and 'mod' (defined in config)
 			logger.info("Getting roles...");
@@ -119,14 +119,14 @@ public class Bot extends ListenerAdapter {
 			for (String s : userRoleIds) {
 				userRoles.add(jda.getRoleById(s));
 			}
-
+			
 			String[] modRoleIds = Globals.MOD_GROUP_IDS.split(",");
 			modRoles = new LinkedList<>();
 			for (String s : modRoleIds) {
 				modRoles.add(jda.getRoleById(s));
 			}
 			logger.info("Got roles.");
-
+			
 			jda.addEventListener(new Bot());
 			
 		} catch (Exception e) {
@@ -139,7 +139,7 @@ public class Bot extends ListenerAdapter {
 	public static JDA getJDA() {
 		return jda;
 	}
-
+	
 	
 	@Override
 	public void onMessageReceived(MessageReceivedEvent event) {
@@ -166,9 +166,10 @@ public class Bot extends ListenerAdapter {
 		
 		
 		List<Token> tokens = lexer.lex(msg);
-		if (tokens.isEmpty() || tokens.get(0).getType() != TokenType.COMMAND || author.isBot()) return; // Checking isBot() prevents user from spamming a !reverse
+		if (tokens.isEmpty() || tokens.get(0).getType() != TokenType.COMMAND || author.isBot())
+			return; // Checking isBot() prevents user from spamming a !reverse
 		logger.info("Received: '" + msg + "'");
-
+		
 		
 		switch (event.getChannelType()) {
 			case TEXT:
@@ -192,7 +193,7 @@ public class Bot extends ListenerAdapter {
 		if (commands.containsKey(args[0])) {
 			Command command = commands.get(args[0]);
 			List<Role> authorRoles = event.getMember().getRoles();
-
+			
 			boolean isUser = false;
 			for (Role r : userRoles) {
 				if (authorRoles.contains(r)) {
@@ -200,7 +201,7 @@ public class Bot extends ListenerAdapter {
 					break;
 				}
 			}
-
+			
 			boolean isMod = false;
 			for (Role r : modRoles) {
 				if (authorRoles.contains(r)) {
@@ -208,7 +209,7 @@ public class Bot extends ListenerAdapter {
 					break;
 				}
 			}
-
+			
 			// Call the command, given the user has proper permissions
 			String response;
 			switch (command.getPerm()) {
@@ -233,7 +234,7 @@ public class Bot extends ListenerAdapter {
 					}
 					break;
 			}
-
+			
 		} else {
 			channel.sendMessage("Unknown or unavailable command").queue();
 		}
