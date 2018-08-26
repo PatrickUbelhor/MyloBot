@@ -37,7 +37,6 @@ public abstract class Service {
 		logger.info("Found media channel: " + mediaChannel.getName());
 		
 		List<Service> services = new LinkedList<>();
-		services.add(new CheckTwitch());
 		services.add(new CheckSurrender());
 		
 		for (Service s : services) {

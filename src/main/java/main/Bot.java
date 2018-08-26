@@ -45,8 +45,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 6/8/2018
- * TODO: On Twitch startup, verify token is valid
+ * @version 8/26/2018
  */
 public class Bot extends ListenerAdapter {
 	
@@ -99,8 +98,9 @@ public class Bot extends ListenerAdapter {
 		try {
 			// Log into Discord account
 			jda = new JDABuilder(AccountType.BOT)
-				      .setToken(DISCORD_TOKEN)
-				      .buildBlocking();
+					.setToken(DISCORD_TOKEN)
+					.build()
+					.awaitReady();
 			
 			// Initialize commands
 			logger.info("Initializing commands...");
