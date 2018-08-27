@@ -1,5 +1,6 @@
 package commands;
 
+import main.Bot;
 import main.Permission;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
@@ -7,7 +8,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 4/30/2018
+ * @version 8/26/2018
  */
 public class Shutdown extends Command {
 
@@ -20,10 +21,13 @@ public class Shutdown extends Command {
 	public void run(MessageReceivedEvent event, String[] args) {
 		
 		logger.info("Shutting down...");
-		for (Command command : getCommandMap().values()) {
-			command.end();
-			logger.info(String.format("\tKilled %s", command.getName()));
-		}
+		Bot.getCommands().values()
+				.parallelStream()
+				.forEach(command -> {
+					command.end();
+					logger.info(String.format("\tKilled %s", command.getName()));
+				});
+		
 		logger.info("All commands killed");
 		event.getJDA().shutdown();
 		logger.info("Shutdown complete");

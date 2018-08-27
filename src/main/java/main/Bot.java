@@ -107,7 +107,7 @@ public class Bot extends ListenerAdapter {
 			logger.info("Initializing commands...");
 			Arrays.stream(preInitCommands)
 					.parallel()
-					.filter(command -> command.init())
+					.filter(Command::init)
 					.forEachOrdered(command -> commands.put(command.getName(), command));
 			logger.info("Initialization finished.");
 			
@@ -138,6 +138,14 @@ public class Bot extends ListenerAdapter {
 	
 	public static JDA getJDA() {
 		return jda;
+	}
+	
+	
+	/**
+	 * @return A HashMap containing all active commands, referenced by their first required argument
+	 */
+	public static LinkedHashMap<String, Command> getCommands() {
+		return commands;
 	}
 	
 	

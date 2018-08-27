@@ -3,18 +3,15 @@ package commands;
 import main.Permission;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
-import java.util.LinkedHashMap;
-
 import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 4/29/2018
+ * @version 8/26/2018
  * @noinspection WeakerAccess
  */
 public abstract class Command {
 	
-	private static final LinkedHashMap<String, Command> commandMap = new LinkedHashMap<>(12, 1f);
 	private final String name;
 	private Permission perm;
 	
@@ -26,15 +23,6 @@ public abstract class Command {
 	protected Command(String name, Permission perm) {
 		this.name = name.toLowerCase();
 		this.perm = perm;
-		commandMap.put(name, this);
-	}
-	
-	
-	/**
-	 * @return A HashMap containing all active commands, referenced by their first required argument
-	 */
-	public static LinkedHashMap<String, Command> getCommandMap() {
-		return commandMap;
 	}
 	
 	
@@ -43,13 +31,14 @@ public abstract class Command {
 	 * like creating or counting files. Removes the command from data the HashMap
 	 * and ArrayList if initialization fails.
 	 */
-	public final void init() {
+	public final boolean init() {
 		if (!subInit()) {
-			commandMap.remove(this.getName());
 			logger.error(String.format("\tFailed to initialize !%s", this.getName()));
-		} else {
-			logger.info(String.format("\tInitialized !%s", this.getName()));
+			return false;
 		}
+		
+		logger.info(String.format("\tInitialized !%s", this.getName()));
+		return true;
 	}
 	
 	
@@ -91,7 +80,7 @@ public abstract class Command {
 	 *
 	 * @return The command name
 	 */
-	public String getName() {
+	public final String getName() {
 		return name;
 	}
 	
@@ -99,7 +88,7 @@ public abstract class Command {
 	/**
 	 * @return The permission level required to call this command.
 	 */
-	public Permission getPerm() {
+	public final Permission getPerm() {
 		return perm;
 	}
 
@@ -109,7 +98,7 @@ public abstract class Command {
 	 *
 	 * @param perm The permission level
 	 */
-	public void setPerm(Permission perm) {
+	public final void setPerm(Permission perm) {
 		this.perm = perm;
 	}
 	
