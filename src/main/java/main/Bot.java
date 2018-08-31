@@ -93,8 +93,8 @@ public class Bot extends ListenerAdapter {
 					new Unpause(),
 					new commands.Random(), // TODO: fix naming collision
 					new Reverse(),
-					new WhoIs(Permission.USER),
 					new ClearText(Permission.MOD),
+					new WhoIs(Permission.USER),
 					new Kick(Permission.MOD),
 					new Ban(Permission.MOD),
 					new Mute(Permission.MOD),
@@ -178,6 +178,10 @@ public class Bot extends ListenerAdapter {
 			return; // Checking isBot() prevents user from spamming a !reverse
 		logger.info("Received: '" + msg + "'");
 		
+		for (Token token : tokens) {
+			logger.debug(token.getType().name() + " | " + token.getData());
+		}
+		
 		
 		switch (event.getChannelType()) {
 			case TEXT:
@@ -202,21 +206,12 @@ public class Bot extends ListenerAdapter {
 			Command command = commands.get(args[0]);
 			List<Role> authorRoles = event.getMember().getRoles();
 			
-			boolean isUser = false;
-			for (Role r : userRoles) {
-				if (authorRoles.contains(r)) {
-					isUser = true;
-					break;
-				}
-			}
+			boolean isUser = userRoles.parallelStream()
+					.anyMatch(authorRoles::contains);
 			
-			boolean isMod = false;
-			for (Role r : modRoles) {
-				if (authorRoles.contains(r)) {
-					isMod = true;
-					break;
-				}
-			}
+			boolean isMod = modRoles.parallelStream()
+					.anyMatch(authorRoles::contains);
+			
 			
 			// Call the command, given the user has proper permissions
 			String response;

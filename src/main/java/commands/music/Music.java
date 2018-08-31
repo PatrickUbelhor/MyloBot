@@ -90,15 +90,7 @@ abstract class Music extends Command {
 
 	protected final boolean joinAudioChannel(MessageReceivedEvent event) {
 		AudioManager am = event.getGuild().getAudioManager();
-		VoiceChannel vc = null;
-
-		// Finds the voice channel of the requester
-		for (VoiceChannel channel : event.getGuild().getVoiceChannels()) {
-			if (channel.getMembers().contains(event.getMember())) {
-				vc = channel;
-				break;
-			}
-		}
+		VoiceChannel vc = event.getMember().getVoiceState().getChannel();
 
 		// Refuses to play if user is not in a voice channel
 		if (vc == null) {
