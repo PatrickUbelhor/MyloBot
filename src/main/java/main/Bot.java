@@ -76,7 +76,7 @@ public class Bot extends ListenerAdapter {
 			jda = new JDABuilder(AccountType.BOT)
 					.setToken(DISCORD_TOKEN)
 					.build()
-					.awaitReady(); // TODO: make this happen asynchronously
+					.awaitReady();
 			
 			// Initialize lexer
 			lexer = new Lexer(); // TODO: make a singleton

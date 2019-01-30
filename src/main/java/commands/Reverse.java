@@ -20,7 +20,10 @@ public class Reverse extends Command {
 		MessageChannel channel = event.getChannel();
 		StringBuilder msg = new StringBuilder();
 		
-		for (int i = 1; i < args.length; i++) {
+		// Print first token. Then add a space before every following token
+		msg.append(args[1]);
+		for (int i = 2; i < args.length; i++) {
+			msg.append(' ');
 			msg.append(args[i]);
 		}
 		
