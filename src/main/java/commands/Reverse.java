@@ -5,7 +5,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/15/2017
+ * @version 1/29/2019
  */
 public class Reverse extends Command {
 	

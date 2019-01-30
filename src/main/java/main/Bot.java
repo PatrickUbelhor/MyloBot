@@ -16,6 +16,8 @@ import commands.music.Play;
 import commands.music.PlayNext;
 import commands.music.Skip;
 import commands.music.Unpause;
+import commands.subscription.Subscribe;
+import commands.subscription.Unsubscribe;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -43,7 +45,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/26/2018
+ * @version 1/29/2019
  */
 public class Bot extends ListenerAdapter {
 	
@@ -99,6 +101,8 @@ public class Bot extends ListenerAdapter {
 					new Ban(Permission.MOD),
 					new Mute(Permission.MOD),
 					new Unmute(Permission.MOD),
+					new Subscribe(Permission.MOD),
+					new Unsubscribe(Permission.MOD),
 					new Shutdown(Permission.MOD)
 			};
 			
