@@ -176,6 +176,17 @@ public class Bot extends ListenerAdapter {
 			return;
 		}
 		
+		// Send "David" to the 'david' thread when prompted
+		if (!author.isBot() && ch.getName().equals("david")) {
+			if (msg.toLowerCase().contains("david")) {
+				ch.sendMessage("David").queue();
+			}
+			
+			if (msg.toLowerCase().contains("like")) {
+				ch.sendMessage("I like monster trucks and David").queue();
+			}
+		}
+		
 		
 		List<Token> tokens = lexer.lex(msg);
 		if (tokens.isEmpty() || tokens.get(0).getType() != TokenType.COMMAND || author.isBot())
