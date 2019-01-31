@@ -12,6 +12,7 @@ import commands.admin.Mute;
 import commands.admin.Unmute;
 import commands.admin.WhoIs;
 import commands.music.Pause;
+import commands.music.PeekQueue;
 import commands.music.Play;
 import commands.music.PlayNext;
 import commands.music.Skip;
@@ -93,6 +94,7 @@ public class Bot extends ListenerAdapter {
 					new Skip(),
 					new Pause(),
 					new Unpause(),
+					new PeekQueue(),
 					new commands.Random(), // TODO: fix naming collision
 					new Reverse(),
 					new ClearText(Permission.MOD),
@@ -184,6 +186,10 @@ public class Bot extends ListenerAdapter {
 			
 			if (msg.toLowerCase().contains("like")) {
 				ch.sendMessage("I like monster trucks and David").queue();
+			}
+			
+			if (msg.toLowerCase().contains("coming") && author.getIdLong() == 104400026993709056L) {
+				ch.sendMessage("David is coming").queue();
 			}
 		}
 		
