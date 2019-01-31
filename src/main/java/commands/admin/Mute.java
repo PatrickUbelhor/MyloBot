@@ -12,7 +12,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 06/09/2018
+ * @version 06/12/2018
  */
 public class Mute extends Command {
 	
@@ -55,7 +55,7 @@ public class Mute extends Command {
 	
 	@Override
 	public String getUsage() {
-		return "mute @user1 @user2 ...";
+		return "mute @users";
 	}
 	
 	

@@ -1,18 +1,23 @@
 package commands.subscription;
 
 import commands.Command;
+import main.Permission;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 4/30/2018
+ * @version 1/29/2019
  */
 public class Unsubscribe extends Command {
 	
 	public Unsubscribe() {
 		super("unsub");
+	}
+	
+	public Unsubscribe(Permission perm) {
+		super("unsub", perm);
 	}
 	
 	

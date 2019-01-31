@@ -1,17 +1,24 @@
 package commands;
 
-import javafx.util.Pair;
+import main.Bot;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * @author Patrick Ubelhor
- * @version 6/10/2018
+ * @version 8/27/2018
  */
 public class Help extends Command {
+	
+	private static final int SIZE_OF_TAB = 4;
+	private static final int DESCRIPTION_WRAP_LENGTH = 64;
+	private static final int DESCRIPTION_WRAP_INDENT = 2;
+	private static final int MAX_MSG_LENGTH = 2000; // Defined by Discord TODO: see if there's a predefined constant for this
+	private static final String SEPARATOR = " : ";
 	
 	public Help() {
 		super("help");
@@ -24,76 +31,92 @@ public class Help extends Command {
 		
 		// Make a <usage, description> Pair for each command. We use StringBuilder to format within the pair
 		LinkedList<Pair<StringBuilder, StringBuilder>> entries = new LinkedList<>();
-		for (Command c : Command.getCommandMap().values()) {
+		
+		for (Command c : Bot.getCommands().values()) {
 			StringBuilder usage = new StringBuilder(c.getUsage());
 			StringBuilder description = new StringBuilder(c.getDescription());
 			Pair<StringBuilder, StringBuilder> entry = new Pair<>(usage, description);
 			entries.addLast(entry);
 		}
 
-		channel.sendMessage(format(entries)).queue();
+		// Send the messages to the channel
+		List<String> messages = format(entries);
+		for (String msg : messages) {
+			channel.sendMessage(msg).queue();
+		}
 	}
 	
 	
-	private String format(List<Pair<StringBuilder, StringBuilder>> entries) {
-		int maxKeyLength = -1;
+	private List<String> format(List<Pair<StringBuilder, StringBuilder>> entries) {
 		
-		// Find length of longest key
-		for (Pair<StringBuilder, StringBuilder> entry : entries) {
-			int keyLength = entry.getKey().length();
-			if (keyLength > maxKeyLength) {
-				maxKeyLength = keyLength;
+		int maxKeyLength = entries.parallelStream()
+				.max(Comparator.comparingInt(o -> o.getKey().length()))
+				.get().getKey().length();
+		
+		// Left-justify each 'usage' and wrap each 'description'
+		entries.parallelStream()
+				.forEach(entry -> {
+					leftJustify(entry, maxKeyLength);
+					wrap(entry, maxKeyLength + SEPARATOR.length(), DESCRIPTION_WRAP_LENGTH);
+				});
+		
+		return compile(entries);
+	}
+	
+	
+	private void leftJustify(Pair<StringBuilder, StringBuilder> entry, int length) {
+		int keyLength = entry.getKey().length(); // Original length (can't check in loop while modifying)
+		
+		// Pad key with spaces on left side
+		for (int i = 0; i < length - keyLength; i++) {
+			entry.getKey().append(' ');
+		}
+	}
+	
+	
+	private void wrap(Pair<StringBuilder, StringBuilder> entry, int leftPadding, int length) {
+		StringBuilder val = entry.getValue();
+		
+		// Break overflow into new lines, then add left padding
+		for (int i = length; i < val.length(); i += length + leftPadding) { // Start at 'length' because first line is padded by 'usage'
+			int lastSpace = val.lastIndexOf(" ", i);
+			val.setCharAt(lastSpace, '\n');
+			
+			// Insert left padding (tabs)
+			for (int j = 1; j <= (leftPadding + DESCRIPTION_WRAP_INDENT) / SIZE_OF_TAB; j++) {
+				val.insert(lastSpace + j, '\t');
+			}
+			
+			// Insert left padding (spaces)
+			for (int j = 1; j <= (leftPadding + DESCRIPTION_WRAP_INDENT) % SIZE_OF_TAB; j++) {
+				val.insert(lastSpace + j, ' ');
 			}
 		}
+	}
+	
+	
+	private List<String> compile(List<Pair<StringBuilder, StringBuilder>> entries) {
+		LinkedList<String> messages = new LinkedList<>();
 		
-		
-		// Right-justify each 'usage' and wrap each 'description' TODO: remove '64' magic number
-		leftJustify(entries, maxKeyLength);
-		wrap(entries, maxKeyLength + 2, 64); // +2 comes from ": " after usage
-		
-		// Construct message string
 		StringBuilder msg = new StringBuilder("```");
 		for (Pair<StringBuilder, StringBuilder> entry : entries) {
+			int entryLength = entry.getKey().length() + SEPARATOR.length() + entry.getValue().length();
 			
-			// "key: value\n"
+			if (msg.length() + entryLength + 3 > MAX_MSG_LENGTH) { // +3 for "```" terminator
+				msg.append("```");
+				messages.addLast(msg.toString());
+				msg = new StringBuilder();
+			}
+			
 			msg.append(entry.getKey());
-			msg.append(": ");
+			msg.append(SEPARATOR);
 			msg.append(entry.getValue());
 			msg.append('\n');
 		}
 		msg.append("```");
+		messages.addLast(msg.toString());
 		
-		return msg.toString();
-	}
-	
-	
-	private void leftJustify(List<Pair<StringBuilder, StringBuilder>> entries, int length) {
-		for (Pair<StringBuilder, StringBuilder> entry : entries) {
-			StringBuilder key = entry.getKey();
-			int keyLength = key.length(); // Original length (can't check in loop while modifying)
-			
-			// Pad key with spaces on left side
-			for (int i = 0; i < length - keyLength; i++) {
-				entry.getKey().append(' ');
-			}
-		}
-	}
-	
-	
-	private void wrap(List<Pair<StringBuilder, StringBuilder>> entries, int leftPadding, int length) {
-		for (Pair<StringBuilder, StringBuilder> entry : entries) {
-			StringBuilder val = entry.getValue();
-			
-			// Break overflow into new lines, then add left padding
-			for (int i = length; i < val.length(); i += length + leftPadding) { // Start at 'length' because first line is padded by 'usage'
-				val.insert(i, '\n');
-				
-				// Insert left padding
-				for (int j = 1; j <= leftPadding; j++) { // Start at 1 to insert after newline
-					val.insert(i + j, ' ');
-				}
-			}
-		}
+		return messages;
 	}
 	
 	
@@ -106,6 +129,25 @@ public class Help extends Command {
 	@Override
 	public String getDescription() {
 		return "Prints a message containing all bot commands and their descriptions";
+	}
+	
+	
+	private class Pair<K, V> {
+		private K key;
+		private V val;
+		
+		private Pair(K key, V val) {
+			this.key = key;
+			this.val = val;
+		}
+		
+		private K getKey() {
+			return key;
+		}
+		
+		private V getValue() {
+			return val;
+		}
 	}
 	
 }

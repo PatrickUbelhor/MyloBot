@@ -10,7 +10,8 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 3/17/2018
+ * @version 8/26/2018
+ * TODO: Make custom exception types
  */
 public class Globals {
 	
@@ -19,13 +20,12 @@ public class Globals {
 	
 	public static final Logger logger = LogManager.getLogger();
 	public static final String DISCORD_TOKEN;
-	public static final String TWITCH_CLIENT_ID;
 	public static final int MUSIC_VOLUME;
 	public static final long SURRENDER_DELAY;
-	public static final long TWITCH_DELAY;
 	public static final String MEDIA_CHANNEL_ID;
 	public static final String USER_GROUP_IDS; // Group name for basic guild members; TODO: Make empty string allow @everybody
 	public static final String MOD_GROUP_IDS;
+	
 	
 	static {
 		
@@ -51,14 +51,12 @@ public class Globals {
 		}
 		
 		// Initializes constants
-		DISCORD_TOKEN       = check("discord.token", "");
-		TWITCH_CLIENT_ID    = check("twitch.id", "");
-		MUSIC_VOLUME        = Integer.parseInt(check("music.volume", "50"));
-		SURRENDER_DELAY     = Long.parseLong(check("delay.surrender", "10800000"));
-		TWITCH_DELAY        = Long.parseLong(check("delay.twitch", ""));
-		MEDIA_CHANNEL_ID    = check("media.channel.id", "");
-		USER_GROUP_IDS = check("user.group.name", "");
-		MOD_GROUP_IDS = check("mod.group.name", "");
+		DISCORD_TOKEN       = getOrFail("discord.token");
+		MEDIA_CHANNEL_ID    = getOrFail("media.channel.id");
+		USER_GROUP_IDS      = getOrFail("user.group.name");
+		MOD_GROUP_IDS       = getOrFail("mod.group.name");
+		MUSIC_VOLUME        = Integer.parseInt(getOrDefault("music.volume", "50"));
+		SURRENDER_DELAY     = Long.parseLong(getOrDefault("delay.surrender", "10800000"));
 		
 		// Put keys in config
 		try (FileWriter fw = new FileWriter(file)) {
@@ -70,10 +68,18 @@ public class Globals {
 	}
 	
 	
-	private static String check(String key, String defaultValue) {
+	private static String getOrDefault(String key, String defaultValue) {
 		if (!properties.containsKey(key)) {
-			logger.error(String.format("Config '%s' does not contain key '%s'. Using default value: '%s'", CONFIG_PATH, key, defaultValue));
+			logger.warn(String.format("Config '%s' does not contain key '%s'. Using default value: '%s'", CONFIG_PATH, key, defaultValue));
 			properties.setProperty(key, defaultValue);
+		}
+		
+		return properties.getProperty(key);
+	}
+	
+	private static String getOrFail(String key) {
+		if (!properties.containsKey(key)) {
+			throw new RuntimeException(String.format("Config '%s' does not contain required key '%s'", CONFIG_PATH, key));
 		}
 		
 		return properties.getProperty(key);

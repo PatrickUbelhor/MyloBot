@@ -1,17 +1,22 @@
 package commands.subscription;
 
 import commands.Command;
+import main.Permission;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 /**
  * @author Patrick Ubelhor
- * @version 4/30/2018
+ * @version 1/29/2019
  */
 public class Subscribe extends Command {
 	
 	public Subscribe() {
 		super("sub");
+	}
+	
+	public Subscribe(Permission perm) {
+		super("sub", perm);
 	}
 	
 	

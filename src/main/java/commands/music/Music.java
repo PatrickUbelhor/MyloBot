@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import main.Globals;
+import main.Permission;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.managers.AudioManager;
@@ -18,7 +19,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 5/1/2018
+ * @version 1/31/2019
  *
  * TODO: Add responses to user interaction
  * TODO: Only add files with given file extensions
@@ -36,6 +37,10 @@ abstract class Music extends Command {
 	
 	protected Music(String name) {
 		super(name);
+	}
+	
+	protected Music(String name, Permission perm) {
+		super(name, perm);
 	}
 	
 	
@@ -90,15 +95,7 @@ abstract class Music extends Command {
 
 	protected final boolean joinAudioChannel(MessageReceivedEvent event) {
 		AudioManager am = event.getGuild().getAudioManager();
-		VoiceChannel vc = null;
-
-		// Finds the voice channel of the requester
-		for (VoiceChannel channel : event.getGuild().getVoiceChannels()) {
-			if (channel.getMembers().contains(event.getMember())) {
-				vc = channel;
-				break;
-			}
-		}
+		VoiceChannel vc = event.getMember().getVoiceState().getChannel();
 
 		// Refuses to play if user is not in a voice channel
 		if (vc == null) {

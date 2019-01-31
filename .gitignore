@@ -3,6 +3,7 @@
 .idea/
 build/
 out/
+*.iml
 
 # Mac
 **/.DS_Store
@@ -10,8 +11,6 @@ out/
 # Gradle
 .gradle/
 gradle/
-gradlew
-gradlew.bat
 
 # Saved data
 SurrenderUpdates.txt

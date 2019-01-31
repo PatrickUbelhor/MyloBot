@@ -14,7 +14,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 5/15/2018
+ * @version 6/12/2018
  */
 public class Kick extends Command {
 
@@ -80,7 +80,11 @@ public class Kick extends Command {
 	@Override
 	public String getUsage() {
 //		return "kick @user [reason]";
+<<<<<<< HEAD
 		return "kick @user1 @user2 ...";
+=======
+		return "kick @users";
+>>>>>>> dev
 	}
 
 

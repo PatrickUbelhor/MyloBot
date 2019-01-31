@@ -12,6 +12,7 @@ import commands.admin.Mute;
 import commands.admin.Unmute;
 import commands.admin.WhoIs;
 import commands.music.Pause;
+import commands.music.PeekQueue;
 import commands.music.Play;
 import commands.music.PlayNext;
 import commands.music.Skip;
@@ -34,10 +35,10 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 
 import static main.Globals.DISCORD_TOKEN;
@@ -45,35 +46,12 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 6/8/2018
- * TODO: On Twitch startup, verify token is valid
+ * @version 1/29/2019
  */
 public class Bot extends ListenerAdapter {
 	
-	private static final char KEY = '!';
-	private static final LinkedHashMap<String, Command> commands = Command.getCommandMap();
+	private static final LinkedHashMap<String, Command> commands = new LinkedHashMap<>();
 	
-	// Even though we don't use these variables, this still adds them to the HashMap
-	private static final Help help = new Help();
-	private static final AddPicture picture = new AddPicture(Permission.DISABLED);
-	private static final Play play = new Play();
-	private static final PlayNext playNext = new PlayNext();
-	private static final Skip skip = new Skip();
-	private static final Pause pause = new Pause();
-	private static final Unpause unpause = new Unpause();
-	private static final commands.Random random = new commands.Random(); // TODO: fix naming collision
-	private static final Reverse reverse = new Reverse();
-	private static final Subscribe sub = new Subscribe();
-	private static final Unsubscribe unsub = new Unsubscribe();
-	
-	// "Moderation" type commands
-	private static final Mute mute = new Mute(Permission.MOD);
-	private static final Unmute unmute = new Unmute(Permission.MOD);
-	private static final Kick kick = new Kick(Permission.MOD);
-	private static final Ban ban = new Ban(Permission.MOD);
-	private static final WhoIs whois = new WhoIs(Permission.USER);
-	private static final ClearText clearText = new ClearText(Permission.MOD);
-	private static final Shutdown shutdown = new Shutdown(Permission.MOD);
 	
 	// Create 'AtEveryone' and 'Music' directories if not found
 	static {
@@ -90,23 +68,55 @@ public class Bot extends ListenerAdapter {
 	
 	
 	private static JDA jda;
+	private static Lexer lexer;
 	private static List<Role> userRoles;
 	private static List<Role> modRoles;
-
+	
 	public static void main(String[] args) {
 		
 		try {
 			// Log into Discord account
 			jda = new JDABuilder(AccountType.BOT)
-				      .setToken(DISCORD_TOKEN)
-				      .buildBlocking();
+					.setToken(DISCORD_TOKEN)
+					.build()
+					.awaitReady();
+			
+			// Initialize lexer
+			lexer = new Lexer(); // TODO: make a singleton
+			
+			
+			// Instantiate commands
+			Command[] preInitCommands = {
+					new Help(),
+					new AddPicture(Permission.DISABLED),
+					new Play(),
+					new PlayNext(),
+					new Skip(),
+					new Pause(),
+					new Unpause(),
+					new PeekQueue(),
+					new commands.Random(), // TODO: fix naming collision
+					new Reverse(),
+					new ClearText(Permission.MOD),
+					new WhoIs(Permission.USER),
+					new Kick(Permission.MOD),
+					new Ban(Permission.MOD),
+					new Mute(Permission.MOD),
+					new Unmute(Permission.MOD),
+					new Subscribe(Permission.MOD),
+					new Unsubscribe(Permission.MOD),
+					new Shutdown(Permission.MOD)
+			};
+			
 			
 			// Initialize commands
 			logger.info("Initializing commands...");
-			for (Command c : Command.getCommandMap().values().toArray(new Command[] {})) {
-				c.init();
-			}
+			Arrays.stream(preInitCommands)
+					.parallel()
+					.filter(Command::init)
+					.forEachOrdered(command -> commands.put(command.getName(), command));
 			logger.info("Initialization finished.");
+			
 			
 			// Get Role object for 'user' and 'mod' (defined in config)
 			logger.info("Getting roles...");
@@ -115,14 +125,14 @@ public class Bot extends ListenerAdapter {
 			for (String s : userRoleIds) {
 				userRoles.add(jda.getRoleById(s));
 			}
-
+			
 			String[] modRoleIds = Globals.MOD_GROUP_IDS.split(",");
 			modRoles = new LinkedList<>();
 			for (String s : modRoleIds) {
 				modRoles.add(jda.getRoleById(s));
 			}
 			logger.info("Got roles.");
-
+			
 			jda.addEventListener(new Bot());
 			
 		} catch (Exception e) {
@@ -135,7 +145,15 @@ public class Bot extends ListenerAdapter {
 	public static JDA getJDA() {
 		return jda;
 	}
-
+	
+	
+	/**
+	 * @return A HashMap containing all active commands, referenced by their first required argument
+	 */
+	public static LinkedHashMap<String, Command> getCommands() {
+		return commands;
+	}
+	
 	
 	@Override
 	public void onMessageReceived(MessageReceivedEvent event) {
@@ -146,9 +164,8 @@ public class Bot extends ListenerAdapter {
 		TextChannel ch = event.getTextChannel();
 		String msg = message.getContentDisplay().trim();
 		
-		// TODO: could possibly make this a subscription service?
+		// Post @everyone meme
 		if (message.mentionsEveryone()) {
-			// Post atEveryone meme
 			File[] pics = new File("AtEveryone").listFiles();
 			
 			if (pics == null || pics.length == 0) {
@@ -161,25 +178,35 @@ public class Bot extends ListenerAdapter {
 			return;
 		}
 		
+		// Send "David" to the 'david' thread when prompted
+		if (!author.isBot() && ch.getName().equals("david")) {
+			if (msg.toLowerCase().contains("david")) {
+				ch.sendMessage("David").queue();
+			}
+			
+			if (msg.toLowerCase().contains("like")) {
+				ch.sendMessage("I like monster trucks and David").queue();
+			}
+			
+			if (msg.toLowerCase().contains("coming") && author.getIdLong() == 104400026993709056L) {
+				ch.sendMessage("David is coming").queue();
+			}
+		}
 		
-		/*
-		FIXME: Checking for '!' here makes David's autodelete code useless. Check afterwards to fix, but maybe not until
-		we complete the 'TODO' below
-		 */
-		if (msg.length() < 1 || msg.charAt(0) != KEY || author.isBot()) return; // Checking isBot() prevents user from spamming a !reverse
+		
+		List<Token> tokens = lexer.lex(msg);
+		if (tokens.isEmpty() || tokens.get(0).getType() != TokenType.COMMAND || author.isBot())
+			return; // Checking isBot() prevents user from spamming a !reverse
 		logger.info("Received: '" + msg + "'");
-
+		
+		for (Token token : tokens) {
+			logger.debug(token.getType().name() + " | " + token.getData());
+		}
+		
 		
 		switch (event.getChannelType()) {
 			case TEXT:
-				// TODO: delete messages after a qualified period of time
-				// TODO: make autodelete a subscription service
-				if (Objects.equals(ch.getName(), "patricks_taxes") ||
-				    Objects.equals(ch.getName(), "twitch_streams")) {
-					
-					message.delete().queue();
-				}
-				
+				// Do nothing here (for now)
 				break;
 			case PRIVATE:
 				// If from a DM, do special stuff here
@@ -189,30 +216,24 @@ public class Bot extends ListenerAdapter {
 				return;
 		}
 		
-		String[] args = msg.substring(1).split(" ");
-		args[0] = args[0].toLowerCase();
+		String[] args = new String[tokens.size()];
+		for (int i = 0; i < args.length; i++) {
+			args[i] = tokens.get(i).getData();
+		}
+		args[0] = args[0].substring(1).toLowerCase();
 		
 		// Runs the command, if it exists and the user has valid permission levels. Otherwise prints an error message
 		if (commands.containsKey(args[0])) {
 			Command command = commands.get(args[0]);
 			List<Role> authorRoles = event.getMember().getRoles();
-
-			boolean isUser = false;
-			for (Role r : userRoles) {
-				if (authorRoles.contains(r)) {
-					isUser = true;
-					break;
-				}
-			}
-
-			boolean isMod = false;
-			for (Role r : modRoles) {
-				if (authorRoles.contains(r)) {
-					isMod = true;
-					break;
-				}
-			}
-
+			
+			boolean isUser = userRoles.parallelStream()
+					.anyMatch(authorRoles::contains);
+			
+			boolean isMod = modRoles.parallelStream()
+					.anyMatch(authorRoles::contains);
+			
+			
 			// Call the command, given the user has proper permissions
 			String response;
 			switch (command.getPerm()) {
@@ -237,7 +258,7 @@ public class Bot extends ListenerAdapter {
 					}
 					break;
 			}
-
+			
 		} else {
 			channel.sendMessage("Unknown or unavailable command").queue();
 		}

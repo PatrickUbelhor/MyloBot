@@ -5,7 +5,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/15/2017
+ * @version 1/29/2019
  */
 public class Reverse extends Command {
 	
@@ -20,7 +20,10 @@ public class Reverse extends Command {
 		MessageChannel channel = event.getChannel();
 		StringBuilder msg = new StringBuilder();
 		
-		for (int i = 1; i < args.length; i++) {
+		// Print first token. Then add a space before every following token
+		msg.append(args[1]);
+		for (int i = 2; i < args.length; i++) {
+			msg.append(' ');
 			msg.append(args[i]);
 		}
 		
