@@ -46,7 +46,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 1/29/2019
+ * @version 1/31/2019
  */
 public class Bot extends ListenerAdapter {
 	
