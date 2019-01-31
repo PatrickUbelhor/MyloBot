@@ -81,11 +81,7 @@ public class Ban extends Command {
 	@Override
 	public String getUsage() {
 //		return "ban @user [reason]";
-<<<<<<< HEAD
-		return "ban @user1 @user2 ...";
-=======
 		return "ban @users";
->>>>>>> dev
 	}
 	
 	
