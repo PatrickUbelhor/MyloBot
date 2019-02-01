@@ -57,7 +57,7 @@ public final class PlayNext extends Music {
 					
 					for (String song : albums.get(args[2])) {
 						System.out.println(song);
-						playerManager.loadItem(song, new MyQueueNextAudioLoadResultHandler(trackScheduler));
+						playerManager.loadItem(song, new QueueNextAudioLoadResultHandler(trackScheduler));
 					}
 					
 					break;
@@ -67,7 +67,7 @@ public final class PlayNext extends Music {
 						return;
 					}
 					
-					playerManager.loadItem(songs.get(args[2]), new MyQueueNextAudioLoadResultHandler(trackScheduler));
+					playerManager.loadItem(songs.get(args[2]), new QueueNextAudioLoadResultHandler(trackScheduler));
 					break;
 				default:
 					event.getTextChannel().sendMessage("Unknown argument for 'play'").queue();
@@ -79,14 +79,14 @@ public final class PlayNext extends Music {
 		
 		
 		if (args[1].startsWith("http") || args[1].startsWith("www")) {
-			playerManager.loadItem(args[1], new MyQueueNextAudioLoadResultHandler(trackScheduler));
+			playerManager.loadItem(args[1], new QueueNextAudioLoadResultHandler(trackScheduler));
 		} else {
 			if (!songs.containsKey(args[1])) {
 				event.getTextChannel().sendMessage("I can't find that song on my computer, sorry!").queue();
 				return;
 			}
 			
-			playerManager.loadItem(songs.get(args[1]), new MyQueueNextAudioLoadResultHandler(trackScheduler));
+			playerManager.loadItem(songs.get(args[1]), new QueueNextAudioLoadResultHandler(trackScheduler));
 		}
 	}
 	

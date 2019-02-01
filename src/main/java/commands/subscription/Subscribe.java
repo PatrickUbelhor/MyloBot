@@ -27,7 +27,7 @@ public class Subscribe extends Command {
 	 */
 	@Override
 	public boolean subInit() {
-		return Service.init();
+		return Service.initAll();
 	}
 	
 	
@@ -38,7 +38,7 @@ public class Subscribe extends Command {
 	 */
 	@Override
 	public boolean subEnd() {
-		Service.end();
+		Service.endAll();
 		return true;
 	}
 	

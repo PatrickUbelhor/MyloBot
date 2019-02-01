@@ -11,10 +11,10 @@ import static main.Globals.logger;
  * @author Patrick Ubelhor
  * @version 5/11/2018
  */
-class MyQueueNextAudioLoadResultHandler implements AudioLoadResultHandler {
+class QueueNextAudioLoadResultHandler implements AudioLoadResultHandler {
 	private final TrackScheduler trackScheduler;
 	
-	MyQueueNextAudioLoadResultHandler(TrackScheduler trackScheduler) {
+	QueueNextAudioLoadResultHandler(TrackScheduler trackScheduler) {
 		this.trackScheduler = trackScheduler;
 	}
 	

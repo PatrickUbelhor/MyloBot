@@ -32,7 +32,7 @@ public abstract class Service {
 	}
 	
 	
-	public static boolean init() {
+	public static boolean initAll() {
 		mediaChannel = Bot.getJDA().getTextChannelById(Globals.MEDIA_CHANNEL_ID);
 		logger.info("Found media channel: " + mediaChannel.getName());
 		
@@ -52,7 +52,7 @@ public abstract class Service {
 	}
 	
 	
-	public static void end() {
+	public static void endAll() {
 		for (Service s : serviceMap.values()) {
 			s.endThread();
 			
@@ -114,6 +114,16 @@ public abstract class Service {
 		}
 		
 		thread.interrupt();
+		
+		// Wait for the thread to die before returning
+		// TODO: have all these in a ThreadGroup to kill them simultaneously?
+		try {
+			thread.join();
+			logger.debug("Thread joined: " + thread.getName());
+		} catch (InterruptedException e) {
+			logger.error("Interrupted while waiting for service: " + name, e);
+		}
+		
 		thread = null;
 	}
 	
