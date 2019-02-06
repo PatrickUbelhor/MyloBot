@@ -9,6 +9,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import main.Globals;
 import main.Permission;
 import net.dv8tion.jda.core.entities.VoiceChannel;
@@ -19,7 +21,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 1/31/2019
+ * @version 2/6/2019
  *
  * TODO: Add responses to user interaction
  * TODO: Only add files with given file extensions
@@ -33,7 +35,7 @@ abstract class Music extends Command {
 	protected static File musicFolder = new File("music"); // FIXME: magic string is bad. Make a global variable
 	protected static HashMap<String, String> songs = new HashMap<>();
 	protected static LinkedHashMap<String, LinkedList<String>> albums = new LinkedHashMap<>();
-	private static boolean hasInit = false;
+	private static AtomicBoolean hasInit = new AtomicBoolean(false);
 	
 	protected Music(String name) {
 		super(name);
@@ -46,8 +48,7 @@ abstract class Music extends Command {
 	
 	@Override
 	protected boolean subInit() {
-		if (!hasInit) { // Each music command (play, skip, etc.) will call this. Only want to run it once.
-			hasInit = true;
+		if (!hasInit.getAndSet(true)) { // Each music command (play, skip, etc.) will call this. Only want to run it once.
 			AudioSourceManagers.registerRemoteSources(playerManager);
 			AudioSourceManagers.registerLocalSource(playerManager);
 			player.setVolume(Globals.MUSIC_VOLUME);

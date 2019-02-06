@@ -17,7 +17,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor, Evan Perry Grove
- * @version 5/11/2018, 5/4/2018
+ * @version 2/6/2019, 5/4/2018
  */
 class TrackScheduler extends AudioEventAdapter {
 	
@@ -72,7 +72,18 @@ class TrackScheduler extends AudioEventAdapter {
 	}
 	
 	
+	/**
+	 * Clears the playback queue and ends the song currently playing.
+	 */
+	void clearQueue() {
+		queue.clear();
+		player.startTrack(null, false);
+	}
+	
+	
 	String getCurrentSong() {
+		if (player.getPlayingTrack() == null) return null;
+		
 		return player.getPlayingTrack().getInfo().title;
 	}
 	
@@ -83,7 +94,6 @@ class TrackScheduler extends AudioEventAdapter {
 		
 		return titles;
 	}
-	
 	
 	/**
 	 * Pauses the current active track.
