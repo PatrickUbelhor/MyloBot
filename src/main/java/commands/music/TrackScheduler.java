@@ -31,13 +31,35 @@ class TrackScheduler extends AudioEventAdapter {
 	
 	
 	/**
+	 * Essentially a proxy to player#startTrack(), but updates the bot's Discord status
+	 * with the name of this song.
+	 *
+	 *
+	 * @param track The track to start playing, passing null will stop the current track and return false
+	 * @param noInterrupt Whether to only start if nothing else is playing
+	 * @return True if the track was started
+	 */
+	private boolean startTrack(AudioTrack track, boolean noInterrupt) {
+		boolean result = player.startTrack(track, noInterrupt);
+		
+		if (result && track != null) {
+			logger.info("Now playing: " + track.getInfo().title);
+			Game status = Game.playing("Playing " + track.getInfo().title);
+			Bot.getJDA().getPresence().setGame(status);
+		}
+		
+		return result;
+	}
+	
+	
+	/**
 	 * Adds the track to the end of the playback queue.
 	 *
 	 * @param track The song to enqueue.
 	 */
 	void queue(AudioTrack track) {
 		
-		if (!player.startTrack(track, true)) {
+		if (!startTrack(track, true)) {
 			logger.info("Adding to queue");
 			queue.offer(track);
 		}
@@ -50,7 +72,7 @@ class TrackScheduler extends AudioEventAdapter {
 	 * @param track The song to push onto the queue.
 	 */
 	void queueNext(AudioTrack track) {
-		if(!player.startTrack(track, true)) {
+		if(!startTrack(track, true)) {
 			logger.info("Adding to front of queue");
 			queue.offerFirst(track);
 		}
@@ -62,13 +84,9 @@ class TrackScheduler extends AudioEventAdapter {
 	 * If there are no more tracks left in the queue, this will terminate playback.
 	 */
 	void playNext() {
-		logger.info("Playing next track: ");
 		AudioTrack next = queue.poll();
 		logger.info(next == null ? "end of queue" : next.getInfo().title);
-		player.startTrack(next, false);
-		
-		Game status = (next == null) ? null : Game.playing("Playing " + next.getInfo().title);
-		Bot.getJDA().getPresence().setGame(status);
+		startTrack(next, false);
 	}
 	
 	
@@ -156,7 +174,7 @@ class TrackScheduler extends AudioEventAdapter {
 	@Override
 	public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception) {
 		// An already playing track threw an exception (track end event will still be received separately)
-		logger.warn("Threw exception");
+		logger.warn("Threw exception", exception);
 	}
 	
 	
