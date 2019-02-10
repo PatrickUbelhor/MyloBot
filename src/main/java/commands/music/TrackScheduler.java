@@ -17,7 +17,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor, Evan Perry Grove
- * @version 2/6/2019, 5/4/2018
+ * @version 2/9/2019, 5/4/2018
  */
 class TrackScheduler extends AudioEventAdapter {
 	
@@ -42,7 +42,10 @@ class TrackScheduler extends AudioEventAdapter {
 	private boolean startTrack(AudioTrack track, boolean noInterrupt) {
 		boolean result = player.startTrack(track, noInterrupt);
 		
-		if (result && track != null) {
+		if (track == null) { // If the playback is killed...
+			Bot.getJDA().getPresence().setGame(null);
+			
+		} else if (result) { // Else if there is a song, and we succeeded in playing it...
 			logger.info("Now playing: " + track.getInfo().title);
 			Game status = Game.playing("Playing " + track.getInfo().title);
 			Bot.getJDA().getPresence().setGame(status);
