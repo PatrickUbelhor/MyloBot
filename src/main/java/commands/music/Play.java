@@ -8,7 +8,6 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
  *
  * TODO: Make bot leave voice channel after some period of inactivity
  * TODO: Ability to loop
- * TODO: Create playlist
  */
 public final class Play extends Music {
 	
@@ -32,11 +31,13 @@ public final class Play extends Music {
 			}
 		}
 		
+		// Directly add song to queue and return if it's a link
 		if (args[1].startsWith("http") || args[1].startsWith("www")) {
 			playerManager.loadItem(args[1], new QueueLastAudioLoadResultHandler(trackScheduler));
 			return;
 		}
 		
+		// Build YouTube query
 		StringBuilder queryBuilder = new StringBuilder();
 		for (int i = 1; i < args.length; i++) {
 			queryBuilder.append(args[i]);

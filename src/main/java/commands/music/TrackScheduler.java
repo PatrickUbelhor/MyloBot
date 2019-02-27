@@ -17,7 +17,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor, Evan Perry Grove
- * @version 2/9/2019, 5/4/2018
+ * @version 2/27/2019, 5/4/2018
  */
 class TrackScheduler extends AudioEventAdapter {
 	
@@ -42,13 +42,8 @@ class TrackScheduler extends AudioEventAdapter {
 	private boolean startTrack(AudioTrack track, boolean noInterrupt) {
 		boolean result = player.startTrack(track, noInterrupt);
 		
-		if (track == null) { // If the playback is killed...
-			Bot.getJDA().getPresence().setGame(null);
-			
-		} else if (result) { // Else if there is a song, and we succeeded in playing it...
+		if (result) { // Else if there is a song, and we succeeded in playing it...
 			logger.info("Now playing: " + track.getInfo().title);
-			Game status = Game.playing("Playing " + track.getInfo().title);
-			Bot.getJDA().getPresence().setGame(status);
 		}
 		
 		return result;
@@ -88,8 +83,34 @@ class TrackScheduler extends AudioEventAdapter {
 	 */
 	void playNext() {
 		AudioTrack next = queue.poll();
-		logger.info(next == null ? "end of queue" : next.getInfo().title);
+		logger.info(next == null ? "End of queue" : next.getInfo().title);
 		startTrack(next, false);
+	}
+	
+	
+	/**
+	 * Removes a number of songs from the queue. This includes the song that is currently playing.
+	 * If 'count - 1' is greater than the number of songs in the queue, this will just clear the queue
+	 * with no errors.
+	 *
+	 * @param count The number of songs to skip.
+	 */
+	void skip(int count) {
+		logger.info("Skipping " + count + " songs");
+		
+		count--; // This is the number of songs from the queue to remove. We also skip currently playing song later, which will meet 'count'.
+		
+		if (count >= queue.size()) {
+			queue.clear();
+			this.playNext();
+			return;
+		}
+		
+		for (int i = 0; i < count; i++) {
+			queue.removeFirst();
+		}
+		
+		this.playNext();
 	}
 	
 	
@@ -154,12 +175,16 @@ class TrackScheduler extends AudioEventAdapter {
 	public void onTrackStart(AudioPlayer player, AudioTrack track) {
 		logger.info("Track has begun");
 		player.getPlayingTrack().setPosition(0);
+		
+		Game status = Game.playing("Playing " + track.getInfo().title);
+		Bot.getJDA().getPresence().setGame(status);
 	}
 	
 	
 	@Override
 	public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
 		logger.info("Ended");
+		Bot.getJDA().getPresence().setGame(null);
 		
 		if (endReason.mayStartNext) {
 			playNext();

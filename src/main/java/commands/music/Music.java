@@ -18,8 +18,6 @@ import static main.Globals.logger;
 /**
  * @author Patrick Ubelhor
  * @version 2/7/2019
- *
- * TODO: Add responses to user interaction
  */
 abstract class Music extends Command {
 	
