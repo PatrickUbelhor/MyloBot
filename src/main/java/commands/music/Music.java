@@ -38,8 +38,10 @@ abstract class Music extends Command {
 	@Override
 	protected boolean subInit() {
 		if (!hasInit.getAndSet(true)) { // Each music command (play, skip, etc.) will call this. Only want to run it once.
+			playerManager.enableGcMonitoring();
+			playerManager.setFrameBufferDuration(10000); // 10 seconds
+			playerManager.setPlayerCleanupThreshold(30000); // 30 seconds
 			AudioSourceManagers.registerRemoteSources(playerManager);
-			AudioSourceManagers.registerLocalSource(playerManager);
 			player.setVolume(Globals.MUSIC_VOLUME);
 			player.addListener(trackScheduler);
 			
