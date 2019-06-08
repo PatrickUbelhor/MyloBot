@@ -10,11 +10,9 @@ out/
 
 # Gradle
 .gradle/
-gradle/
 
 # Saved data
 SurrenderUpdates.txt
-TwitchStreamers.txt
 mylobot.properties
 AtEveryone
 

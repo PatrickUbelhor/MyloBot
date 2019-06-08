@@ -22,7 +22,6 @@ dependencies {
 }
 
 jar {
-    // TODO: learn more about manifest, specifically how it applies to Java 10
     manifest {
         attributes(
                 'Implementation-Title': 'MyloBot',
