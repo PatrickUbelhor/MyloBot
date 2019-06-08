@@ -4,11 +4,10 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 /**
  * @author Patrick Ubelhor
- * @version 5/10/2018
+ * @version 2/6/2019
  *
  * TODO: Make bot leave voice channel after some period of inactivity
  * TODO: Ability to loop
- * TODO: Create playlist
  */
 public final class Play extends Music {
 	
@@ -23,7 +22,7 @@ public final class Play extends Music {
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
 		
-		if (args.length < 2 || args.length > 4) return;
+		if (args.length < 2) return;
 		
 		// Joins the voice channel if not in one
 		if (!active) {
@@ -32,47 +31,23 @@ public final class Play extends Music {
 			}
 		}
 		
-		if (args.length == 3) {
-			switch (args[1]) {
-				case "album":
-					if (!albums.containsKey(args[2])) {
-						event.getTextChannel().sendMessage("I can't find that album on my computer, sorry!").queue();
-						return;
-					}
-					
-					for (String song : albums.get(args[2])) {
-						System.out.println(song);
-						playerManager.loadItem(song, new MyAudioLoadResultHandler(trackScheduler));
-					}
-					
-					break;
-				case "song":
-					if (!songs.containsKey(args[2])) {
-						event.getTextChannel().sendMessage("I can't find that song on my computer, sorry!").queue();
-						return;
-					}
-					
-					playerManager.loadItem(songs.get(args[2]), new MyAudioLoadResultHandler(trackScheduler));
-					break;
-				default:
-					event.getTextChannel().sendMessage("Unknown argument for 'play'").queue();
-					return;
-			}
-			
+		// Directly add song to queue and return if it's a link
+		if (args[1].startsWith("http") || args[1].startsWith("www")) {
+			playerManager.loadItem(args[1], new QueueLastAudioLoadResultHandler(trackScheduler));
 			return;
 		}
 		
-		
-		if (args[1].startsWith("http") || args[1].startsWith("www")) {
-			playerManager.loadItem(args[1], new MyAudioLoadResultHandler(trackScheduler));
-		} else {
-			if (!songs.containsKey(args[1])) {
-				event.getTextChannel().sendMessage("I can't find that song on my computer, sorry!").queue();
-				return;
-			}
-			
-			playerManager.loadItem(songs.get(args[1]), new MyAudioLoadResultHandler(trackScheduler));
+		// Build YouTube query
+		StringBuilder queryBuilder = new StringBuilder();
+		for (int i = 1; i < args.length; i++) {
+			queryBuilder.append(args[i]);
+			queryBuilder.append(' ');
 		}
+		String query = queryBuilder.toString().strip();
+		
+		// TODO: send YouTube query
+		// TODO: Fix PlayNext
+				
 	}
 	
 	

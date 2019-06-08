@@ -46,7 +46,9 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 1/31/2019
+ * @version 2/10/2019
+ *
+ * TODO: make a simple setStatus method for setting the bot's Discord status?
  */
 public class Bot extends ListenerAdapter {
 	
@@ -58,11 +60,6 @@ public class Bot extends ListenerAdapter {
 		File pics = new File("AtEveryone");
 		if (!pics.exists() && !pics.mkdir()) {
 			logger.error("Could not create 'AtEveryone' directory!");
-		}
-		
-		File music = new File("Music");
-		if (!music.exists() && !music.mkdir()) {
-			logger.error("Could not create 'Music' directory!");
 		}
 	}
 	

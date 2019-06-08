@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * @author Patrick Ubelhor
- * @version 1/31/2019
+ * @version 2/27/2019
  */
 public class PeekQueue extends Music {
 	
@@ -37,9 +37,15 @@ public class PeekQueue extends Music {
 		msg.append(currentSong);
 		msg.append('\n');
 		
+		// TODO: add ability to view pages of queue
 		// List remaining songs in the queue
 		int i = 1;
 		for (String title : titles) {
+			if (msg.length() + (i + "").length() + ". ".length() + title.length() + 1 >= 2000) {
+				event.getTextChannel().sendMessage(msg.toString()).queue();
+				msg = new StringBuilder();
+			}
+			
 			msg.append(i);
 			msg.append(". ");
 			msg.append(title);
