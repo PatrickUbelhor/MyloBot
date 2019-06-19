@@ -46,7 +46,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 2/10/2019
+ * @version 5/18/2019
  *
  * TODO: make a simple setStatus method for setting the bot's Discord status?
  */
@@ -55,9 +55,9 @@ public class Bot extends ListenerAdapter {
 	private static final LinkedHashMap<String, Command> commands = new LinkedHashMap<>();
 	
 	
-	// Create 'AtEveryone' and 'Music' directories if not found
+	// Create 'AtEveryone' directory if not found
 	static {
-		File pics = new File("AtEveryone");
+		File pics = new File(Globals.AT_EVERYONE_PATH);
 		if (!pics.exists() && !pics.mkdir()) {
 			logger.error("Could not create 'AtEveryone' directory!");
 		}

@@ -10,14 +10,16 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/26/2018
+ * @version 5/18/2019
  * TODO: Make custom exception types
  */
 public class Globals {
 	
-	private static final String CONFIG_PATH = "mylobot.properties";
+	private static final String CONFIG_PATH = "config/mylobot.properties";
 	private static final Properties properties = new Properties();
 	
+	public static final String AT_EVERYONE_PATH = "config/AtEveryone";
+	public static final String SURRENDER_20_PATH = "config/SurrenderUpdates.txt";
 	public static final Logger logger = LogManager.getLogger();
 	public static final String DISCORD_TOKEN;
 	public static final int MUSIC_VOLUME;

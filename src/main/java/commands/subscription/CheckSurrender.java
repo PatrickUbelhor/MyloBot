@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import clients.SurrenderClient;
+import main.Globals;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import static main.Globals.SURRENDER_DELAY;
@@ -14,12 +15,12 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 2/10/2019
+ * @version 5/18/2019
  */
 public class CheckSurrender extends Service {
 	
 	private static final int NUM_UPDATES = 3;
-	private static final String OUTPUT_FILE_LINKS = "./SurrenderUpdates.txt";
+	private static final String OUTPUT_FILE_LINKS = Globals.SURRENDER_20_PATH;
 	private static final SourceInfo sourceInfo = new SourceInfo();
 	
 	private SurrenderClient client = new SurrenderClient();
