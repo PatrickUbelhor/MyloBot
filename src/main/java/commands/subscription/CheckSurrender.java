@@ -15,7 +15,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 5/18/2019
+ * @version 6/18/2019
  */
 public class CheckSurrender extends Service {
 	

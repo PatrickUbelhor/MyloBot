@@ -46,7 +46,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 5/18/2019
+ * @version 6/18/2019
  *
  * TODO: make a simple setStatus method for setting the bot's Discord status?
  */
