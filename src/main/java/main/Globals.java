@@ -10,17 +10,14 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 5/18/2019
+ * @version 5/19/2019
  * TODO: Make custom exception types
  */
 public class Globals {
 	
-	private static final String CONFIG_PATH = "config/mylobot.properties";
-	private static final Properties properties = new Properties();
-	
+	public static final Logger logger = LogManager.getLogger();
 	public static final String AT_EVERYONE_PATH = "config/AtEveryone";
 	public static final String SURRENDER_20_PATH = "config/SurrenderUpdates.txt";
-	public static final Logger logger = LogManager.getLogger();
 	public static final String DISCORD_TOKEN;
 	public static final int MUSIC_VOLUME;
 	public static final long SURRENDER_DELAY;
@@ -28,6 +25,9 @@ public class Globals {
 	public static final String USER_GROUP_IDS; // Group name for basic guild members; TODO: Make empty string allow @everybody
 	public static final String MOD_GROUP_IDS;
 	
+	private static final String CONFIG_PATH = "config/mylobot.properties";
+	private static final Properties properties = new Properties();
+	private static boolean gotAllRequiredProperties = true;
 	
 	static {
 		
@@ -38,6 +38,7 @@ public class Globals {
 		
 		// Attempts to create config file if it doesn't exist
 		try {
+			file.getParentFile().mkdirs();
 			isEmpty = file.createNewFile();
 		} catch (IOException e) {
 			logger.error(String.format("Could not create '%s' file.", CONFIG_PATH), e);
@@ -55,8 +56,8 @@ public class Globals {
 		// Initializes constants
 		DISCORD_TOKEN       = getOrFail("discord.token");
 		MEDIA_CHANNEL_ID    = getOrFail("media.channel.id");
-		USER_GROUP_IDS      = getOrFail("user.group.name");
-		MOD_GROUP_IDS       = getOrFail("mod.group.name");
+		USER_GROUP_IDS      = getOrFail("user.group.ids");
+		MOD_GROUP_IDS       = getOrFail("mod.group.ids");
 		MUSIC_VOLUME        = Integer.parseInt(getOrDefault("music.volume", "50"));
 		SURRENDER_DELAY     = Long.parseLong(getOrDefault("delay.surrender", "10800000"));
 		
@@ -67,11 +68,14 @@ public class Globals {
 			logger.error(String.format("Could not write to '%s'.", CONFIG_PATH), e);
 		}
 		
+		if (!gotAllRequiredProperties) {
+			throw new RuntimeException("Failed to fetch all required configuration properties");
+		}
 	}
 	
 	
 	private static String getOrDefault(String key, String defaultValue) {
-		if (!properties.containsKey(key)) {
+		if (!properties.containsKey(key) || properties.getProperty(key).equals("")) {
 			logger.warn(String.format("Config '%s' does not contain key '%s'. Using default value: '%s'", CONFIG_PATH, key, defaultValue));
 			properties.setProperty(key, defaultValue);
 		}
@@ -80,8 +84,11 @@ public class Globals {
 	}
 	
 	private static String getOrFail(String key) {
-		if (!properties.containsKey(key)) {
-			throw new RuntimeException(String.format("Config '%s' does not contain required key '%s'", CONFIG_PATH, key));
+		if (!properties.containsKey(key) || properties.getProperty(key).equals("")) {
+			logger.error(String.format("Config '%s' does not contain value for required key '%s'", CONFIG_PATH, key));
+			gotAllRequiredProperties = false;
+			properties.setProperty(key, ""); // Ensures empty value gets printed to file
+			return null;
 		}
 		
 		return properties.getProperty(key);
