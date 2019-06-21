@@ -41,6 +41,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import static main.Globals.DISCORD_TOKEN;
 import static main.Globals.logger;
@@ -55,22 +56,18 @@ public class Bot extends ListenerAdapter {
 	
 	private static final LinkedHashMap<String, Command> commands = new LinkedHashMap<>();
 	
-	
-	// Create 'AtEveryone' directory if not found
-	static {
-		File pics = new File(Globals.AT_EVERYONE_PATH);
-		if (!pics.exists() && !pics.mkdir()) {
-			logger.error("Could not create 'AtEveryone' directory!");
-		}
-	}
-	
-	
 	private static JDA jda;
 	private static Lexer lexer;
 	private static List<Role> userRoles;
 	private static List<Role> modRoles;
 	
 	public static void main(String[] args) {
+		
+		// Create 'AtEveryone' directory if not found
+		File pics = new File(Globals.AT_EVERYONE_PATH);
+		if (!pics.exists() && !pics.mkdir()) {
+			logger.error("Could not create 'AtEveryone' directory!");
+		}
 		
 		try {
 			// Log into Discord account
@@ -118,17 +115,16 @@ public class Bot extends ListenerAdapter {
 			
 			// Get Role object for 'user' and 'mod' (defined in config)
 			logger.info("Getting roles...");
-			String[] userRoleIds = Globals.USER_GROUP_IDS.split(",");
-			userRoles = new LinkedList<>();
-			for (String s : userRoleIds) {
-				userRoles.add(jda.getRoleById(s));
-			}
+			// TODO: Check here if role actually exists?
+			userRoles = Arrays.stream(Globals.USER_GROUP_IDS.split(","))
+					.parallel()
+					.map(s -> jda.getRoleById(s))
+					.collect(Collectors.toList());
 			
-			String[] modRoleIds = Globals.MOD_GROUP_IDS.split(",");
-			modRoles = new LinkedList<>();
-			for (String s : modRoleIds) {
-				modRoles.add(jda.getRoleById(s));
-			}
+			modRoles = Arrays.stream(Globals.MOD_GROUP_IDS.split(","))
+					.parallel()
+					.map(s -> jda.getRoleById(s))
+					.collect(Collectors.toList());
 			logger.info("Got roles.");
 			
 			jda.addEventListener(new Bot());

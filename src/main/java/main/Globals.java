@@ -10,20 +10,20 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 6/19/2019
+ * @version 6/21/2019
  * TODO: Make custom exception types
  */
 public class Globals {
 	
 	public static final Logger logger = LogManager.getLogger();
-	public static final String AT_EVERYONE_PATH = "config/AtEveryone";
-	public static final String SURRENDER_20_PATH = "config/SurrenderUpdates.txt";
 	public static final String DISCORD_TOKEN;
 	public static final int MUSIC_VOLUME;
 	public static final long SURRENDER_DELAY;
 	public static final String MEDIA_CHANNEL_ID;
 	public static final String USER_GROUP_IDS; // Group name for basic guild members; TODO: Make empty string allow @everybody
 	public static final String MOD_GROUP_IDS;
+	public static final String AT_EVERYONE_PATH;
+	public static final String SURRENDER_20_PATH;
 	
 	private static final String CONFIG_PATH = "config/mylobot.properties";
 	private static final Properties properties = new Properties();
@@ -60,6 +60,8 @@ public class Globals {
 		MOD_GROUP_IDS       = getOrFail("mod.group.ids");
 		MUSIC_VOLUME        = Integer.parseInt(getOrDefault("music.volume", "50"));
 		SURRENDER_DELAY     = Long.parseLong(getOrDefault("delay.surrender", "10800000"));
+		AT_EVERYONE_PATH    = getOrDefault("path.at.everyone", "config/AtEveryone");
+		SURRENDER_20_PATH   = getOrDefault("path.surrender.savefile", "config/SurrenderUpdates.txt");
 		
 		// Put keys in config
 		try (FileWriter fw = new FileWriter(file)) {
