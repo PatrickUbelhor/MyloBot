@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
@@ -46,7 +47,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 6/18/2019
+ * @version 6/21/2019
  *
  * TODO: make a simple setStatus method for setting the bot's Discord status?
  */
@@ -173,6 +174,13 @@ public class Bot extends ListenerAdapter {
 			channel.sendFile(pics[new Random().nextInt(pics.length)]).queue();
 			
 			return;
+		}
+		
+		// Message Tyler when Evan posts
+		if (author.getIdLong() == 104652244556718080L) {
+			String dm = "Evan just posted in " + ch.getGuild().getName() + "#" + ch.getName();
+			PrivateChannel tylerDM = jda.getPrivateChannelById(104725353402003456L);
+			tylerDM.sendMessage(dm).queue();
 		}
 		
 		// Send "David" to the 'david' thread when prompted
