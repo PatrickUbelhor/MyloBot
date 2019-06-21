@@ -12,13 +12,13 @@ import static main.Globals.logger;
  * @author Patrick Ubelhor
  * @version 8/16/2017
  */
-final class CheckerThread extends Thread {
+final class PeriodicRunner extends Thread {
 	
 	private final long delayTime;
 	private final Supplier<List<MessageContent>> checkFunction;
 	private final MessageChannel mediaChannel;
 	
-	CheckerThread(String name, long delayTime, Supplier<List<MessageContent>> checkFunction, MessageChannel mediaChannel) {
+	PeriodicRunner(String name, long delayTime, Supplier<List<MessageContent>> checkFunction, MessageChannel mediaChannel) {
 		super(name);
 		this.delayTime = delayTime;
 		this.checkFunction = checkFunction;

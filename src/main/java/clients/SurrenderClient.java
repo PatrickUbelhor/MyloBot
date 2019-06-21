@@ -9,6 +9,10 @@ import java.util.List;
 
 import static main.Globals.logger;
 
+/**
+ * @author Patrick Ubelhor
+ * @version 6/21/2019
+ */
 public class SurrenderClient {
 	
 	public SurrenderClient() {}

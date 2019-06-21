@@ -67,7 +67,7 @@ public abstract class Service {
 	private final String name;
 	private final long delayTime;
 	private final String saveFilePath;
-	private CheckerThread thread = null;
+	private PeriodicRunner thread = null;
 	
 	
 	Service(String name, long delayTime, String saveFilePath) {
@@ -90,11 +90,11 @@ public abstract class Service {
 	 */
 	protected final void startThread() {
 		if (thread != null && thread.isAlive()) {
-			logger.warn("Tried to start CheckerThread when one was already active!");
+			logger.warn("Tried to start PeriodicRunner when one was already active!");
 			return;
 		}
 		
-		thread = new CheckerThread(this.getClass().getSimpleName(), delayTime, this::check, mediaChannel);
+		thread = new PeriodicRunner(this.getClass().getSimpleName(), delayTime, this::check, mediaChannel);
 		thread.start();
 	}
 	
@@ -104,12 +104,12 @@ public abstract class Service {
 	 */
 	protected final void endThread() {
 		if (thread == null) {
-			logger.warn("Cannot kill null CheckerThread: " + name);
+			logger.warn("Cannot kill null PeriodicRunner: " + name);
 			return;
 		}
 		
 		if (!thread.isAlive()) {
-			logger.warn("Cannot kill dead CheckerThread: " + name);
+			logger.warn("Cannot kill dead PeriodicRunner: " + name);
 			return;
 		}
 		
