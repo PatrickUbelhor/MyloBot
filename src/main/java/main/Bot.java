@@ -38,7 +38,6 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import java.io.File;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;

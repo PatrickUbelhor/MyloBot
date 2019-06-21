@@ -1,10 +1,8 @@
 package clients;
 
 import java.io.BufferedReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,8 +36,8 @@ public class SurrenderClient {
 					keyFound = false;
 				}
 				
-				if (keyFound && line.contains("new-title")) {
-					newLinks.addFirst(br.readLine().split("\'")[1]);
+				if (keyFound && line.contains("news-title")) {
+					newLinks.addFirst(br.readLine().split("'")[1]);
 					i++;
 				}
 			}
