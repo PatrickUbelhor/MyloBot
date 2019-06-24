@@ -173,9 +173,10 @@ public class Bot extends ListenerAdapter {
 		
 		// Message Tyler when Evan posts
 		if (author.getIdLong() == 104652244556718080L) {
-			String dm = "Evan just posted in " + ch.getGuild().getName() + "#" + ch.getName();
-			PrivateChannel tylerDM = jda.getPrivateChannelById(104725353402003456L);
-			tylerDM.sendMessage(dm).queue();
+			String dm = "Evan just posted in " + ch.getGuild().getName() + "#" + ch.getName() + "."
+					+ "\nA citation will be required.";
+			PrivateChannel tylerDirectMsg = jda.getUserById(104725353402003456L).openPrivateChannel().complete();
+			tylerDirectMsg.sendMessage(dm).queue();
 		}
 		
 		// Send "David" to the 'david' thread when prompted
