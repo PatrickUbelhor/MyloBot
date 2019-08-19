@@ -15,7 +15,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class Globals {
 	
-	public static final Logger logger = LogManager.getLogger();
+	public static final Logger logger = LogManager.getLogger(Globals.class);
 	public static final String DISCORD_TOKEN;
 	public static final int MUSIC_VOLUME;
 	public static final long SURRENDER_DELAY;
