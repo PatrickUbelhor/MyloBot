@@ -1,7 +1,7 @@
 package commands.subscription;
 
 import java.util.Collection;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.api.entities.User;
 
 /**
  * @author Patrick Ubelhor

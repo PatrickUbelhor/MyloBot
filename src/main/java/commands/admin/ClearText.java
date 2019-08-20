@@ -2,10 +2,10 @@ package commands.admin;
 
 import commands.Command;
 import main.Permission;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageHistory;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageHistory;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -15,7 +15,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/26/2018
+ * @version 8/20/2019
  */
 public class ClearText extends Command {
 	
@@ -66,7 +66,7 @@ public class ClearText extends Command {
 	 */
 	private boolean isTwoWeeksOld(Message m) {
 		OffsetDateTime now = OffsetDateTime.now();
-		OffsetDateTime then = m.getCreationTime();
+		OffsetDateTime then = m.getTimeCreated();
 		
 		// We know there won't be any Discord messages from pre-2014
 		// Convert the instant into the number of days since 1/1/2014

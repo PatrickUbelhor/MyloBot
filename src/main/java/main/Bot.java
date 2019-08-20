@@ -1,6 +1,5 @@
 package main;
 
-import commands.AddPicture;
 import commands.admin.Ban;
 import commands.admin.ClearText;
 import commands.Command;
@@ -19,21 +18,21 @@ import commands.music.Skip;
 import commands.music.Unpause;
 import commands.subscription.Subscribe;
 import commands.subscription.Unsubscribe;
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.DisconnectEvent;
-import net.dv8tion.jda.core.events.ReadyEvent;
-import net.dv8tion.jda.core.events.ReconnectedEvent;
-import net.dv8tion.jda.core.events.ResumedEvent;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.PrivateChannel;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.DisconnectEvent;
+import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.events.ReconnectedEvent;
+import net.dv8tion.jda.api.events.ResumedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.io.File;
 import java.util.Arrays;
@@ -47,7 +46,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 6/21/2019
+ * @version 8/20/2019
  *
  * TODO: make a simple setStatus method for setting the bot's Discord status?
  */
@@ -82,7 +81,6 @@ public class Bot extends ListenerAdapter {
 			// Instantiate commands
 			Command[] preInitCommands = {
 					new Help(),
-					new AddPicture(Permission.DISABLED),
 					new Play(),
 					new PlayNext(),
 					new Skip(),

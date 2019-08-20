@@ -1,10 +1,11 @@
 package commands.subscription;
 
+import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.User;
+
 import java.util.List;
 import java.util.function.Supplier;
-import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.User;
 
 import static main.Globals.logger;
 

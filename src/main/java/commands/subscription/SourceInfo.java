@@ -1,8 +1,9 @@
 package commands.subscription;
 
+import net.dv8tion.jda.api.entities.User;
+
 import java.util.Collection;
 import java.util.LinkedList;
-import net.dv8tion.jda.core.entities.User;
 
 /**
  * @author Patrick Ubelhor

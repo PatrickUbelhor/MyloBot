@@ -2,11 +2,11 @@ package commands.admin;
 
 import commands.Command;
 import main.Permission;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 06/12/2018
+ * @version 8/20/2019
  */
 public class WhoIs extends Command {
 
@@ -56,8 +56,8 @@ public class WhoIs extends Command {
 					user.getName(), user.getDiscriminator(),
 					user.getId(),
 					member.getEffectiveName(),
-					user.getCreationTime().toString(),
-					member.getJoinDate().toString(),
+					user.getTimeCreated().toString(),
+					member.getTimeJoined().toString(),
 					member.getOnlineStatus().getKey(),
 					user.getEffectiveAvatarUrl(),
 					rolesToString(member.getRoles())

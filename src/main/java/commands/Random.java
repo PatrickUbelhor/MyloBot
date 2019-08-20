@@ -1,7 +1,7 @@
 package commands;
 
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import static main.Globals.logger;
 

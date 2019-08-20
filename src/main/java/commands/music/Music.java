@@ -5,15 +5,13 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import commands.Command;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import main.Globals;
 import main.Permission;
-import net.dv8tion.jda.core.entities.VoiceChannel;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.managers.AudioManager;
+import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.managers.AudioManager;
 
-import static main.Globals.logger;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Patrick Ubelhor

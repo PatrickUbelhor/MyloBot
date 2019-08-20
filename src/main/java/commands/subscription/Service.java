@@ -1,5 +1,10 @@
 package commands.subscription;
 
+import main.Bot;
+import main.Globals;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -9,10 +14,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import main.Bot;
-import main.Globals;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import static main.Globals.logger;
 

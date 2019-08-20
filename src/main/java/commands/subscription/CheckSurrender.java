@@ -1,14 +1,14 @@
 package commands.subscription;
 
+import clients.SurrenderClient;
+import main.Globals;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-
-import clients.SurrenderClient;
-import main.Globals;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import static main.Globals.SURRENDER_DELAY;
 import static main.Globals.logger;

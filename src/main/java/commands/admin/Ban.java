@@ -2,11 +2,10 @@ package commands.admin;
 
 import commands.Command;
 import main.Permission;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.managers.GuildController;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.List;
 
@@ -14,7 +13,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 6/12/2018
+ * @version 8/20/2019
  */
 public class Ban extends Command {
 	
@@ -27,7 +26,6 @@ public class Ban extends Command {
 	public void run(MessageReceivedEvent event, String[] args) {
 		List<Member> members = event.getMessage().getMentionedMembers();
 		Guild guild = event.getGuild();
-		GuildController controller = guild.getController();
 		TextChannel channel = event.getTextChannel();
 		Member self = guild.getSelfMember();
 		
@@ -39,7 +37,7 @@ public class Ban extends Command {
 		}
 		
 		// Check if we have permission to ban users from this guild
-		if (!self.hasPermission(net.dv8tion.jda.core.Permission.BAN_MEMBERS)) {
+		if (!self.hasPermission(net.dv8tion.jda.api.Permission.BAN_MEMBERS)) {
 			logger.debug("Insufficient permissions to ban users");
 			channel.sendMessage("I don't have permission to ban users from this guild!").queue();
 			return;
@@ -62,7 +60,7 @@ public class Ban extends Command {
 			
 			// TODO: Implement delDays argument: delete messages from N days ago from this user
 			// Finally ban the member
-			controller.ban(member, 0).queue(
+			guild.ban(member, 0).queue(
 					success -> {
 						logger.info("Successfully banned " + member.getEffectiveName());
 						channel.sendMessage("Successfully banned ").append(member.getEffectiveName()).append("!").queue();

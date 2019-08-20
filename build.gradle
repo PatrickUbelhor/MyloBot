@@ -9,27 +9,27 @@ targetCompatibility = 1.12
 mainClassName = 'main.Bot'
 
 repositories {
-    mavenCentral()
-    jcenter()
+	mavenCentral()
+	jcenter()
 }
 
 dependencies {
-    implementation group: 'org.apache.logging.log4j',   name: 'log4j-core',     version: '2.12.1'
-    implementation group: 'com.sedmelluq',              name: 'lavaplayer',     version: '1.3.20'
-    implementation group: 'net.dv8tion',                name: 'JDA',            version: '3.8.3_463'
+	implementation group: 'org.apache.logging.log4j',   name: 'log4j-core',     version: '2.12.1'
+	implementation group: 'com.sedmelluq',              name: 'lavaplayer',     version: '1.3.20'
+	implementation group: 'net.dv8tion',                name: 'JDA',            version: '4.0.0_44'
 }
 
 jar {
-    manifest {
-        attributes(
-                'Implementation-Title': 'MyloBot',
-                'Main-Class': mainClassName
-        )
-    }
+	manifest {
+		attributes(
+				'Implementation-Title': 'MyloBot',
+				'Main-Class': mainClassName
+		)
+	}
 
-    from {
-        configurations.compileClasspath.collect {
-            (it.isDirectory() || it.name[-3..-1] == 'pom') ? it : zipTree(it)
-        }
-    }
+	from {
+		configurations.runtimeClasspath.collect {
+			(it.isDirectory() || it.name[-3..-1] == 'pom') ? it : zipTree(it)
+		}
+	}
 }
