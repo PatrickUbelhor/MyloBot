@@ -2,12 +2,18 @@ package commands.admin;
 
 import commands.Command;
 import main.Permission;
+import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.entities.EmbedType;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
+import java.time.OffsetDateTime;
+import java.util.LinkedList;
 import java.util.List;
 
 import static main.Globals.logger;
@@ -18,6 +24,17 @@ import static main.Globals.logger;
  */
 public class WhoIs extends Command {
 
+	private static String format =
+			"```json" +
+			"   User: %s#%s\n" +
+			"     ID: %s\n" +
+			"   Name: %s\n" +
+			"Created: %s\n" +
+			" Joined: %s\n" +
+			" Status: %s\n" +
+			" Avatar: %s\n" +
+			"  Roles: %s```\n";
+	
 	public WhoIs(Permission perm) {
 		super("whois", perm);
 	}
@@ -36,9 +53,8 @@ public class WhoIs extends Command {
 		}
 		
 		// String builder for final message. Format string for each users' information
-		StringBuilder sb = new StringBuilder();
 		String format =
-				"```" +
+				"```json" +
 				"   User: %s#%s\n" +
 				"     ID: %s\n" +
 				"   Name: %s\n" +
@@ -48,7 +64,6 @@ public class WhoIs extends Command {
 				" Avatar: %s\n" +
 				"  Roles: %s```\n";
 		
-		// Retrieve the information for each user @mentioned and append to msg string
 		for (Member member : members) {
 			User user = member.getUser();
 			
@@ -59,16 +74,14 @@ public class WhoIs extends Command {
 					user.getTimeCreated().toString(),
 					member.getTimeJoined().toString(),
 					member.getOnlineStatus().getKey(),
+					channel.
 					user.getEffectiveAvatarUrl(),
 					rolesToString(member.getRoles())
 			);
 			
-			sb.append(msg);
-			sb.append("\n");
+			channel.sendMessage(msg).queue();
 		}
 		
-		// Finally send the message
-		channel.sendMessage(sb.toString()).queue();
 	}
 	
 	
