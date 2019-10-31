@@ -18,6 +18,7 @@ import commands.music.Skip;
 import commands.music.Unpause;
 import commands.subscription.Subscribe;
 import commands.subscription.Unsubscribe;
+import log.VoiceTracker;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -31,9 +32,14 @@ import net.dv8tion.jda.api.events.DisconnectEvent;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.ReconnectedEvent;
 import net.dv8tion.jda.api.events.ResumedEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.user.update.UserUpdateOnlineStatusEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -46,7 +52,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/20/2019
+ * @version 10/31/2019
  *
  * TODO: make a simple setStatus method for setting the bot's Discord status?
  */
@@ -56,6 +62,7 @@ public class Bot extends ListenerAdapter {
 	
 	private static JDA jda;
 	private static Lexer lexer;
+	private static VoiceTracker tracker;
 	private static List<Role> userRoles;
 	private static List<Role> modRoles;
 	
@@ -77,6 +84,8 @@ public class Bot extends ListenerAdapter {
 			// Initialize lexer
 			lexer = new Lexer(); // TODO: make a singleton
 			
+			// Initialize tracker
+			tracker = new VoiceTracker();
 			
 			// Instantiate commands
 			Command[] preInitCommands = {
@@ -266,26 +275,48 @@ public class Bot extends ListenerAdapter {
 	
 	
 	@Override
-	public void onReconnect(ReconnectedEvent event) {
+	public void onReconnect(@Nonnull ReconnectedEvent event) {
 		logger.info("Reconnected");
 	}
 	
 	
 	@Override
-	public void onReady(ReadyEvent event) {
+	public void onReady(@Nonnull ReadyEvent event) {
 		logger.info("Ready");
 	}
 	
 	
 	@Override
-	public void onResume(ResumedEvent event) {
+	public void onResume(@Nonnull ResumedEvent event) {
 		logger.info("Resumed");
 	}
 	
 	
 	@Override
-	public void onDisconnect(DisconnectEvent event) {
+	public void onDisconnect(@Nonnull DisconnectEvent event) {
 		logger.info("Disconnected");
+	}
+	
+	
+	@Override
+	public void onUserUpdateOnlineStatus(@Nonnull UserUpdateOnlineStatusEvent event) {}
+	
+	
+	@Override
+	public void onGuildVoiceJoin(@Nonnull GuildVoiceJoinEvent event) {
+		tracker.enter(event.getMember().getUser());
+	}
+	
+	
+	@Override
+	public void onGuildVoiceMove(@Nonnull GuildVoiceMoveEvent event) {
+	
+	}
+	
+	
+	@Override
+	public void onGuildVoiceLeave(@Nonnull GuildVoiceLeaveEvent event) {
+		tracker.exit(event.getMember().getUser());
 	}
 	
 }
