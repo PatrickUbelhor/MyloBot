@@ -1,43 +1,51 @@
 package log;
 
-import net.dv8tion.jda.api.entities.User;
+import main.Globals;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
 
 /**
  * @author Patrick Ubelhor
- * @version 10/31/2019
+ * @version 11/1/2019
  */
 public class VoiceTracker {
 	
-	private HashMap<Long, LinkedList<VoiceTrackerEntry>> log;
+	private final FileWriter fw;
 	
-	public VoiceTracker() {
-		 log = new HashMap<>();
+	public VoiceTracker() throws IOException {
+		 fw = new FileWriter("vclog.csv");
 	}
 	
 	
-	public void enter(User user) {
-		log.putIfAbsent(user.getIdLong(), new LinkedList<>());
+	public void enter(GuildVoiceJoinEvent event) {
 		
-		VoiceTrackerEntry entry = new VoiceTrackerEntry();
-		entry.setUsername(user.getName());
-		entry.setTimeIn(new Date());
-		
-		log.get(user.getIdLong()).addLast(entry);
-	}
-	
-	
-	public void exit(User user) {
-		
-		// If users are in call when bot starts up, they won't have an entry log
-		if (!log.containsKey(user.getIdLong())) {
-			return;
+		Long time = new Date().getTime(); // Get it now before potential lockout
+		synchronized (fw) {
+			try {
+				fw.append(String.format("J,%d,%d", event.getMember().getIdLong(), time));
+			} catch (IOException e) {
+				Globals.logger.error("Failed to log VC join");
+				Globals.logger.error(e);
+			}
 		}
+	}
+	
+	
+	public void exit(GuildVoiceLeaveEvent event) {
 		
-		log.get(user.getIdLong()).getLast().setTimeOut(new Date());
+		Long time = new Date().getTime(); // Get it now before potential lockout
+		synchronized (fw) {
+			try {
+				fw.append(String.format("L,%d,%d", event.getMember().getIdLong(), time));
+			} catch (IOException e) {
+				Globals.logger.error("Failed to log VC leave");
+				Globals.logger.error(e);
+			}
+		}
 	}
 	
 }
