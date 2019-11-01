@@ -41,6 +41,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.annotation.Nonnull;
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -72,6 +73,14 @@ public class Bot extends ListenerAdapter {
 		File pics = new File(Globals.AT_EVERYONE_PATH);
 		if (!pics.exists() && !pics.mkdir()) {
 			logger.error("Could not create 'AtEveryone' directory!");
+		}
+		
+		// Create log of voice channel entries/exits
+		File trackerFile = new File("tracker.csv");
+		try {
+			trackerFile.createNewFile();
+		} catch (IOException e) {
+			logger.error("Could not create VC log file!");
 		}
 		
 		try {
@@ -304,18 +313,18 @@ public class Bot extends ListenerAdapter {
 	
 	@Override
 	public void onGuildVoiceJoin(@Nonnull GuildVoiceJoinEvent event) {
+		logger.debug("JOIN " + event.getMember().getNickname() + " | " + event.getChannelJoined().getName());
 		tracker.enter(event.getMember().getUser());
 	}
 	
 	
 	@Override
-	public void onGuildVoiceMove(@Nonnull GuildVoiceMoveEvent event) {
-	
-	}
+	public void onGuildVoiceMove(@Nonnull GuildVoiceMoveEvent event) {}
 	
 	
 	@Override
 	public void onGuildVoiceLeave(@Nonnull GuildVoiceLeaveEvent event) {
+		logger.debug("LEAVE " + event.getMember().getNickname() + " | " + event.getChannelLeft().getName());
 		tracker.exit(event.getMember().getUser());
 	}
 	
