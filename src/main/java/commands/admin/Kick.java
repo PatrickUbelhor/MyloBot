@@ -2,11 +2,10 @@ package commands.admin;
 
 import commands.Command;
 import main.Permission;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.managers.GuildController;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.List;
 
@@ -14,7 +13,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 6/12/2018
+ * @version 8/20/2019
  */
 public class Kick extends Command {
 
@@ -27,7 +26,6 @@ public class Kick extends Command {
 	public void run(MessageReceivedEvent event, String[] args) {
 		List<Member> members = event.getMessage().getMentionedMembers();
 		Guild guild = event.getGuild();
-		GuildController controller = guild.getController();
 		TextChannel channel = event.getTextChannel();
 		Member self = guild.getSelfMember();
 
@@ -39,7 +37,7 @@ public class Kick extends Command {
 		}
 
 		// Check if we have permission to kick users from this guild
-		if (!self.hasPermission(net.dv8tion.jda.core.Permission.KICK_MEMBERS)) {
+		if (!self.hasPermission(net.dv8tion.jda.api.Permission.KICK_MEMBERS)) {
 			logger.debug("Insufficient permissions to kick users");
 			channel.sendMessage("I don't have permission to kick users from this guild!").queue();
 			return;
@@ -61,7 +59,7 @@ public class Kick extends Command {
 
 
 			// Finally kick the member
-			controller.kick(member).queue(
+			guild.kick(member).queue(
 					success -> {
 						logger.info("Successfully kicked " + member.getEffectiveName());
 						channel.sendMessage("Successfully kicked ").append(member.getEffectiveName()).append("!").queue();

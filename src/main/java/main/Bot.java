@@ -1,6 +1,6 @@
 package main;
 
-import commands.AddPicture;
+import commands.GetVoiceLog;
 import commands.admin.Ban;
 import commands.admin.ClearText;
 import commands.Command;
@@ -19,23 +19,30 @@ import commands.music.Skip;
 import commands.music.Unpause;
 import commands.subscription.Subscribe;
 import commands.subscription.Unsubscribe;
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.DisconnectEvent;
-import net.dv8tion.jda.core.events.ReadyEvent;
-import net.dv8tion.jda.core.events.ReconnectedEvent;
-import net.dv8tion.jda.core.events.ResumedEvent;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import log.VoiceTracker;
+import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.PrivateChannel;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.DisconnectEvent;
+import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.events.ReconnectedEvent;
+import net.dv8tion.jda.api.events.ResumedEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.user.update.UserUpdateOnlineStatusEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
+import javax.annotation.Nonnull;
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -47,7 +54,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 6/21/2019
+ * @version 11/2/2019
  *
  * TODO: make a simple setStatus method for setting the bot's Discord status?
  */
@@ -57,6 +64,7 @@ public class Bot extends ListenerAdapter {
 	
 	private static JDA jda;
 	private static Lexer lexer;
+	private static VoiceTracker tracker;
 	private static List<Role> userRoles;
 	private static List<Role> modRoles;
 	
@@ -68,6 +76,7 @@ public class Bot extends ListenerAdapter {
 			logger.error("Could not create 'AtEveryone' directory!");
 		}
 		
+		
 		try {
 			// Log into Discord account
 			jda = new JDABuilder(AccountType.BOT)
@@ -78,11 +87,17 @@ public class Bot extends ListenerAdapter {
 			// Initialize lexer
 			lexer = new Lexer(); // TODO: make a singleton
 			
+			// Initialize tracker
+			try {
+				tracker = new VoiceTracker();
+			} catch (IOException e) {
+				logger.error("Couldn't create VoiceTracker!");
+				logger.error(e);
+			}
 			
 			// Instantiate commands
 			Command[] preInitCommands = {
 					new Help(),
-					new AddPicture(Permission.DISABLED),
 					new Play(),
 					new PlayNext(),
 					new Skip(),
@@ -99,7 +114,8 @@ public class Bot extends ListenerAdapter {
 					new Unmute(Permission.MOD),
 					new Subscribe(Permission.MOD),
 					new Unsubscribe(Permission.MOD),
-					new Shutdown(Permission.MOD)
+					new Shutdown(Permission.MOD),
+					new GetVoiceLog(Permission.MOD, tracker)
 			};
 			
 			
@@ -173,9 +189,10 @@ public class Bot extends ListenerAdapter {
 		
 		// Message Tyler when Evan posts
 		if (author.getIdLong() == 104652244556718080L) {
-			String dm = "Evan just posted in " + ch.getGuild().getName() + "#" + ch.getName();
-			PrivateChannel tylerDM = jda.getPrivateChannelById(104725353402003456L);
-			tylerDM.sendMessage(dm).queue();
+			String dm = "Evan just posted in " + ch.getGuild().getName() + "#" + ch.getName() + "."
+					+ "\nA citation will be required.";
+			PrivateChannel tylerDirectMsg = jda.getUserById(104725353402003456L).openPrivateChannel().complete();
+			tylerDirectMsg.sendMessage(dm).queue();
 		}
 		
 		// Send "David" to the 'david' thread when prompted
@@ -267,26 +284,52 @@ public class Bot extends ListenerAdapter {
 	
 	
 	@Override
-	public void onReconnect(ReconnectedEvent event) {
+	public void onReconnect(@Nonnull ReconnectedEvent event) {
 		logger.info("Reconnected");
 	}
 	
 	
 	@Override
-	public void onReady(ReadyEvent event) {
+	public void onReady(@Nonnull ReadyEvent event) {
 		logger.info("Ready");
 	}
 	
 	
 	@Override
-	public void onResume(ResumedEvent event) {
+	public void onResume(@Nonnull ResumedEvent event) {
 		logger.info("Resumed");
 	}
 	
 	
 	@Override
-	public void onDisconnect(DisconnectEvent event) {
+	public void onDisconnect(@Nonnull DisconnectEvent event) {
 		logger.info("Disconnected");
 	}
+	
+	
+	@Override
+	public void onUserUpdateOnlineStatus(@Nonnull UserUpdateOnlineStatusEvent event) {}
+	
+	
+	@Override
+	public void onGuildVoiceJoin(@Nonnull GuildVoiceJoinEvent event) {
+		if (tracker != null) {
+			logger.debug("JOIN " + event.getMember().getNickname() + " | " + event.getChannelJoined().getName());
+			tracker.enter(event);
+		}
+	}
+	
+	
+	@Override
+	public void onGuildVoiceLeave(@Nonnull GuildVoiceLeaveEvent event) {
+		if (tracker != null) {
+			logger.debug("LEAVE " + event.getMember().getNickname() + " | " + event.getChannelLeft().getName());
+			tracker.exit(event);
+		}
+	}
+	
+	
+	@Override
+	public void onGuildVoiceMove(@Nonnull GuildVoiceMoveEvent event) {}
 	
 }

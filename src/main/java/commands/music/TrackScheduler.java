@@ -6,7 +6,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import main.Bot;
-import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.api.entities.Activity;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -17,7 +17,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor, Evan Perry Grove
- * @version 2/27/2019, 5/4/2018
+ * @version 8/20/2019, 5/4/2018
  */
 class TrackScheduler extends AudioEventAdapter {
 	
@@ -176,15 +176,15 @@ class TrackScheduler extends AudioEventAdapter {
 		logger.info("Track has begun");
 		player.getPlayingTrack().setPosition(0);
 		
-		Game status = Game.playing("Playing " + track.getInfo().title);
-		Bot.getJDA().getPresence().setGame(status);
+		Activity status = Activity.playing("Playing " + track.getInfo().title);
+		Bot.getJDA().getPresence().setActivity(status);
 	}
 	
 	
 	@Override
 	public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
 		logger.info("Ended");
-		Bot.getJDA().getPresence().setGame(null);
+		Bot.getJDA().getPresence().setActivity(null);
 		
 		if (endReason.mayStartNext) {
 			playNext();

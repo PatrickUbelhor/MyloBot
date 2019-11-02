@@ -2,11 +2,11 @@ package commands.admin;
 
 import commands.Command;
 import main.Permission;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.List;
 
@@ -14,10 +14,23 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 06/12/2018
+ * @version 10/15/2019
  */
 public class WhoIs extends Command {
-
+	
+	// Format string for each users' information
+	private static String format =
+			"```json" +
+			"   User: %s#%s\n" +
+			"     ID: %s\n" +
+			"   Name: %s\n" +
+			"Created: %s\n" +
+			" Joined: %s\n" +
+			" Status: %s\n" +
+			" Avatar: %s\n" +
+			"  Roles: %s```\n";
+	
+	
 	public WhoIs(Permission perm) {
 		super("whois", perm);
 	}
@@ -35,20 +48,7 @@ public class WhoIs extends Command {
 			return;
 		}
 		
-		// String builder for final message. Format string for each users' information
-		StringBuilder sb = new StringBuilder();
-		String format =
-				"```" +
-				"   User: %s#%s\n" +
-				"     ID: %s\n" +
-				"   Name: %s\n" +
-				"Created: %s\n" +
-				" Joined: %s\n" +
-				" Status: %s\n" +
-				" Avatar: %s\n" +
-				"  Roles: %s```\n";
-		
-		// Retrieve the information for each user @mentioned and append to msg string
+		// Send a message of information for each user requested
 		for (Member member : members) {
 			User user = member.getUser();
 			
@@ -56,19 +56,16 @@ public class WhoIs extends Command {
 					user.getName(), user.getDiscriminator(),
 					user.getId(),
 					member.getEffectiveName(),
-					user.getCreationTime().toString(),
-					member.getJoinDate().toString(),
+					user.getTimeCreated().toString(),
+					member.getTimeJoined().toString(),
 					member.getOnlineStatus().getKey(),
 					user.getEffectiveAvatarUrl(),
 					rolesToString(member.getRoles())
 			);
 			
-			sb.append(msg);
-			sb.append("\n");
+			channel.sendMessage(msg).queue();
 		}
 		
-		// Finally send the message
-		channel.sendMessage(sb.toString()).queue();
 	}
 	
 	

@@ -2,9 +2,10 @@ package commands.admin;
 
 import commands.Command;
 import main.Permission;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 06/12/2018
+ * @version 8/20/2019
  */
 public class Mute extends Command {
 	
@@ -23,6 +24,7 @@ public class Mute extends Command {
 	
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
+		Guild guild = event.getGuild();
 		TextChannel channel = event.getMessage().getTextChannel();
 		List<Member> members = event.getMessage().getMentionedMembers();
 		
@@ -35,7 +37,7 @@ public class Mute extends Command {
 		
 		// Mute all the members
 		for (Member member : members) {
-			event.getGuild().getController().setMute(member, true).queue(
+			guild.mute(member, true).queue(
 					success -> {
 						logger.info("Successfully muted " + member.getEffectiveName());
 						channel.sendMessage("Successfully muted ").append(member.getEffectiveName()).append("!").queue();

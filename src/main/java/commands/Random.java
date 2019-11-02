@@ -1,13 +1,13 @@
 package commands;
 
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 05/20/2018
+ * @version 10/23/2019
  */
 public class Random extends Command {
 	
@@ -23,7 +23,7 @@ public class Random extends Command {
 		}
 		
 		TextChannel channel = event.getTextChannel();
-		int min = 0;
+		int min = 1;
 		int max;
 		
 		// Parse upper bound
@@ -77,7 +77,7 @@ public class Random extends Command {
 	
 	@Override
 	public String getDescription() {
-		return "Generates a random number between 'min' (inclusive) and 'max' (exclusive). " +
+		return "Generates a random number between 'min' and 'max' (inclusive). " +
 				"If no min is specified, it defaults to 0";
 	}
 	
