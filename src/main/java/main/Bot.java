@@ -88,7 +88,12 @@ public class Bot extends ListenerAdapter {
 			lexer = new Lexer(); // TODO: make a singleton
 			
 			// Initialize tracker
-			tracker = new VoiceTracker();
+			try {
+				tracker = new VoiceTracker();
+			} catch (IOException e) {
+				logger.error("Couldn't create VoiceTracker!");
+				logger.error(e);
+			}
 			
 			// Instantiate commands
 			Command[] preInitCommands = {
@@ -110,7 +115,7 @@ public class Bot extends ListenerAdapter {
 					new Subscribe(Permission.MOD),
 					new Unsubscribe(Permission.MOD),
 					new Shutdown(Permission.MOD),
-					new GetVoiceLog(Permission.MOD)
+					new GetVoiceLog(Permission.MOD, tracker)
 			};
 			
 			
@@ -308,15 +313,19 @@ public class Bot extends ListenerAdapter {
 	
 	@Override
 	public void onGuildVoiceJoin(@Nonnull GuildVoiceJoinEvent event) {
-		logger.debug("JOIN " + event.getMember().getNickname() + " | " + event.getChannelJoined().getName());
-		tracker.enter(event);
+		if (tracker != null) {
+			logger.debug("JOIN " + event.getMember().getNickname() + " | " + event.getChannelJoined().getName());
+			tracker.enter(event);
+		}
 	}
 	
 	
 	@Override
 	public void onGuildVoiceLeave(@Nonnull GuildVoiceLeaveEvent event) {
-		logger.debug("LEAVE " + event.getMember().getNickname() + " | " + event.getChannelLeft().getName());
-		tracker.exit(event);
+		if (tracker != null) {
+			logger.debug("LEAVE " + event.getMember().getNickname() + " | " + event.getChannelLeft().getName());
+			tracker.exit(event);
+		}
 	}
 	
 	
