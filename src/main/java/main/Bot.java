@@ -314,18 +314,18 @@ public class Bot extends ListenerAdapter {
 	@Override
 	public void onGuildVoiceJoin(@Nonnull GuildVoiceJoinEvent event) {
 		logger.debug("JOIN " + event.getMember().getNickname() + " | " + event.getChannelJoined().getName());
-		tracker.enter(event.getMember().getUser());
+		tracker.enter(event);
 	}
-	
-	
-	@Override
-	public void onGuildVoiceMove(@Nonnull GuildVoiceMoveEvent event) {}
 	
 	
 	@Override
 	public void onGuildVoiceLeave(@Nonnull GuildVoiceLeaveEvent event) {
 		logger.debug("LEAVE " + event.getMember().getNickname() + " | " + event.getChannelLeft().getName());
-		tracker.exit(event.getMember().getUser());
+		tracker.exit(event);
 	}
+	
+	
+	@Override
+	public void onGuildVoiceMove(@Nonnull GuildVoiceMoveEvent event) {}
 	
 }
