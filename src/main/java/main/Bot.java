@@ -1,5 +1,6 @@
 package main;
 
+import commands.GetVoiceLog;
 import commands.admin.Ban;
 import commands.admin.ClearText;
 import commands.Command;
@@ -53,7 +54,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 10/31/2019
+ * @version 11/2/2019
  *
  * TODO: make a simple setStatus method for setting the bot's Discord status?
  */
@@ -75,13 +76,6 @@ public class Bot extends ListenerAdapter {
 			logger.error("Could not create 'AtEveryone' directory!");
 		}
 		
-		// Create log of voice channel entries/exits
-		File trackerFile = new File("tracker.csv");
-		try {
-			trackerFile.createNewFile();
-		} catch (IOException e) {
-			logger.error("Could not create VC log file!");
-		}
 		
 		try {
 			// Log into Discord account
@@ -115,7 +109,8 @@ public class Bot extends ListenerAdapter {
 					new Unmute(Permission.MOD),
 					new Subscribe(Permission.MOD),
 					new Unsubscribe(Permission.MOD),
-					new Shutdown(Permission.MOD)
+					new Shutdown(Permission.MOD),
+					new GetVoiceLog(Permission.MOD)
 			};
 			
 			
