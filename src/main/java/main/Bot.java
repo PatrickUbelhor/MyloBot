@@ -1,5 +1,6 @@
 package main;
 
+import commands.GetVoiceLog;
 import commands.admin.Ban;
 import commands.admin.ClearText;
 import commands.Command;
@@ -41,6 +42,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.annotation.Nonnull;
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -52,7 +54,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 10/31/2019
+ * @version 11/2/2019
  *
  * TODO: make a simple setStatus method for setting the bot's Discord status?
  */
@@ -74,6 +76,7 @@ public class Bot extends ListenerAdapter {
 			logger.error("Could not create 'AtEveryone' directory!");
 		}
 		
+		
 		try {
 			// Log into Discord account
 			jda = new JDABuilder(AccountType.BOT)
@@ -85,7 +88,12 @@ public class Bot extends ListenerAdapter {
 			lexer = new Lexer(); // TODO: make a singleton
 			
 			// Initialize tracker
-			tracker = new VoiceTracker();
+			try {
+				tracker = new VoiceTracker();
+			} catch (IOException e) {
+				logger.error("Couldn't create VoiceTracker!");
+				logger.error(e);
+			}
 			
 			// Instantiate commands
 			Command[] preInitCommands = {
@@ -106,7 +114,8 @@ public class Bot extends ListenerAdapter {
 					new Unmute(Permission.MOD),
 					new Subscribe(Permission.MOD),
 					new Unsubscribe(Permission.MOD),
-					new Shutdown(Permission.MOD)
+					new Shutdown(Permission.MOD),
+					new GetVoiceLog(Permission.MOD, tracker)
 			};
 			
 			
@@ -304,13 +313,19 @@ public class Bot extends ListenerAdapter {
 	
 	@Override
 	public void onGuildVoiceJoin(@Nonnull GuildVoiceJoinEvent event) {
-		tracker.enter(event);
+		if (tracker != null) {
+			logger.debug("JOIN " + event.getMember().getNickname() + " | " + event.getChannelJoined().getName());
+			tracker.enter(event);
+		}
 	}
 	
 	
 	@Override
 	public void onGuildVoiceLeave(@Nonnull GuildVoiceLeaveEvent event) {
-		tracker.exit(event);
+		if (tracker != null) {
+			logger.debug("LEAVE " + event.getMember().getNickname() + " | " + event.getChannelLeft().getName());
+			tracker.exit(event);
+		}
 	}
 	
 	
