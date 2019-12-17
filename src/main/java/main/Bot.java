@@ -1,5 +1,6 @@
 package main;
 
+import clients.VoiceTrackerClient;
 import commands.GetVoiceLog;
 import commands.admin.Ban;
 import commands.admin.ClearText;
@@ -65,6 +66,7 @@ public class Bot extends ListenerAdapter {
 	private static JDA jda;
 	private static Lexer lexer;
 	private static VoiceTracker tracker;
+	private static VoiceTrackerClient trackerClient;
 	private static List<Role> userRoles;
 	private static List<Role> modRoles;
 	
@@ -94,6 +96,8 @@ public class Bot extends ListenerAdapter {
 				logger.error("Couldn't create VoiceTracker!");
 				logger.error(e);
 			}
+			
+			trackerClient = new VoiceTrackerClient();
 			
 			// Instantiate commands
 			Command[] preInitCommands = {
@@ -316,6 +320,7 @@ public class Bot extends ListenerAdapter {
 		if (tracker != null) {
 			logger.debug("JOIN " + event.getMember().getNickname() + " | " + event.getChannelJoined().getName());
 			tracker.enter(event);
+			trackerClient.logJoinEvent(event.getMember().getIdLong());
 		}
 	}
 	
@@ -325,6 +330,7 @@ public class Bot extends ListenerAdapter {
 		if (tracker != null) {
 			logger.debug("LEAVE " + event.getMember().getNickname() + " | " + event.getChannelLeft().getName());
 			tracker.exit(event);
+			trackerClient.logLeaveEvent(event.getMember().getIdLong());
 		}
 	}
 	
