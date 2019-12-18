@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 6/21/2019
+ * @version 12/17/2019
  * TODO: Make custom exception types
  */
 public class Globals {
