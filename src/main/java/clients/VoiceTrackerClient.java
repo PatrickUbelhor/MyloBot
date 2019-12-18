@@ -13,7 +13,6 @@ import java.net.http.HttpResponse;
  */
 public class VoiceTrackerClient {
 	
-	private final String BASE_URL = "http://localhost:25569/tracker/api/";
 	private final HttpClient client;
 	
 	public VoiceTrackerClient() {
@@ -23,7 +22,7 @@ public class VoiceTrackerClient {
 	
 	public void logJoinEvent(Long snowflake) {
 		HttpRequest request = HttpRequest.newBuilder()
-				.uri(URI.create(BASE_URL + "join/" + snowflake))
+				.uri(URI.create(Globals.VOICE_TRACKER_BASE_URL + "/join/" + snowflake))
 				.POST(HttpRequest.BodyPublishers.noBody())
 				.build();
 		
@@ -32,7 +31,7 @@ public class VoiceTrackerClient {
 	
 	public void logLeaveEvent(Long snowflake) {
 		HttpRequest request = HttpRequest.newBuilder()
-				.uri(URI.create(BASE_URL + "leave/" + snowflake))
+				.uri(URI.create(Globals.VOICE_TRACKER_BASE_URL + "/leave/" + snowflake))
 				.POST(HttpRequest.BodyPublishers.noBody())
 				.build();
 		
