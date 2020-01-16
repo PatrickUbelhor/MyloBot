@@ -35,7 +35,7 @@ public class GetIp extends Command {
 		}
 		
 		ProcessBuilder builder = new ProcessBuilder();
-		builder.command("sh -c wget http://checkip.dyndns.org/ -O - -o /dev/null | cut -d: -f 2 | cut -d < -f 1".split(" "));
+		builder.command("sh", "-c", "wget http://checkip.dyndns.org/ -O - -o /dev/null | cut -d: -f 2 | cut -d\\< -f 1");
 		builder.directory(new File(System.getProperty("user.home")));
 		try {
 			Process process = builder.start();
