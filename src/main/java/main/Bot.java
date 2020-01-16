@@ -8,6 +8,7 @@ import commands.Command;
 import commands.Help;
 import commands.Reverse;
 import commands.Shutdown;
+import commands.admin.GetIp;
 import commands.admin.Kick;
 import commands.admin.Mute;
 import commands.admin.Unmute;
@@ -55,7 +56,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 12/17/2019
+ * @version 1/16/2020
  *
  * TODO: make a simple setStatus method for setting the bot's Discord status?
  */
@@ -119,6 +120,7 @@ public class Bot extends ListenerAdapter {
 					new Subscribe(Permission.MOD),
 					new Unsubscribe(Permission.MOD),
 					new Shutdown(Permission.MOD),
+					new GetIp(Permission.MOD),
 					new GetVoiceLog(Permission.MOD, tracker)
 			};
 			
