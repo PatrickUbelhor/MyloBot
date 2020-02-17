@@ -20,6 +20,8 @@ dependencies {
 }
 
 jar {
+	duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
 	manifest {
 		attributes(
 				'Implementation-Title': 'MyloBot',
