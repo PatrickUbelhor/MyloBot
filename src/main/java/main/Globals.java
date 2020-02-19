@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 6/21/2019
+ * @version 12/17/2019
  * TODO: Make custom exception types
  */
 public class Globals {
@@ -24,6 +24,7 @@ public class Globals {
 	public static final String MOD_GROUP_IDS;
 	public static final String AT_EVERYONE_PATH;
 	public static final String SURRENDER_20_PATH;
+	public static final String VOICE_TRACKER_BASE_URL;
 	
 	private static final String CONFIG_PATH = "config/mylobot.properties";
 	private static final Properties properties = new Properties();
@@ -58,6 +59,7 @@ public class Globals {
 		MEDIA_CHANNEL_ID    = getOrFail("media.channel.id");
 		USER_GROUP_IDS      = getOrFail("user.group.ids");
 		MOD_GROUP_IDS       = getOrFail("mod.group.ids");
+		VOICE_TRACKER_BASE_URL  = getOrFail("url.voicetracker");
 		MUSIC_VOLUME        = Integer.parseInt(getOrDefault("music.volume", "50"));
 		SURRENDER_DELAY     = Long.parseLong(getOrDefault("delay.surrender", "10800000"));
 		AT_EVERYONE_PATH    = getOrDefault("path.at.everyone", "config/AtEveryone");

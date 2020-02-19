@@ -1,5 +1,6 @@
 package main;
 
+import clients.VoiceTrackerClient;
 import commands.GetVoiceLog;
 import commands.admin.Ban;
 import commands.admin.ClearText;
@@ -7,6 +8,7 @@ import commands.Command;
 import commands.Help;
 import commands.Reverse;
 import commands.Shutdown;
+import commands.admin.GetIp;
 import commands.admin.Kick;
 import commands.admin.Mute;
 import commands.admin.Unmute;
@@ -54,7 +56,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 11/2/2019
+ * @version 1/16/2020
  *
  * TODO: make a simple setStatus method for setting the bot's Discord status?
  */
@@ -65,6 +67,7 @@ public class Bot extends ListenerAdapter {
 	private static JDA jda;
 	private static Lexer lexer;
 	private static VoiceTracker tracker;
+	private static VoiceTrackerClient trackerClient;
 	private static List<Role> userRoles;
 	private static List<Role> modRoles;
 	
@@ -95,6 +98,8 @@ public class Bot extends ListenerAdapter {
 				logger.error(e);
 			}
 			
+			trackerClient = new VoiceTrackerClient();
+			
 			// Instantiate commands
 			Command[] preInitCommands = {
 					new Help(),
@@ -115,6 +120,7 @@ public class Bot extends ListenerAdapter {
 					new Subscribe(Permission.MOD),
 					new Unsubscribe(Permission.MOD),
 					new Shutdown(Permission.MOD),
+					new GetIp(Permission.MOD),
 					new GetVoiceLog(Permission.MOD, tracker)
 			};
 			
@@ -316,6 +322,7 @@ public class Bot extends ListenerAdapter {
 		if (tracker != null) {
 			logger.debug("JOIN " + event.getMember().getNickname() + " | " + event.getChannelJoined().getName());
 			tracker.enter(event);
+			trackerClient.logJoinEvent(event.getMember().getIdLong());
 		}
 	}
 	
@@ -325,6 +332,7 @@ public class Bot extends ListenerAdapter {
 		if (tracker != null) {
 			logger.debug("LEAVE " + event.getMember().getNickname() + " | " + event.getChannelLeft().getName());
 			tracker.exit(event);
+			trackerClient.logLeaveEvent(event.getMember().getIdLong());
 		}
 	}
 	
