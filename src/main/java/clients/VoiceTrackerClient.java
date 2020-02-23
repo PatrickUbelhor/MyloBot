@@ -51,9 +51,8 @@ public class VoiceTrackerClient {
 				Globals.logger.debug("Successfully sent JOIN request");
 			}
 		});
-				
-	
 	}
+	
 	
 	public void logLeaveEvent(Long snowflake) {
 		
