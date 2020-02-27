@@ -41,12 +41,15 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateOnlineStatusEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import services.IPChange;
+import services.Service;
 
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -56,13 +59,14 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 1/16/2020
+ * @version 2/27/2020
  *
  * TODO: make a simple setStatus method for setting the bot's Discord status?
  */
 public class Bot extends ListenerAdapter {
 	
 	private static final LinkedHashMap<String, Command> commands = new LinkedHashMap<>();
+	private static final LinkedList<Service> services = new LinkedList<>();
 	
 	private static JDA jda;
 	private static Lexer lexer;
@@ -125,13 +129,28 @@ public class Bot extends ListenerAdapter {
 			};
 			
 			
+			Service[] preInitServices = {
+					new IPChange(3600000)
+			};
+			
+			
 			// Initialize commands
 			logger.info("Initializing commands...");
 			Arrays.stream(preInitCommands)
 					.parallel()
 					.filter(Command::init)
 					.forEachOrdered(command -> commands.put(command.getName(), command));
-			logger.info("Initialization finished.");
+			logger.info("Initialization finished");
+			
+			
+			// Initialize services
+			logger.info("Initializing services...");
+			Arrays.stream(preInitServices)
+					.forEachOrdered(service -> {
+						service.startThread();
+						services.addLast(service);
+					});
+			logger.info("Initialization finished");
 			
 			
 			// Get Role object for 'user' and 'mod' (defined in config)
@@ -167,6 +186,14 @@ public class Bot extends ListenerAdapter {
 	 */
 	public static LinkedHashMap<String, Command> getCommands() {
 		return commands;
+	}
+	
+	
+	/**
+	 * @return A list of all services that were started
+	 */
+	public static LinkedList<Service> getServices() {
+		return services;
 	}
 	
 	
@@ -320,7 +347,7 @@ public class Bot extends ListenerAdapter {
 	@Override
 	public void onGuildVoiceJoin(@Nonnull GuildVoiceJoinEvent event) {
 		if (tracker != null) {
-			logger.debug("JOIN " + event.getMember().getNickname() + " | " + event.getChannelJoined().getName());
+			logger.debug("JOIN {} | {}", event.getMember().getNickname(), event.getChannelJoined().getName());
 			tracker.enter(event);
 			trackerClient.logJoinEvent(event.getMember().getIdLong());
 		}
@@ -330,7 +357,7 @@ public class Bot extends ListenerAdapter {
 	@Override
 	public void onGuildVoiceLeave(@Nonnull GuildVoiceLeaveEvent event) {
 		if (tracker != null) {
-			logger.debug("LEAVE " + event.getMember().getNickname() + " | " + event.getChannelLeft().getName());
+			logger.debug("LEAVE {} | {}", event.getMember().getNickname(), event.getChannelLeft().getName());
 			tracker.exit(event);
 			trackerClient.logLeaveEvent(event.getMember().getIdLong());
 		}

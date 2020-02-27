@@ -7,8 +7,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/26/2018
- * @noinspection WeakerAccess
+ * @version 2/26/2020
  */
 public abstract class Command {
 	
@@ -32,13 +31,13 @@ public abstract class Command {
 	 * and ArrayList if initialization fails.
 	 */
 	public final boolean init() {
-		if (!subInit()) {
-			logger.error(String.format("\tFailed to initialize !%s", this.getName()));
-			return false;
+		if (subInit()) {
+			logger.info("\tInitialized command: !{}", this.getName());
+			return true;
 		}
 		
-		logger.info(String.format("\tInitialized !%s", this.getName()));
-		return true;
+		logger.error("\tFailed to initialize command: !{}", this.getName());
+		return false;
 	}
 	
 	
@@ -59,7 +58,7 @@ public abstract class Command {
 	 */
 	public final void end() {
 		if (!subEnd()) {
-			logger.error(String.format("Module %s failed to shut down properly!", this.getName()));
+			logger.warn("Failed to safely shut down command: {}", this.getName());
 		}
 	}
 	

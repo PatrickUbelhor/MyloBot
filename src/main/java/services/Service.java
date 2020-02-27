@@ -4,19 +4,17 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 2/19/2020
+ * @version 2/26/2020
  */
 public abstract class Service {
 	
 	private final String name;
 	private final long period;
-	private final Runnable action;
 	private PeriodicRunner thread = null;
 	
-	Service(String name, long period, Runnable action) {
+	protected Service(String name, long period) {
 		this.name = name;
 		this.period = period;
-		this.action = action;
 	}
 	
 	
@@ -25,25 +23,52 @@ public abstract class Service {
 	}
 	
 	
-	public final void startThread() {
-		if (thread != null && thread.isAlive()) {
-			logger.warn("Tried to start PeriodicRunner '" + name + "' when one was already active!");
+	protected abstract boolean init();
+	protected abstract void execute();
+	protected abstract boolean end();
+	public abstract String getInfo();
+	
+	
+	private boolean initProxy() {
+		if (init()) {
+			logger.info("Initialized service: {}", name);
+			return true;
+		}
+		
+		logger.error("Failed to initialize service: {}", name);
+		return false;
+	}
+	
+	
+	private void endProxy() {
+		if (end()) {
+			logger.info("Safely ended service: {}", name);
 			return;
 		}
 		
-		thread = new PeriodicRunner(name + "Service", period, action);
+		logger.warn("Failed to safely end service: {}", name);
+	}
+	
+	
+	public final void startThread() {
+		if (thread != null && thread.isAlive()) {
+			logger.warn("Tried to start PeriodicRunner '{}' when one was already active!", name);
+			return;
+		}
+		
+		thread = new PeriodicRunner(name + "Service", period, this::initProxy, this::execute, this::endProxy);
 		thread.start();
 	}
 	
 	
 	public final void endThread() {
 		if (thread == null) {
-			logger.warn("Cannot kill null PeriodicRunner: " + name);
+			logger.warn("Cannot kill null PeriodicRunner: {}", name);
 			return;
 		}
 		
 		if (!thread.isAlive()) {
-			logger.warn("Cannot kill dead PeriodRunner: " + name);
+			logger.warn("Cannot kill dead PeriodRunner: {}", name);
 			return;
 		}
 		
@@ -54,7 +79,7 @@ public abstract class Service {
 			thread.join();
 			logger.debug("Thread joined: " + thread.getName());
 		} catch (InterruptedException e) {
-			logger.error("Interrupted while killing service: " + name, e);
+			logger.error("Interrupted while killing service: {}", name, e);
 		}
 	}
 	

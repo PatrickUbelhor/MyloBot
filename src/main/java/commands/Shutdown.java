@@ -8,7 +8,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/26/2018
+ * @version 2/27/2020
  */
 public class Shutdown extends Command {
 
@@ -21,14 +21,25 @@ public class Shutdown extends Command {
 	public void run(MessageReceivedEvent event, String[] args) {
 		
 		logger.info("Shutting down...");
+		
+		logger.info("Killing commands...");
 		Bot.getCommands().values()
 				.parallelStream()
 				.forEach(command -> {
 					command.end();
-					logger.info(String.format("\tKilled %s", command.getName()));
+					logger.info("\tKilled {}", command.getName());
 				});
-		
 		logger.info("All commands killed");
+		
+		logger.info("Killing services...");
+		Bot.getServices()
+				.parallelStream()
+				.forEach(service -> {
+					service.endThread();
+					logger.info("\tKilled {}", service.getName());
+				});
+		logger.info("All services killed");
+		
 		event.getJDA().shutdown();
 		logger.info("Shutdown complete");
 	}
