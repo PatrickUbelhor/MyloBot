@@ -66,7 +66,7 @@ import static main.Globals.logger;
 public class Bot extends ListenerAdapter {
 	
 	private static final LinkedHashMap<String, Command> commands = new LinkedHashMap<>();
-	private static final LinkedList<Service> services = new LinkedList<>();
+	private static final LinkedHashMap<String, Service> services = new LinkedHashMap<>();
 	
 	private static JDA jda;
 	private static Lexer lexer;
@@ -148,7 +148,7 @@ public class Bot extends ListenerAdapter {
 			Arrays.stream(preInitServices)
 					.forEachOrdered(service -> {
 						service.startThread();
-						services.addLast(service);
+						services.put(service.getName(), service);
 					});
 			logger.info("Initialization finished");
 			
@@ -165,7 +165,7 @@ public class Bot extends ListenerAdapter {
 					.parallel()
 					.map(s -> jda.getRoleById(s))
 					.collect(Collectors.toList());
-			logger.info("Got roles.");
+			logger.info("Got roles");
 			
 			jda.addEventListener(new Bot());
 			
@@ -192,7 +192,7 @@ public class Bot extends ListenerAdapter {
 	/**
 	 * @return A list of all services that were started
 	 */
-	public static LinkedList<Service> getServices() {
+	public static LinkedHashMap<String, Service> getServices() {
 		return services;
 	}
 	

@@ -6,22 +6,22 @@ package services;
  */
 public class Subscriber {
 	
-	private final long guildSnowflake;
 	private final long channelSnowflake;
 	
-	public Subscriber(long guildSnowflake, long channelSnowflake) {
-		this.guildSnowflake = guildSnowflake;
+	public Subscriber(long channelSnowflake) {
 		this.channelSnowflake = channelSnowflake;
-	}
-	
-	
-	public long getGuildSnowflake() {
-		return guildSnowflake;
 	}
 	
 	
 	public long getChannelSnowflake() {
 		return channelSnowflake;
+	}
+	
+	
+	@Override
+	public boolean equals(Object o) {
+		return o instanceof Subscriber
+				&& ((Subscriber) o).channelSnowflake == this.channelSnowflake;
 	}
 	
 }

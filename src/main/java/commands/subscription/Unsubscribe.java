@@ -1,14 +1,16 @@
 package commands.subscription;
 
 import commands.Command;
+import main.Bot;
 import main.Permission;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-
-import static main.Globals.logger;
+import services.MessageSubscriber;
+import services.Subscriber;
 
 /**
  * @author Patrick Ubelhor
- * @version 1/29/2019
+ * @version 2/27/2020
  */
 public class Unsubscribe extends Command {
 	
@@ -23,19 +25,22 @@ public class Unsubscribe extends Command {
 	
 	@Override
 	public final void run(MessageReceivedEvent event, String[] args) {
+		TextChannel channel = event.getTextChannel();
+		
 		if (args.length < 2) {
-			logger.warn("Too few args");
+			channel.sendMessage("Too few args").queue();
 			return;
 		}
 		
-		Service s = Service.getServiceMap().get(args[1]);
+		services.Service service = Bot.getServices().get(args[1].toLowerCase());
 		
-		if (s == null) {
-			event.getChannel().sendMessage("Unknown or unavailable service").queue();
+		if (service == null) {
+			channel.sendMessage("Unknown or unavailable service").queue();
 			return;
 		}
 		
-		s.unsubscribe(event, (args.length > 2) ? args[2] : null);
+		Subscriber sub = new Subscriber(channel.getIdLong());
+		MessageSubscriber.getInstance().removeSubscriber(service.getName(), sub);
 	}
 	
 	@Override
@@ -46,7 +51,7 @@ public class Unsubscribe extends Command {
 	
 	@Override
 	public String getDescription() {
-		return "Unsubscribes a channel from a checker service, like Twitch or S@20";
+		return "Unsubscribes a channel from a checker service, like IPChange or S@20";
 	}
 	
 }

@@ -51,4 +51,13 @@ public class MessageSubscriber {
 		subscribers.get(topic).addLast(sub);
 	}
 	
+	
+	public void removeSubscriber(String topic, Subscriber sub) {
+		if (!subscribers.containsKey(topic)) {
+			return;
+		}
+		
+		subscribers.get(topic).remove(sub);
+	}
+	
 }

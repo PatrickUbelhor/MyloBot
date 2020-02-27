@@ -4,7 +4,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 2/26/2020
+ * @version 2/27/2020
  */
 public abstract class Service {
 	
@@ -13,7 +13,7 @@ public abstract class Service {
 	private PeriodicRunner thread = null;
 	
 	protected Service(String name, long period) {
-		this.name = name;
+		this.name = name.toLowerCase();
 		this.period = period;
 	}
 	

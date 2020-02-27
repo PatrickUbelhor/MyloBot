@@ -32,7 +32,7 @@ public class Shutdown extends Command {
 		logger.info("All commands killed");
 		
 		logger.info("Killing services...");
-		Bot.getServices()
+		Bot.getServices().values()
 				.parallelStream()
 				.forEach(service -> {
 					service.endThread();
