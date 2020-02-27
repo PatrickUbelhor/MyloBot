@@ -13,7 +13,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/20/2019
+ * @version 2/27/2020
  */
 public class Mute extends Command {
 	
@@ -45,8 +45,7 @@ public class Mute extends Command {
 					
 					// FIXME: this doesn't actually do any exception handling
 					error -> {
-						String errorMsg = String.format("Error muting user: %s\n%s", member.getEffectiveName(), error.toString());
-						logger.warn(errorMsg);
+						logger.warn("Error muting user: {}\n{}", member.getEffectiveName(), error.toString());
 						channel.sendMessage("Error muting user: ").append(member.getEffectiveName()).queue();
 					}
 			);

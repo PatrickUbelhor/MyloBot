@@ -9,7 +9,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 2/19/2020
+ * @version 2/27/2020
  */
 public class ShellClient {
 
@@ -81,7 +81,7 @@ public class ShellClient {
 		try {
 			int exitCode = process.waitFor();
 			if (exitCode != 0) {
-				logger.error("An error occurred while attempting to get IP. Exit status " + exitCode);
+				logger.error("An error occurred while attempting to get IP. Exit status {}", exitCode);
 			}
 			
 			return result.toString();
