@@ -49,7 +49,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -59,7 +58,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 2/27/2020
+ * @version 3/27/2020
  *
  * TODO: make a simple setStatus method for setting the bot's Discord status?
  */
@@ -357,7 +356,7 @@ public class Bot extends ListenerAdapter {
 	@Override
 	public void onGuildVoiceLeave(@Nonnull GuildVoiceLeaveEvent event) {
 		if (tracker != null) {
-			logger.debug("LEAVE {} | {}", event.getMember().getNickname(), event.getChannelLeft().getName());
+			logger.debug("LEAVE {} | {}", event.getMember().getEffectiveName(), event.getChannelLeft().getName());
 			tracker.exit(event);
 			trackerClient.logLeaveEvent(event.getMember().getIdLong());
 		}

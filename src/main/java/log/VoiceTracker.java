@@ -11,7 +11,7 @@ import java.util.Date;
 
 /**
  * @author Patrick Ubelhor
- * @version 11/2/2019
+ * @version 3/27/2020
  */
 public class VoiceTracker implements Closeable {
 	
@@ -26,7 +26,6 @@ public class VoiceTracker implements Closeable {
 		
 		Long time = new Date().getTime(); // Get it now before potential lockout
 		synchronized (fw) {
-			Globals.logger.debug("Got mutex for 'enter'");
 			try {
 				// Flush to print immediately. If bot goes down, we don't lose data.
 				fw.append(String.format("J,%d,%d\n", event.getMember().getIdLong(), time));
@@ -43,7 +42,6 @@ public class VoiceTracker implements Closeable {
 		
 		Long time = new Date().getTime(); // Get it now before potential lockout
 		synchronized (fw) {
-			Globals.logger.debug("Got mutex for 'exit'");
 			try {
 				// Flush to print immediately. If bot goes down, we don't lose data.
 				fw.append(String.format("L,%d,%d\n", event.getMember().getIdLong(), time));
