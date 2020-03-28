@@ -58,7 +58,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 3/27/2020
+ * @version 3/28/2020
  *
  * TODO: make a simple setStatus method for setting the bot's Discord status?
  */
@@ -346,7 +346,7 @@ public class Bot extends ListenerAdapter {
 	@Override
 	public void onGuildVoiceJoin(@Nonnull GuildVoiceJoinEvent event) {
 		if (tracker != null) {
-			logger.debug("JOIN {} | {}", event.getMember().getNickname(), event.getChannelJoined().getName());
+			logger.debug("JOIN {} | {}", event.getMember().getEffectiveName(), event.getChannelJoined().getName());
 			tracker.enter(event);
 			trackerClient.logJoinEvent(event.getMember().getIdLong());
 		}
