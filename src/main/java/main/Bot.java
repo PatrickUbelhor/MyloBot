@@ -58,7 +58,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 3/28/2020
+ * @version 7/25/2020
  *
  * TODO: make a simple setStatus method for setting the bot's Discord status?
  */
@@ -85,8 +85,7 @@ public class Bot extends ListenerAdapter {
 		
 		try {
 			// Log into Discord account
-			jda = new JDABuilder(AccountType.BOT)
-					.setToken(DISCORD_TOKEN)
+			jda = JDABuilder.createDefault(DISCORD_TOKEN)
 					.build()
 					.awaitReady();
 			
