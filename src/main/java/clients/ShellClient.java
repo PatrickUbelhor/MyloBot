@@ -9,7 +9,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 2/27/2020
+ * @version 8/10/2020
  */
 public class ShellClient {
 
@@ -31,7 +31,7 @@ public class ShellClient {
 	
 	
 	private String getIpUnix() {
-		return runUnixCommand("dig TXT +short o-o.myaddr.l.google.com @ns1.google.com | awk -F'\"' '{ print $2}'");
+		return runUnixCommand("dig TXT +short o-o.myaddr.l.google.com @ns1.google.com -4 | awk -F'\"' '{ print $2}'");
 	}
 	
 	
