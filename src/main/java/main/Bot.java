@@ -22,9 +22,9 @@ import commands.music.Unpause;
 import commands.subscription.Subscribe;
 import commands.subscription.Unsubscribe;
 import log.VoiceTracker;
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.PrivateChannel;
@@ -41,6 +41,8 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateOnlineStatusEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import services.IPChange;
 import services.Service;
 
@@ -58,7 +60,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 3/28/2020
+ * @version 8/8/2020
  *
  * TODO: make a simple setStatus method for setting the bot's Discord status?
  */
@@ -85,8 +87,9 @@ public class Bot extends ListenerAdapter {
 		
 		try {
 			// Log into Discord account
-			jda = new JDABuilder(AccountType.BOT)
-					.setToken(DISCORD_TOKEN)
+			jda = JDABuilder.createDefault(DISCORD_TOKEN)
+					.enableIntents(GatewayIntent.GUILD_MEMBERS)
+					.setMemberCachePolicy(MemberCachePolicy.ALL)
 					.build()
 					.awaitReady();
 			
@@ -165,6 +168,10 @@ public class Bot extends ListenerAdapter {
 					.map(s -> jda.getRoleById(s))
 					.collect(Collectors.toList());
 			logger.info("Got roles");
+			
+			
+			// Load
+			jda.getGuilds().forEach(Guild::loadMembers);
 			
 			jda.addEventListener(new Bot());
 			

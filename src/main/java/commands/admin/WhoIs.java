@@ -2,25 +2,28 @@ package commands.admin;
 
 import commands.Command;
 import main.Permission;
+import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 10/15/2019
+ * @version 8/8/2020
  */
 public class WhoIs extends Command {
 	
 	// Format string for each users' information
-	private static String format =
-			"```json" +
+	private static final String format =
 			"   User: %s#%s\n" +
 			"     ID: %s\n" +
 			"   Name: %s\n" +
@@ -28,7 +31,7 @@ public class WhoIs extends Command {
 			" Joined: %s\n" +
 			" Status: %s\n" +
 			" Avatar: %s\n" +
-			"  Roles: %s```\n";
+			"  Roles: %s\n";
 	
 	
 	public WhoIs(Permission perm) {
@@ -40,19 +43,26 @@ public class WhoIs extends Command {
 	public void run(MessageReceivedEvent event, String[] args) {
 		TextChannel channel = event.getMessage().getTextChannel();
 		List<Member> members = event.getMessage().getMentionedMembers();
+		List<Role> roles = event.getMessage().getMentionedRoles();
 		
 		// Make sure the user entered at least one @mention
-		if (members.isEmpty()) {
+		if (members.isEmpty() && roles.isEmpty()) {
 			logger.debug("Did not find any @mentions in message");
 			channel.sendMessage("You must @mention 1 or more users/roles to identify!").queue();
 			return;
 		}
 		
+		// Add all members in mentioned roles
+		Set<Member> uniqueMembers = new HashSet<>(members);
+		for (Role role : roles) {
+			uniqueMembers.addAll(event.getGuild().getMembersWithRoles(role));
+		}
+		
 		// Send a message of information for each user requested
-		for (Member member : members) {
+		for (Member member : uniqueMembers) {
 			User user = member.getUser();
 			
-			String msg = String.format(format,
+			String messageContent = String.format(format,
 					user.getName(), user.getDiscriminator(),
 					user.getId(),
 					member.getEffectiveName(),
@@ -63,9 +73,12 @@ public class WhoIs extends Command {
 					rolesToString(member.getRoles())
 			);
 			
-			channel.sendMessage(msg).queue();
+			Message message = new MessageBuilder()
+					.appendCodeBlock(messageContent, "yaml")
+					.build();
+			
+			channel.sendMessage(message).queue();
 		}
-		
 	}
 	
 	
