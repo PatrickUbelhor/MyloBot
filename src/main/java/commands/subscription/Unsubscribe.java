@@ -6,11 +6,12 @@ import main.Permission;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import services.MessageSubscriber;
+import services.Service;
 import services.Subscriber;
 
 /**
  * @author Patrick Ubelhor
- * @version 2/27/2020
+ * @version 9/19/2020
  */
 public class Unsubscribe extends Command {
 	
@@ -32,7 +33,7 @@ public class Unsubscribe extends Command {
 			return;
 		}
 		
-		services.Service service = Bot.getServices().get(args[1].toLowerCase());
+		Service service = Bot.getServices().get(args[1].toLowerCase());
 		
 		if (service == null) {
 			channel.sendMessage("Unknown or unavailable service").queue();
