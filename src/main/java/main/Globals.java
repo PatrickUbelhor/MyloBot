@@ -24,6 +24,7 @@ public class Globals {
 	public static final String MOD_GROUP_IDS;
 	public static final String AT_EVERYONE_PATH;
 	public static final String VOICE_TRACKER_BASE_URL;
+	public static final boolean ENABLE_WHO_WOULDA_THOUGHT_MEME;
 	
 	private static final String CONFIG_PATH = "config/mylobot.properties";
 	private static final Properties properties = new Properties();
@@ -62,6 +63,7 @@ public class Globals {
 		SURRENDER_DELAY     = Long.parseLong(getOrDefault("delay.surrender", "10800000"));
 		IP_CHECK_DELAY      = Long.parseLong(getOrDefault("delay.ip", "3600000"));
 		AT_EVERYONE_PATH    = getOrDefault("path.at.everyone", "config/AtEveryone");
+		ENABLE_WHO_WOULDA_THOUGHT_MEME  = Boolean.getBoolean(getOrDefault("intercept.who_woulda_thought", "true"));
 		
 		// Put keys in config
 		try (FileWriter fw = new FileWriter(file)) {

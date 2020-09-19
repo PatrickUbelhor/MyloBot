@@ -2,6 +2,7 @@ package main;
 
 import clients.VoiceTrackerClient;
 import commands.GetVoiceLog;
+import commands.Random;
 import commands.admin.Ban;
 import commands.admin.ClearText;
 import commands.Command;
@@ -27,7 +28,6 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
@@ -53,7 +53,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 import static main.Globals.DISCORD_TOKEN;
@@ -61,7 +60,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 9/18/2020
+ * @version 9/19/2020
  *
  * TODO: make a simple setStatus method for setting the bot's Discord status?
  */
@@ -71,6 +70,7 @@ public class Bot extends ListenerAdapter {
 	private static final LinkedHashMap<String, Service> services = new LinkedHashMap<>();
 	
 	private static JDA jda;
+	private static MessageInterceptor messageInterceptor;
 	private static Lexer lexer;
 	private static VoiceTracker tracker;
 	private static VoiceTrackerClient trackerClient;
@@ -94,6 +94,9 @@ public class Bot extends ListenerAdapter {
 					.build()
 					.awaitReady();
 			
+			// Initialize interceptor
+			messageInterceptor = new MessageInterceptor();
+			
 			// Initialize lexer
 			lexer = new Lexer(); // TODO: make a singleton
 			
@@ -116,7 +119,7 @@ public class Bot extends ListenerAdapter {
 					new Pause(),
 					new Unpause(),
 					new PeekQueue(),
-					new commands.Random(), // TODO: fix naming collision
+					new Random(),
 					new Reverse(),
 					new ClearText(Permission.MOD),
 					new WhoIs(Permission.USER),
@@ -214,44 +217,10 @@ public class Bot extends ListenerAdapter {
 		TextChannel ch = event.getTextChannel();
 		String msg = message.getContentDisplay().trim();
 		
-		// Post @everyone meme
-		if (message.mentionsEveryone()) {
-			File[] pics = new File("AtEveryone").listFiles();
-			
-			if (pics == null || pics.length == 0) {
-				channel.sendMessage("reeeeEEEEEEEEEEEE E E E E E E E E E E E E E").queue();
-				return;
-			}
-			
-			channel.sendFile(pics[new Random().nextInt(pics.length)]).queue();
-			
-			return;
-		}
-		
-		// Message Tyler when Evan posts
-		if (author.getIdLong() == 104652244556718080L) {
-			String dm = "Evan just posted in " + ch.getGuild().getName() + "#" + ch.getName() + "."
-					+ "\nA citation will be required.";
-			PrivateChannel tylerDirectMsg = jda.getUserById(104725353402003456L).openPrivateChannel().complete();
-			tylerDirectMsg.sendMessage(dm).queue();
-		}
-		
-		// Send "David" to the 'david' thread when prompted
-		if (!author.isBot() && ch.getName().equals("david")) {
-			if (msg.toLowerCase().contains("david")) {
-				ch.sendMessage("David").queue();
-			}
-			
-			if (msg.toLowerCase().contains("like")) {
-				ch.sendMessage("I like monster trucks and David").queue();
-			}
-			
-			if (msg.toLowerCase().contains("coming") && author.getIdLong() == 104400026993709056L) {
-				ch.sendMessage("David is coming").queue();
-			}
-		}
+		messageInterceptor.intercept(event);
 		
 		
+		// Tokenize and parse message
 		List<Token> tokens = lexer.lex(msg);
 		if (tokens.isEmpty() || tokens.get(0).getType() != TokenType.COMMAND || author.isBot())
 			return; // Checking isBot() prevents user from spamming a !reverse
