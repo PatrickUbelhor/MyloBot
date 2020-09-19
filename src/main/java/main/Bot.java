@@ -45,6 +45,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import services.IPChange;
 import services.Service;
+import services.SurrenderAt20;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -60,7 +61,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/8/2020
+ * @version 9/18/2020
  *
  * TODO: make a simple setStatus method for setting the bot's Discord status?
  */
@@ -132,7 +133,8 @@ public class Bot extends ListenerAdapter {
 			
 			
 			Service[] preInitServices = {
-					new IPChange(3600000)
+					new IPChange(3600000),
+					new SurrenderAt20(3600000)
 			};
 			
 			
