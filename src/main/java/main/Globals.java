@@ -60,7 +60,7 @@ public class Globals {
 		VOICE_TRACKER_BASE_URL  = getOrFail("url.voicetracker");
 		MUSIC_VOLUME        = Integer.parseInt(getOrDefault("music.volume", "50"));
 		SURRENDER_DELAY     = Long.parseLong(getOrDefault("delay.surrender", "10800000"));
-		IP_CHECK_DELAY      = Long.parseLong(getOrDefault("delay.ip", "3600000"))
+		IP_CHECK_DELAY      = Long.parseLong(getOrDefault("delay.ip", "3600000"));
 		AT_EVERYONE_PATH    = getOrDefault("path.at.everyone", "config/AtEveryone");
 		
 		// Put keys in config
