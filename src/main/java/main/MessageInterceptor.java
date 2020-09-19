@@ -26,6 +26,7 @@ public class MessageInterceptor {
 		interceptAtEveryone(message, channel);
 		interceptEvanPost(author, ch);
 		interceptDavidWalterMeme(author, ch, msg);
+		interceptWhoWouldaThoughtMeme(msg, channel);
 	}
 	
 	
