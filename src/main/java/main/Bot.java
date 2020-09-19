@@ -133,8 +133,8 @@ public class Bot extends ListenerAdapter {
 			
 			
 			Service[] preInitServices = {
-					new IPChange(3600000),
-					new SurrenderAt20(3600000)
+					new IPChange(Globals.IP_CHECK_DELAY),
+					new SurrenderAt20(Globals.SURRENDER_DELAY)
 			};
 			
 			

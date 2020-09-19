@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 12/17/2019
+ * @version 9/19/2019
  * TODO: Make custom exception types
  */
 public class Globals {
@@ -19,11 +19,10 @@ public class Globals {
 	public static final String DISCORD_TOKEN;
 	public static final int MUSIC_VOLUME;
 	public static final long SURRENDER_DELAY;
-	public static final String MEDIA_CHANNEL_ID;
+	public static final long IP_CHECK_DELAY;
 	public static final String USER_GROUP_IDS; // Group name for basic guild members; TODO: Make empty string allow @everybody
 	public static final String MOD_GROUP_IDS;
 	public static final String AT_EVERYONE_PATH;
-	public static final String SURRENDER_20_PATH;
 	public static final String VOICE_TRACKER_BASE_URL;
 	
 	private static final String CONFIG_PATH = "config/mylobot.properties";
@@ -56,14 +55,13 @@ public class Globals {
 		
 		// Initializes constants
 		DISCORD_TOKEN       = getOrFail("discord.token");
-		MEDIA_CHANNEL_ID    = getOrFail("media.channel.id");
 		USER_GROUP_IDS      = getOrFail("user.group.ids");
 		MOD_GROUP_IDS       = getOrFail("mod.group.ids");
 		VOICE_TRACKER_BASE_URL  = getOrFail("url.voicetracker");
 		MUSIC_VOLUME        = Integer.parseInt(getOrDefault("music.volume", "50"));
 		SURRENDER_DELAY     = Long.parseLong(getOrDefault("delay.surrender", "10800000"));
+		IP_CHECK_DELAY      = Long.parseLong(getOrDefault("delay.ip", "3600000"))
 		AT_EVERYONE_PATH    = getOrDefault("path.at.everyone", "config/AtEveryone");
-		SURRENDER_20_PATH   = getOrDefault("path.surrender.savefile", "config/SurrenderUpdates.txt");
 		
 		// Put keys in config
 		try (FileWriter fw = new FileWriter(file)) {
