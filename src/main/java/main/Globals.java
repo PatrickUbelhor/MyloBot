@@ -63,7 +63,7 @@ public class Globals {
 		SURRENDER_DELAY     = Long.parseLong(getOrDefault("delay.surrender", "10800000"));
 		IP_CHECK_DELAY      = Long.parseLong(getOrDefault("delay.ip", "3600000"));
 		AT_EVERYONE_PATH    = getOrDefault("path.at.everyone", "config/AtEveryone");
-		ENABLE_WHO_WOULDA_THOUGHT_MEME  = Boolean.getBoolean(getOrDefault("intercept.who_woulda_thought", "true"));
+		ENABLE_WHO_WOULDA_THOUGHT_MEME  = Boolean.parseBoolean(getOrDefault("intercept.who_woulda_thought", "true"));
 		
 		// Put keys in config
 		try (FileWriter fw = new FileWriter(file)) {
