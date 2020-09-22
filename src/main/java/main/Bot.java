@@ -60,7 +60,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 9/19/2020
+ * @version 9/22/2020
  *
  * TODO: make a simple setStatus method for setting the bot's Discord status?
  */
@@ -152,6 +152,7 @@ public class Bot extends ListenerAdapter {
 			
 			// Initialize services
 			logger.info("Initializing services...");
+			Service.loadSubscribers();
 			Arrays.stream(preInitServices)
 					.forEachOrdered(service -> {
 						service.startThread();

@@ -4,9 +4,13 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 2/27/2020
+ * @version 9/22/2020
  */
 public abstract class Service {
+	
+	public static void loadSubscribers() {
+		MessageSubscriber.getInstance().loadSubscribers();
+	}
 	
 	private final String name;
 	private final long period;

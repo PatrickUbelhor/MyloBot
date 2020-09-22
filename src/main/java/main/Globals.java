@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 9/19/2019
+ * @version 9/22/2020
  * TODO: Make custom exception types
  */
 public class Globals {
@@ -25,6 +25,8 @@ public class Globals {
 	public static final String AT_EVERYONE_PATH;
 	public static final String VOICE_TRACKER_BASE_URL;
 	public static final boolean ENABLE_WHO_WOULDA_THOUGHT_MEME;
+	
+	public static final String SERVICES_SAVE_PATH = "config/services.txt";
 	
 	private static final String CONFIG_PATH = "config/mylobot.properties";
 	private static final Properties properties = new Properties();
