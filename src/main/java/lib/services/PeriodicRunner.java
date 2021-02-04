@@ -1,4 +1,4 @@
-package services;
+package lib.services;
 
 import java.util.function.BooleanSupplier;
 
@@ -46,8 +46,5 @@ class PeriodicRunner extends Thread {
 		end.run();
 		logger.info("{} thread killed", this.getName());
 	}
-	
-	
-	
 	
 }

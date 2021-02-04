@@ -1,13 +1,13 @@
 package commands.subscription;
 
-import commands.Command;
+import lib.commands.Command;
 import main.Bot;
-import main.Permission;
+import lib.main.Permission;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import services.MessageSubscriber;
-import services.Service;
-import services.Subscriber;
+import lib.services.MessageSubscriber;
+import lib.services.Service;
+import lib.services.Subscriber;
 
 /**
  * @author Patrick Ubelhor

@@ -1,7 +1,8 @@
 package commands;
 
+import lib.commands.Command;
 import main.Bot;
-import main.Permission;
+import lib.main.Permission;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import static main.Globals.logger;

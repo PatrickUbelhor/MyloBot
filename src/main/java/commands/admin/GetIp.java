@@ -1,8 +1,8 @@
 package commands.admin;
 
 import clients.ShellClient;
-import commands.Command;
-import main.Permission;
+import lib.commands.Command;
+import lib.main.Permission;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 

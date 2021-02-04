@@ -1,6 +1,7 @@
 package commands.music;
 
-import main.Permission;
+import lib.commands.music.Music;
+import lib.main.Permission;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package services;
+package lib.services;
 
 import main.Bot;
 import main.Globals;

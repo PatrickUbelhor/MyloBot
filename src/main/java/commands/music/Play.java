@@ -1,5 +1,7 @@
 package commands.music;
 
+import lib.commands.music.Music;
+import lib.commands.music.QueueLastAudioLoadResultHandler;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 /**

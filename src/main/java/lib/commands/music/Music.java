@@ -1,12 +1,12 @@
-package commands.music;
+package lib.commands.music;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
-import commands.Command;
+import lib.commands.Command;
 import main.Globals;
-import main.Permission;
+import lib.main.Permission;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.managers.AudioManager;
@@ -17,11 +17,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Patrick Ubelhor
  * @version 2/7/2019
  */
-abstract class Music extends Command {
+public abstract class Music extends Command {
 	
-	static AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
+	protected static AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
 	static AudioPlayer player = playerManager.createPlayer();
-	static TrackScheduler trackScheduler = new TrackScheduler(player);
+	protected static TrackScheduler trackScheduler = new TrackScheduler(player);
 	private static AtomicBoolean hasInit = new AtomicBoolean(false);
 	
 	protected Music(String name) {

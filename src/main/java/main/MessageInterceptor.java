@@ -38,7 +38,7 @@ public class MessageInterceptor {
 	 */
 	private void interceptAtEveryone(Message message, MessageChannel channel) {
 		if (message.mentionsEveryone()) {
-			File[] pics = new File("AtEveryone").listFiles();
+			File[] pics = new File(Globals.AT_EVERYONE_PATH).listFiles();
 			
 			// Send a text response if no images found
 			if (pics == null || pics.length == 0) {

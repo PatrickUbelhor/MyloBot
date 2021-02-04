@@ -1,6 +1,8 @@
 package services;
 
 import clients.ShellClient;
+import lib.services.MessageSubscriber;
+import lib.services.Service;
 
 /**
  * @author Patrick Ubelhor
