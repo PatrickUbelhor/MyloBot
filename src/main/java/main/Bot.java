@@ -64,7 +64,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 9/22/2020
+ * @version 2/12/2021
  *
  * TODO: make a simple setStatus method for setting the bot's Discord status?
  */
@@ -331,7 +331,7 @@ public class Bot extends ListenerAdapter {
 		if (tracker != null) {
 			logger.debug("JOIN {} | {}", event.getMember().getEffectiveName(), event.getChannelJoined().getName());
 			tracker.enter(event);
-			trackerClient.logJoinEvent(event.getMember().getIdLong());
+			trackerClient.logJoinEvent(event.getMember().getIdLong(), event.getChannelJoined().getIdLong());
 		}
 	}
 	
@@ -341,12 +341,27 @@ public class Bot extends ListenerAdapter {
 		if (tracker != null) {
 			logger.debug("LEAVE {} | {}", event.getMember().getEffectiveName(), event.getChannelLeft().getName());
 			tracker.exit(event);
-			trackerClient.logLeaveEvent(event.getMember().getIdLong());
+			trackerClient.logLeaveEvent(event.getMember().getIdLong(), event.getChannelLeft().getIdLong());
 		}
 	}
 	
 	
 	@Override
-	public void onGuildVoiceMove(@Nonnull GuildVoiceMoveEvent event) {}
+	public void onGuildVoiceMove(@Nonnull GuildVoiceMoveEvent event) {
+		if (tracker != null) {
+			logger.debug("MOVE {} | {} -> {}",
+					event.getMember().getEffectiveName(),
+					event.getChannelLeft().getName(),
+					event.getChannelJoined().getName()
+			);
+			
+			tracker.move(event);
+			trackerClient.logMoveEvent(
+					event.getMember().getIdLong(),
+					event.getChannelLeft().getIdLong(),
+					event.getChannelJoined().getIdLong()
+			);
+		}
+	}
 	
 }
