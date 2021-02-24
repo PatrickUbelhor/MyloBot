@@ -17,7 +17,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor, Evan Perry Grove
- * @version 8/20/2019, 5/4/2018
+ * @version 2/24/2021, 5/4/2018
  */
 public class TrackScheduler extends AudioEventAdapter {
 	
@@ -31,9 +31,16 @@ public class TrackScheduler extends AudioEventAdapter {
 	
 	
 	/**
+	 * @return The audio player attached to this track scheduler.
+	 */
+	public AudioPlayer getPlayer() {
+		return player;
+	}
+	
+	
+	/**
 	 * Essentially a proxy to player#startTrack(), but updates the bot's Discord status
 	 * with the name of this song.
-	 *
 	 *
 	 * @param track The track to start playing, passing null will stop the current track and return false
 	 * @param noInterrupt Whether to only start if nothing else is playing

@@ -1,6 +1,7 @@
 package commands.music;
 
 import lib.commands.music.Music;
+import lib.commands.music.TrackScheduler;
 import lib.main.Permission;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -9,7 +10,7 @@ import java.util.List;
 
 /**
  * @author Patrick Ubelhor
- * @version 2/27/2019
+ * @version 2/24/2021
  */
 public class PeekQueue extends Music {
 	
@@ -24,6 +25,7 @@ public class PeekQueue extends Music {
 	
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
+		TrackScheduler trackScheduler = Music.trackSchedulers.get(event.getGuild().getIdLong());
 		StringBuilder msg = new StringBuilder();
 		List<String> titles = trackScheduler.getQueue();
 		String currentSong = trackScheduler.getCurrentSong();

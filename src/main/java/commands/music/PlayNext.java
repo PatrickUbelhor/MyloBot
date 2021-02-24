@@ -2,11 +2,12 @@ package commands.music;
 
 import lib.commands.music.Music;
 import lib.commands.music.QueueNextAudioLoadResultHandler;
+import lib.commands.music.TrackScheduler;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 /**
  * @author Patrick Ubelhor, Evan Perry Grove
- * @version 2/10/2017, 5/4/2018
+ * @version 2/24/2021, 5/4/2018
  *
  */
 public final class PlayNext extends Music {
@@ -32,6 +33,7 @@ public final class PlayNext extends Music {
 		}
 		
 		if (args[1].startsWith("http") || args[1].startsWith("www")) {
+			TrackScheduler trackScheduler = Music.trackSchedulers.get(event.getGuild().getIdLong());
 			playerManager.loadItem(args[1], new QueueNextAudioLoadResultHandler(trackScheduler));
 		}
 	}

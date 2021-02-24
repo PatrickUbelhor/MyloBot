@@ -2,7 +2,7 @@ package lib.main;
 
 /**
  * @author Patrick Ubelhor
- * @version 2/23/2021
+ * @version 2/24/2021
  */
 public enum TokenType {
 	
@@ -10,7 +10,7 @@ public enum TokenType {
 	COMMAND("^![a-zA-Z]+"),
 	LINK("https?://.+"),
 	WORD("[a-zA-Z]+[\\w\\.]*"),
-	DICE_ROLL("[0-9]+d[0-9]+"),
+	DICEROLL("[0-9]+d[0-9]+"),
 	NUMBER("-?[0-9]+"),
 	QUOTE("\".*\""),
 	AMP("&$"),

@@ -1,11 +1,12 @@
 package commands.music;
 
 import lib.commands.music.Music;
+import lib.commands.music.TrackScheduler;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 /**
  * @author Patrick Ubelhor
- * @version 4/30/2018
+ * @version 2/24/2021
  */
 public class Pause extends Music {
 	
@@ -15,6 +16,7 @@ public class Pause extends Music {
 	
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
+		TrackScheduler trackScheduler = Music.trackSchedulers.get(event.getGuild().getIdLong());
 		trackScheduler.pause();
 	}
 	
