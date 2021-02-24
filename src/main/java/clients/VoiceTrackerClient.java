@@ -35,23 +35,7 @@ public class VoiceTrackerClient {
 				.build();
 		
 		// Send JOIN request to VoiceTracker asynchronously
-		client.newCall(request).enqueue(new Callback() {
-			@Override
-			public void onFailure(@Nonnull Call call, @Nonnull IOException e) {
-				Globals.logger.error("Failed to send JOIN request", e);
-			}
-			
-			@Override
-			public void onResponse(@Nonnull Call call, @Nonnull Response response) {
-				if (!response.isSuccessful()) {
-					Globals.logger.error("Error on JOIN request: {}\n{}", response.code(), response.body());
-					return;
-				}
-				
-				response.close();
-				Globals.logger.debug("Successfully sent JOIN request");
-			}
-		});
+		client.newCall(request).enqueue(new VoiceTrackerCallback("JOIN"));
 	}
 	
 	
@@ -62,23 +46,7 @@ public class VoiceTrackerClient {
 				.post(RequestBody.create(body, JSON))
 				.build();
 		
-		client.newCall(request).enqueue(new Callback() {
-			@Override
-			public void onFailure(@Nonnull Call call, @Nonnull IOException e) {
-				Globals.logger.error("Failed to send MOVE request", e);
-			}
-			
-			@Override
-			public void onResponse(@Nonnull Call call, @Nonnull Response response) {
-				if (!response.isSuccessful()) {
-					Globals.logger.error("Error on MOVE request: {}\n{}", response.code(), response.body());
-					return;
-				}
-				
-				response.close();
-				Globals.logger.debug("Successfully sent MOVE request");
-			}
-		});
+		client.newCall(request).enqueue(new VoiceTrackerCallback("MOVE"));
 	}
 	
 	
@@ -89,23 +57,32 @@ public class VoiceTrackerClient {
 				.post(RequestBody.create(body, JSON))
 				.build();
 		
-		client.newCall(request).enqueue(new Callback() {
-			@Override
-			public void onFailure(@Nonnull Call call, @Nonnull IOException e) {
-				Globals.logger.error("Failed to send LEAVE request", e);
+		client.newCall(request).enqueue(new VoiceTrackerCallback("LEAVE"));
+	}
+	
+	
+	private static class VoiceTrackerCallback implements Callback {
+		final String type;
+		
+		private VoiceTrackerCallback(String type) {
+			this.type = type;
+		}
+		
+		@Override
+		public void onFailure(@Nonnull Call call, @Nonnull IOException e) {
+			Globals.logger.error("Failed to send {} request", type, e);
+		}
+		
+		@Override
+		public void onResponse(@Nonnull Call call, @Nonnull Response response) {
+			if (!response.isSuccessful()) {
+				Globals.logger.error("Error on {} request: {}\n{}", type, response.code(), response.body());
+				return;
 			}
 			
-			@Override
-			public void onResponse(@Nonnull Call call, @Nonnull Response response) {
-				if (!response.isSuccessful()) {
-					Globals.logger.error("Error on LEAVE request: {}\n{}", response.code(), response.body());
-					return;
-				}
-				
-				response.close();
-				Globals.logger.debug("Successfully sent LEAVE request");
-			}
-		});
+			response.close();
+			Globals.logger.debug("Successfully sent {} request", type);
+		}
 	}
 	
 }
