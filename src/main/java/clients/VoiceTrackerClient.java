@@ -8,13 +8,13 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 
 /**
  * @author Patrick Ubelhor
- * @version 2/12/2021
+ * @version 2/23/2021
  */
 public class VoiceTrackerClient {
 	
@@ -37,12 +37,12 @@ public class VoiceTrackerClient {
 		// Send JOIN request to VoiceTracker asynchronously
 		client.newCall(request).enqueue(new Callback() {
 			@Override
-			public void onFailure(@NotNull Call call, @NotNull IOException e) {
+			public void onFailure(@Nonnull Call call, @Nonnull IOException e) {
 				Globals.logger.error("Failed to send JOIN request", e);
 			}
 			
 			@Override
-			public void onResponse(@NotNull Call call, @NotNull Response response) {
+			public void onResponse(@Nonnull Call call, @Nonnull Response response) {
 				if (!response.isSuccessful()) {
 					Globals.logger.error("Error on JOIN request: {}\n{}", response.code(), response.body());
 					return;
@@ -64,12 +64,12 @@ public class VoiceTrackerClient {
 		
 		client.newCall(request).enqueue(new Callback() {
 			@Override
-			public void onFailure(Call call, IOException e) {
+			public void onFailure(@Nonnull Call call, @Nonnull IOException e) {
 				Globals.logger.error("Failed to send MOVE request", e);
 			}
 			
 			@Override
-			public void onResponse(Call call, Response response) {
+			public void onResponse(@Nonnull Call call, @Nonnull Response response) {
 				if (!response.isSuccessful()) {
 					Globals.logger.error("Error on MOVE request: {}\n{}", response.code(), response.body());
 					return;
@@ -91,12 +91,12 @@ public class VoiceTrackerClient {
 		
 		client.newCall(request).enqueue(new Callback() {
 			@Override
-			public void onFailure(@NotNull Call call, @NotNull IOException e) {
+			public void onFailure(@Nonnull Call call, @Nonnull IOException e) {
 				Globals.logger.error("Failed to send LEAVE request", e);
 			}
 			
 			@Override
-			public void onResponse(@NotNull Call call, @NotNull Response response) {
+			public void onResponse(@Nonnull Call call, @Nonnull Response response) {
 				if (!response.isSuccessful()) {
 					Globals.logger.error("Error on LEAVE request: {}\n{}", response.code(), response.body());
 					return;

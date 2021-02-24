@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/27/2018
+ * @version 2/23/2021
  */
 public class Help extends Command {
 	
@@ -133,9 +133,9 @@ public class Help extends Command {
 	}
 	
 	
-	private class Pair<K, V> {
-		private K key;
-		private V val;
+	private static class Pair<K, V> {
+		private final K key;
+		private final V val;
 		
 		private Pair(K key, V val) {
 			this.key = key;

@@ -3,6 +3,7 @@ package main;
 import clients.VoiceTrackerClient;
 import commands.GetVoiceLog;
 import commands.Random;
+import commands.Roll;
 import commands.admin.Ban;
 import commands.admin.ClearText;
 import lib.commands.Command;
@@ -64,7 +65,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 2/12/2021
+ * @version 2/23/2021
  *
  * TODO: make a simple setStatus method for setting the bot's Discord status?
  */
@@ -125,6 +126,7 @@ public class Bot extends ListenerAdapter {
 					new PeekQueue(),
 					new Random(),
 					new Reverse(),
+					new Roll(Permission.USER),
 					new ClearText(Permission.MOD),
 					new WhoIs(Permission.USER),
 					new Kick(Permission.MOD),
@@ -299,7 +301,7 @@ public class Bot extends ListenerAdapter {
 	
 	
 	@Override
-	public void onReconnect(@Nonnull ReconnectedEvent event) {
+	public void onReconnected(@Nonnull ReconnectedEvent event) {
 		logger.info("Reconnected");
 	}
 	
@@ -311,7 +313,7 @@ public class Bot extends ListenerAdapter {
 	
 	
 	@Override
-	public void onResume(@Nonnull ResumedEvent event) {
+	public void onResumed(@Nonnull ResumedEvent event) {
 		logger.info("Resumed");
 	}
 	
