@@ -1,4 +1,4 @@
-package commands.music;
+package lib.commands.music;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
@@ -9,26 +9,26 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/15/2017
+ * @version 5/11/2018
  */
-class QueueLastAudioLoadResultHandler implements AudioLoadResultHandler {
+public class QueueNextAudioLoadResultHandler implements AudioLoadResultHandler {
 	private final TrackScheduler trackScheduler;
 	
-	QueueLastAudioLoadResultHandler(TrackScheduler trackScheduler) {
+	public QueueNextAudioLoadResultHandler(TrackScheduler trackScheduler) {
 		this.trackScheduler = trackScheduler;
 	}
 	
 	@Override
 	public void trackLoaded(AudioTrack track) {
-		logger.info("Loaded track");
-		trackScheduler.queue(track);
+		logger.info("Loaded track to front of playback queue");
+		trackScheduler.queueNext(track);
 	}
 	
 	@Override
 	public void playlistLoaded(AudioPlaylist playlist) {
-		logger.info("Loaded playlist");
+		logger.info("Loaded playlist to front of playback queue");
 		for (AudioTrack track : playlist.getTracks()) {
-			trackScheduler.queue(track);
+			trackScheduler.queueNext(track);
 		}
 	}
 	

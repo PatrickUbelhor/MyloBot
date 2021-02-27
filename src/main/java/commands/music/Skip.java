@@ -1,10 +1,12 @@
 package commands.music;
 
+import lib.commands.music.Music;
+import lib.commands.music.TrackScheduler;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 /**
  * @author Patrick Ubelhor
- * @version 2/27/2019
+ * @version 2/24/2021
  */
 public final class Skip extends Music {
 	
@@ -15,6 +17,7 @@ public final class Skip extends Music {
 	
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
+		TrackScheduler trackScheduler = Music.trackSchedulers.get(event.getGuild().getIdLong());
 		
 		// Clear all songs or a certain number from queue.
 		if (args.length > 1) {

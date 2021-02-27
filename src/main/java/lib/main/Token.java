@@ -1,4 +1,4 @@
-package main;
+package lib.main;
 
 /**
  * @author Patrick Ubelhor

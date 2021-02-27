@@ -1,5 +1,6 @@
 package commands;
 
+import lib.commands.Command;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -7,7 +8,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 10/23/2019
+ * @version 2/27/2020
  */
 public class Random extends Command {
 	
@@ -31,7 +32,7 @@ public class Random extends Command {
 		try {
 			max = Integer.parseInt(maxString);
 		} catch (NumberFormatException e) {
-			logger.debug("User entered invalid upper bound: '" + maxString + "'");
+			logger.debug("User entered invalid upper bound: '{}'", maxString);
 			channel.sendMessage("I think you specified an invalid upper bound: '" + maxString + "'").queue();
 			return;
 		}
@@ -42,7 +43,7 @@ public class Random extends Command {
 			try {
 				min = Integer.parseInt(args[1]);
 			} catch (NumberFormatException e) {
-				logger.debug("User entered invalid number: '" + args[1] + "'");
+				logger.debug("User entered invalid number: '{}'", args[1]);
 				channel.sendMessage("I think you specified an invalid number: '" + args[1] + "'").queue();
 				return;
 			}
@@ -50,21 +51,21 @@ public class Random extends Command {
 		
 		// Make sure 'max' is positive
 		if (max <= 0) {
-			logger.debug("User entered non-positive upper bound: '" + max + "'");
+			logger.debug("User entered non-positive upper bound: '{}'", max);
 			channel.sendMessage("The upper bound must be positive!").queue();
 			return;
 		}
 		
 		// Make sure 'min' is non-negative
 		if (min < 0) {
-			logger.debug("User entered negative lower bound: '" + min + "'");
+			logger.debug("User entered negative lower bound: '{}'", min);
 			channel.sendMessage("The lower bound can't be negative!").queue();
 			return;
 		}
 		
 		
 		int rand = new java.util.Random().nextInt(max - min) + min; // Generate random number in range, plus minimum value
-		logger.info("Generated: " + rand);
+		logger.info("Generated: {}", rand);
 		channel.sendMessage(rand + "").queue();
 	}
 	

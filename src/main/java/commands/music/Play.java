@@ -1,10 +1,13 @@
 package commands.music;
 
+import lib.commands.music.Music;
+import lib.commands.music.QueueLastAudioLoadResultHandler;
+import lib.commands.music.TrackScheduler;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 /**
  * @author Patrick Ubelhor
- * @version 2/6/2019
+ * @version 2/24/2021
  *
  * TODO: Make bot leave voice channel after some period of inactivity
  * TODO: Ability to loop
@@ -33,6 +36,7 @@ public final class Play extends Music {
 		
 		// Directly add song to queue and return if it's a link
 		if (args[1].startsWith("http") || args[1].startsWith("www")) {
+			TrackScheduler trackScheduler = Music.trackSchedulers.get(event.getGuild().getIdLong());
 			playerManager.loadItem(args[1], new QueueLastAudioLoadResultHandler(trackScheduler));
 			return;
 		}

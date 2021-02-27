@@ -1,7 +1,7 @@
 package commands.admin;
 
-import commands.Command;
-import main.Permission;
+import lib.commands.Command;
+import lib.main.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -13,7 +13,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/20/2019
+ * @version 2/27/2020
  */
 public class Kick extends Command {
 
@@ -48,7 +48,7 @@ public class Kick extends Command {
 
 			// Check if we are higher in the role hierarchy than the member. Can't kick members equal to or above us.
 			if (!self.canInteract(member)) {
-				logger.debug("Can't kick " + member.getEffectiveName() + " due to hierarchy restriction");
+				logger.debug("Can't kick {} due to hierarchy restriction", member.getEffectiveName());
 				channel.sendMessage("I'm not ranked high enough to kick ")
 						.append(member.getEffectiveName())
 						.append("!")
@@ -61,13 +61,12 @@ public class Kick extends Command {
 			// Finally kick the member
 			guild.kick(member).queue(
 					success -> {
-						logger.info("Successfully kicked " + member.getEffectiveName());
+						logger.info("Successfully kicked {}", member.getEffectiveName());
 						channel.sendMessage("Successfully kicked ").append(member.getEffectiveName()).append("!").queue();
 					},
 
 					error -> {
-						String errorMsg = String.format("Error kicking user: %s\n%s", member.getEffectiveName(), error.toString());
-						logger.warn(errorMsg);
+						logger.warn("Error kicking user: {}\n{}", member.getEffectiveName(), error.toString());
 						channel.sendMessage("Error kicking user: ").append(member.getEffectiveName()).queue();
 					}
 			);

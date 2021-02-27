@@ -1,7 +1,7 @@
 package commands.admin;
 
-import commands.Command;
-import main.Permission;
+import lib.commands.Command;
+import lib.main.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -13,7 +13,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/20/2019
+ * @version 2/27/2020
  */
 public class Unmute extends Command {
 	
@@ -39,13 +39,12 @@ public class Unmute extends Command {
 		for (Member member : members) {
 			guild.mute(member, true).queue(
 					success -> {
-						logger.info("Successfully unmuted " + member.getEffectiveName());
+						logger.info("Successfully unmuted {}", member.getEffectiveName());
 						channel.sendMessage("Successfully unmuted ").append(member.getEffectiveName()).append("!").queue();
 					},
 					
 					error -> {
-						String errorMsg = String.format("Error unmuting user: %s\n%s", member.getEffectiveName(), error.toString());
-						logger.warn(errorMsg);
+						logger.warn("Error unmuting user: {}\n{}", member.getEffectiveName(), error.toString());
 						channel.sendMessage("Error unmuting user: ").append(member.getEffectiveName()).queue();
 					}
 			);

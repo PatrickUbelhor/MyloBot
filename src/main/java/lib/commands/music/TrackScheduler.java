@@ -1,4 +1,4 @@
-package commands.music;
+package lib.commands.music;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
@@ -17,9 +17,9 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor, Evan Perry Grove
- * @version 8/20/2019, 5/4/2018
+ * @version 2/24/2021, 5/4/2018
  */
-class TrackScheduler extends AudioEventAdapter {
+public class TrackScheduler extends AudioEventAdapter {
 	
 	private final AudioPlayer player;
 	private final BlockingDeque<AudioTrack> queue;
@@ -31,9 +31,16 @@ class TrackScheduler extends AudioEventAdapter {
 	
 	
 	/**
+	 * @return The audio player attached to this track scheduler.
+	 */
+	public AudioPlayer getPlayer() {
+		return player;
+	}
+	
+	
+	/**
 	 * Essentially a proxy to player#startTrack(), but updates the bot's Discord status
 	 * with the name of this song.
-	 *
 	 *
 	 * @param track The track to start playing, passing null will stop the current track and return false
 	 * @param noInterrupt Whether to only start if nothing else is playing
@@ -55,7 +62,7 @@ class TrackScheduler extends AudioEventAdapter {
 	 *
 	 * @param track The song to enqueue.
 	 */
-	void queue(AudioTrack track) {
+	public void queue(AudioTrack track) {
 		
 		if (!startTrack(track, true)) {
 			logger.info("Adding to queue");
@@ -69,7 +76,7 @@ class TrackScheduler extends AudioEventAdapter {
 	 *
 	 * @param track The song to push onto the queue.
 	 */
-	void queueNext(AudioTrack track) {
+	public void queueNext(AudioTrack track) {
 		if(!startTrack(track, true)) {
 			logger.info("Adding to front of queue");
 			queue.offerFirst(track);
@@ -81,7 +88,7 @@ class TrackScheduler extends AudioEventAdapter {
 	 * Plays the next song in the queue, ending playback of the current active track if necessary.
 	 * If there are no more tracks left in the queue, this will terminate playback.
 	 */
-	void playNext() {
+	public void playNext() {
 		AudioTrack next = queue.poll();
 		logger.info(next == null ? "End of queue" : next.getInfo().title);
 		startTrack(next, false);
@@ -95,7 +102,7 @@ class TrackScheduler extends AudioEventAdapter {
 	 *
 	 * @param count The number of songs to skip.
 	 */
-	void skip(int count) {
+	public void skip(int count) {
 		logger.info("Skipping " + count + " songs");
 		
 		count--; // This is the number of songs from the queue to remove. We also skip currently playing song later, which will meet 'count'.
@@ -117,20 +124,20 @@ class TrackScheduler extends AudioEventAdapter {
 	/**
 	 * Clears the playback queue and ends the song currently playing.
 	 */
-	void clearQueue() {
+	public void clearQueue() {
 		queue.clear();
 		player.startTrack(null, false);
 	}
 	
 	
-	String getCurrentSong() {
+	public String getCurrentSong() {
 		if (player.getPlayingTrack() == null) return null;
 		
 		return player.getPlayingTrack().getInfo().title;
 	}
 	
 	
-	List<String> getQueue() {
+	public List<String> getQueue() {
 		var titles = new LinkedList<String>();
 		queue.forEach(audioTrack -> titles.addLast(audioTrack.getInfo().title));
 		
@@ -140,7 +147,7 @@ class TrackScheduler extends AudioEventAdapter {
 	/**
 	 * Pauses the current active track.
 	 */
-	void pause() {
+	public void pause() {
 		if (player.getPlayingTrack() != null) {
 			player.setPaused(true);
 		}
@@ -150,7 +157,7 @@ class TrackScheduler extends AudioEventAdapter {
 	/**
 	 * Continues playback of the current active track.
 	 */
-	void unpause() {
+	public void unpause() {
 		player.setPaused(false);
 	}
 	
@@ -158,7 +165,7 @@ class TrackScheduler extends AudioEventAdapter {
 	/**
 	 * @return The number of tracks remaining in the playback queue (excluding the active track).
 	 */
-	int getQueueLength() {
+	public int getQueueLength() {
 		return queue.size();
 	}
 	

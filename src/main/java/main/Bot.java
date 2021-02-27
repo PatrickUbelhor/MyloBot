@@ -2,9 +2,11 @@ package main;
 
 import clients.VoiceTrackerClient;
 import commands.GetVoiceLog;
+import commands.Random;
+import commands.Roll;
 import commands.admin.Ban;
 import commands.admin.ClearText;
-import commands.Command;
+import lib.commands.Command;
 import commands.Help;
 import commands.Reverse;
 import commands.Shutdown;
@@ -21,13 +23,16 @@ import commands.music.Skip;
 import commands.music.Unpause;
 import commands.subscription.Subscribe;
 import commands.subscription.Unsubscribe;
+import lib.main.Lexer;
+import lib.main.Permission;
+import lib.main.Token;
+import lib.main.TokenType;
 import log.VoiceTracker;
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
@@ -41,6 +46,11 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateOnlineStatusEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import services.IPChange;
+import lib.services.Service;
+import services.SurrenderAt20;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -48,7 +58,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 import static main.Globals.DISCORD_TOKEN;
@@ -56,15 +65,17 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 1/16/2020
+ * @version 2/23/2021
  *
  * TODO: make a simple setStatus method for setting the bot's Discord status?
  */
 public class Bot extends ListenerAdapter {
 	
 	private static final LinkedHashMap<String, Command> commands = new LinkedHashMap<>();
+	private static final LinkedHashMap<String, Service> services = new LinkedHashMap<>();
 	
 	private static JDA jda;
+	private static MessageInterceptor messageInterceptor;
 	private static Lexer lexer;
 	private static VoiceTracker tracker;
 	private static VoiceTrackerClient trackerClient;
@@ -82,10 +93,14 @@ public class Bot extends ListenerAdapter {
 		
 		try {
 			// Log into Discord account
-			jda = new JDABuilder(AccountType.BOT)
-					.setToken(DISCORD_TOKEN)
+			jda = JDABuilder.createDefault(DISCORD_TOKEN)
+					.enableIntents(GatewayIntent.GUILD_MEMBERS)
+					.setMemberCachePolicy(MemberCachePolicy.ALL)
 					.build()
 					.awaitReady();
+			
+			// Initialize interceptor
+			messageInterceptor = new MessageInterceptor();
 			
 			// Initialize lexer
 			lexer = new Lexer(); // TODO: make a singleton
@@ -109,8 +124,9 @@ public class Bot extends ListenerAdapter {
 					new Pause(),
 					new Unpause(),
 					new PeekQueue(),
-					new commands.Random(), // TODO: fix naming collision
+					new Random(),
 					new Reverse(),
+					new Roll(Permission.USER),
 					new ClearText(Permission.MOD),
 					new WhoIs(Permission.USER),
 					new Kick(Permission.MOD),
@@ -125,13 +141,30 @@ public class Bot extends ListenerAdapter {
 			};
 			
 			
+			Service[] preInitServices = {
+					new IPChange(Globals.IP_CHECK_DELAY),
+					new SurrenderAt20(Globals.SURRENDER_DELAY)
+			};
+			
+			
 			// Initialize commands
 			logger.info("Initializing commands...");
 			Arrays.stream(preInitCommands)
 					.parallel()
 					.filter(Command::init)
 					.forEachOrdered(command -> commands.put(command.getName(), command));
-			logger.info("Initialization finished.");
+			logger.info("Initialization finished");
+			
+			
+			// Initialize services
+			logger.info("Initializing services...");
+			Service.loadSubscribers();
+			Arrays.stream(preInitServices)
+					.forEachOrdered(service -> {
+						service.startThread();
+						services.put(service.getName(), service);
+					});
+			logger.info("Initialization finished");
 			
 			
 			// Get Role object for 'user' and 'mod' (defined in config)
@@ -146,7 +179,11 @@ public class Bot extends ListenerAdapter {
 					.parallel()
 					.map(s -> jda.getRoleById(s))
 					.collect(Collectors.toList());
-			logger.info("Got roles.");
+			logger.info("Got roles");
+			
+			
+			// Load
+			jda.getGuilds().forEach(Guild::loadMembers);
 			
 			jda.addEventListener(new Bot());
 			
@@ -170,6 +207,14 @@ public class Bot extends ListenerAdapter {
 	}
 	
 	
+	/**
+	 * @return A list of all services that were started
+	 */
+	public static LinkedHashMap<String, Service> getServices() {
+		return services;
+	}
+	
+	
 	@Override
 	public void onMessageReceived(MessageReceivedEvent event) {
 		
@@ -179,44 +224,10 @@ public class Bot extends ListenerAdapter {
 		TextChannel ch = event.getTextChannel();
 		String msg = message.getContentDisplay().trim();
 		
-		// Post @everyone meme
-		if (message.mentionsEveryone()) {
-			File[] pics = new File("AtEveryone").listFiles();
-			
-			if (pics == null || pics.length == 0) {
-				channel.sendMessage("reeeeEEEEEEEEEEEE E E E E E E E E E E E E E").queue();
-				return;
-			}
-			
-			channel.sendFile(pics[new Random().nextInt(pics.length)]).queue();
-			
-			return;
-		}
-		
-		// Message Tyler when Evan posts
-		if (author.getIdLong() == 104652244556718080L) {
-			String dm = "Evan just posted in " + ch.getGuild().getName() + "#" + ch.getName() + "."
-					+ "\nA citation will be required.";
-			PrivateChannel tylerDirectMsg = jda.getUserById(104725353402003456L).openPrivateChannel().complete();
-			tylerDirectMsg.sendMessage(dm).queue();
-		}
-		
-		// Send "David" to the 'david' thread when prompted
-		if (!author.isBot() && ch.getName().equals("david")) {
-			if (msg.toLowerCase().contains("david")) {
-				ch.sendMessage("David").queue();
-			}
-			
-			if (msg.toLowerCase().contains("like")) {
-				ch.sendMessage("I like monster trucks and David").queue();
-			}
-			
-			if (msg.toLowerCase().contains("coming") && author.getIdLong() == 104400026993709056L) {
-				ch.sendMessage("David is coming").queue();
-			}
-		}
+		messageInterceptor.intercept(event);
 		
 		
+		// Tokenize and parse message
 		List<Token> tokens = lexer.lex(msg);
 		if (tokens.isEmpty() || tokens.get(0).getType() != TokenType.COMMAND || author.isBot())
 			return; // Checking isBot() prevents user from spamming a !reverse
@@ -290,7 +301,7 @@ public class Bot extends ListenerAdapter {
 	
 	
 	@Override
-	public void onReconnect(@Nonnull ReconnectedEvent event) {
+	public void onReconnected(@Nonnull ReconnectedEvent event) {
 		logger.info("Reconnected");
 	}
 	
@@ -302,7 +313,7 @@ public class Bot extends ListenerAdapter {
 	
 	
 	@Override
-	public void onResume(@Nonnull ResumedEvent event) {
+	public void onResumed(@Nonnull ResumedEvent event) {
 		logger.info("Resumed");
 	}
 	
@@ -320,9 +331,9 @@ public class Bot extends ListenerAdapter {
 	@Override
 	public void onGuildVoiceJoin(@Nonnull GuildVoiceJoinEvent event) {
 		if (tracker != null) {
-			logger.debug("JOIN " + event.getMember().getNickname() + " | " + event.getChannelJoined().getName());
+			logger.debug("JOIN {} | {}", event.getMember().getEffectiveName(), event.getChannelJoined().getName());
 			tracker.enter(event);
-			trackerClient.logJoinEvent(event.getMember().getIdLong());
+			trackerClient.logJoinEvent(event.getMember().getIdLong(), event.getChannelJoined().getIdLong());
 		}
 	}
 	
@@ -330,14 +341,29 @@ public class Bot extends ListenerAdapter {
 	@Override
 	public void onGuildVoiceLeave(@Nonnull GuildVoiceLeaveEvent event) {
 		if (tracker != null) {
-			logger.debug("LEAVE " + event.getMember().getNickname() + " | " + event.getChannelLeft().getName());
+			logger.debug("LEAVE {} | {}", event.getMember().getEffectiveName(), event.getChannelLeft().getName());
 			tracker.exit(event);
-			trackerClient.logLeaveEvent(event.getMember().getIdLong());
+			trackerClient.logLeaveEvent(event.getMember().getIdLong(), event.getChannelLeft().getIdLong());
 		}
 	}
 	
 	
 	@Override
-	public void onGuildVoiceMove(@Nonnull GuildVoiceMoveEvent event) {}
+	public void onGuildVoiceMove(@Nonnull GuildVoiceMoveEvent event) {
+		if (tracker != null) {
+			logger.debug("MOVE {} | {} -> {}",
+					event.getMember().getEffectiveName(),
+					event.getChannelLeft().getName(),
+					event.getChannelJoined().getName()
+			);
+			
+			tracker.move(event);
+			trackerClient.logMoveEvent(
+					event.getMember().getIdLong(),
+					event.getChannelLeft().getIdLong(),
+					event.getChannelJoined().getIdLong()
+			);
+		}
+	}
 	
 }

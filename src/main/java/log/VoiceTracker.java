@@ -3,6 +3,7 @@ package log;
 import main.Globals;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
 
 import java.io.Closeable;
 import java.io.FileWriter;
@@ -11,7 +12,7 @@ import java.util.Date;
 
 /**
  * @author Patrick Ubelhor
- * @version 11/2/2019
+ * @version 2/12/2021
  */
 public class VoiceTracker implements Closeable {
 	
@@ -23,16 +24,23 @@ public class VoiceTracker implements Closeable {
 	
 	
 	public void enter(GuildVoiceJoinEvent event) {
-		
+		this.logEvent("J", event.getMember().getIdLong(), event.getChannelJoined().getIdLong());
+	}
+	
+	
+	public void move(GuildVoiceMoveEvent event) {
+		Long userSnowflake = event.getMember().getIdLong();
 		Long time = new Date().getTime(); // Get it now before potential lockout
+		Long leavingChannelId = event.getChannelLeft().getIdLong();
+		Long joiningChannelId = event.getChannelJoined().getIdLong();
+		
 		synchronized (fw) {
-			Globals.logger.debug("Got mutex for 'enter'");
 			try {
 				// Flush to print immediately. If bot goes down, we don't lose data.
-				fw.append(String.format("J,%d,%d\n", event.getMember().getIdLong(), time));
+				fw.append(String.format("M,%d,%d,%d,%d\n", userSnowflake, time, leavingChannelId, joiningChannelId));
 				fw.flush();
 			} catch (IOException e) {
-				Globals.logger.error("Failed to log VC join");
+				Globals.logger.error("Failed to log VC {} event", "M");
 				Globals.logger.error(e);
 			}
 		}
@@ -40,16 +48,20 @@ public class VoiceTracker implements Closeable {
 	
 	
 	public void exit(GuildVoiceLeaveEvent event) {
+		this.logEvent("L", event.getMember().getIdLong(), event.getChannelLeft().getIdLong());
+	}
+	
+	
+	private void logEvent(String eventCode, Long userId, Long channelId) {
 		
 		Long time = new Date().getTime(); // Get it now before potential lockout
 		synchronized (fw) {
-			Globals.logger.debug("Got mutex for 'exit'");
 			try {
 				// Flush to print immediately. If bot goes down, we don't lose data.
-				fw.append(String.format("L,%d,%d\n", event.getMember().getIdLong(), time));
+				fw.append(String.format("%s,%d,%d,%d\n", eventCode, userId, time, channelId));
 				fw.flush();
 			} catch (IOException e) {
-				Globals.logger.error("Failed to log VC leave");
+				Globals.logger.error("Failed to log VC {} event", eventCode);
 				Globals.logger.error(e);
 			}
 		}

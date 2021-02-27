@@ -1,7 +1,7 @@
 package commands.admin;
 
-import commands.Command;
-import main.Permission;
+import lib.commands.Command;
+import lib.main.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -13,7 +13,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/20/2019
+ * @version 2/27/2020
  */
 public class Ban extends Command {
 	
@@ -48,7 +48,7 @@ public class Ban extends Command {
 			
 			// Check if we are higher in the role hierarchy than the member. Can't kick members equal to or above us.
 			if (!self.canInteract(member)) {
-				logger.debug("Can't ban " + member.getEffectiveName() + " due to hierarchy restriction");
+				logger.debug("Can't ban {} due to hierarchy restriction", member.getEffectiveName());
 				channel.sendMessage("I'm not ranked high enough to ban ")
 						.append(member.getEffectiveName())
 						.append("!")
@@ -62,13 +62,12 @@ public class Ban extends Command {
 			// Finally ban the member
 			guild.ban(member, 0).queue(
 					success -> {
-						logger.info("Successfully banned " + member.getEffectiveName());
+						logger.info("Successfully banned {}", member.getEffectiveName());
 						channel.sendMessage("Successfully banned ").append(member.getEffectiveName()).append("!").queue();
 					},
 					
 					error -> {
-						String errorMsg = String.format("Error banning user: %s\n%s", member.getEffectiveName(), error.toString());
-						logger.warn(errorMsg);
+						logger.warn("Error banning user: {}\n{}", member.getEffectiveName(), error.toString());
 						channel.sendMessage("Error banning user: ").append(member.getEffectiveName()).queue();
 					}
 			);
