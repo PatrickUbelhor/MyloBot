@@ -9,7 +9,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/10/2020
+ * @version 3/9/2021
  */
 public class ShellClient {
 
@@ -79,11 +79,13 @@ public class ShellClient {
 		
 		// Wait for process to terminate
 		try {
+			logger.debug("Waiting for shell to respond");
 			int exitCode = process.waitFor();
 			if (exitCode != 0) {
 				logger.error("An error occurred while attempting to get IP. Exit status {}", exitCode);
 			}
 			
+			logger.debug("Shell responded with '{}'", result.toString());
 			return result.toString();
 		} catch (InterruptedException e) {
 			logger.error("Failed while waiting for shell to exit");

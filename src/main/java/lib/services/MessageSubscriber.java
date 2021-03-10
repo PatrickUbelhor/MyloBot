@@ -17,7 +17,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 9/22/2020
+ * @version 3/9/2021
  */
 public class MessageSubscriber {
 	
@@ -49,7 +49,7 @@ public class MessageSubscriber {
 				continue;
 			}
 			
-			channel.sendMessage(message).queue();
+			channel.sendMessage(message).queue(null, failure -> logger.error("[{}] Error logging message", topic, failure));
 		}
 	}
 	
@@ -92,7 +92,7 @@ public class MessageSubscriber {
 			sb.deleteCharAt(sb.length() - 1); // Remove trailing ","
 			sb.append("\n");
 		}
-		sb.deleteCharAt(sb.length() - 1); // Remove trailing "\n"
+//		sb.deleteCharAt(sb.length() - 1); // Remove trailing "\n"
 		
 		// Save to file
 		try (FileWriter fw = new FileWriter(Globals.SERVICES_SAVE_PATH, false)) {
