@@ -1,5 +1,7 @@
 package clients;
 
+import main.Globals;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,7 +13,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 6/21/2019
+ * @version 3/10/2021
  */
 public class SurrenderClient {
 	
@@ -23,15 +25,15 @@ public class SurrenderClient {
 		URL url;
 		BufferedReader br = null;
 		LinkedList<String> newLinks = new LinkedList<>();
-		boolean keyFound = false;
 		
 		
 		try {
-			url = new URL("http://www.surrenderat20.net/search/label/Releases");
+			url = new URL(Globals.SURRENDER_URL);
 			br = new BufferedReader(new InputStreamReader(url.openStream()));
 			
 			int i = 0;
 			String line;
+			boolean keyFound = false;
 			while (i < numLinks && (line = br.readLine()) != null) {
 				
 				if (line.contains("blog-posts hfeed")) {
@@ -41,13 +43,15 @@ public class SurrenderClient {
 				}
 				
 				if (keyFound && line.contains("news-title")) {
-					newLinks.addFirst(br.readLine().split("'")[1]);
+					String anchor = br.readLine();
+					logger.debug("[S@20] Found anchor: {}", anchor);
+					newLinks.addFirst(anchor.split("'")[1]);
 					i++;
 				}
 			}
 			
 		} catch (IOException e) {
-			logger.error("Failed to retrieve S@20 links", e);
+			logger.error("[S@20] Failed to retrieve S@20 links", e);
 			
 		} finally {
 			
@@ -56,9 +60,13 @@ public class SurrenderClient {
 				try {
 					br.close();
 				} catch (IOException e) {
-					logger.error("Failed to properly close S220 BufferedReader", e);
+					logger.error("[S@20] Failed to properly close S220 BufferedReader", e);
 				}
 			}
+		}
+		
+		for (String link : newLinks) {
+			logger.debug("[S@20] Found link: '{}'", link);
 		}
 		
 		return newLinks;

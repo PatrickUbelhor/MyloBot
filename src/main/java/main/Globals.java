@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 9/22/2020
+ * @version 3/10/2021
  * TODO: Make custom exception types
  */
 public class Globals {
@@ -25,6 +25,7 @@ public class Globals {
 	public static final String AT_EVERYONE_PATH;
 	public static final String VOICE_TRACKER_BASE_URL;
 	public static final boolean ENABLE_WHO_WOULDA_THOUGHT_MEME;
+	public static final String SURRENDER_URL;
 	
 	public static final String SERVICES_SAVE_PATH = "config/services.txt";
 	
@@ -61,6 +62,7 @@ public class Globals {
 		USER_GROUP_IDS      = getOrFail("user.group.ids");
 		MOD_GROUP_IDS       = getOrFail("mod.group.ids");
 		VOICE_TRACKER_BASE_URL  = getOrFail("url.voicetracker");
+		SURRENDER_URL       = getOrFail("url.surrender");
 		MUSIC_VOLUME        = Integer.parseInt(getOrDefault("music.volume", "50"));
 		SURRENDER_DELAY     = Long.parseLong(getOrDefault("delay.surrender", "10800000"));
 		IP_CHECK_DELAY      = Long.parseLong(getOrDefault("delay.ip", "3600000"));

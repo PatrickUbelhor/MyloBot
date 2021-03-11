@@ -14,7 +14,7 @@ import java.io.IOException;
 
 /**
  * @author Patrick Ubelhor
- * @version 2/23/2021
+ * @version 3/9/2021
  */
 public class VoiceTrackerClient {
 	
@@ -70,18 +70,18 @@ public class VoiceTrackerClient {
 		
 		@Override
 		public void onFailure(@Nonnull Call call, @Nonnull IOException e) {
-			Globals.logger.error("Failed to send {} request", type, e);
+			Globals.logger.error("[Voice] Failed to send {} request", type, e);
 		}
 		
 		@Override
 		public void onResponse(@Nonnull Call call, @Nonnull Response response) {
 			if (!response.isSuccessful()) {
-				Globals.logger.error("Error on {} request: {}\n{}", type, response.code(), response.body());
+				Globals.logger.error("[Voice] Error on {} request: {}\n{}", type, response.code(), response.body());
 				return;
 			}
 			
 			response.close();
-			Globals.logger.debug("Successfully sent {} request", type);
+			Globals.logger.debug("[Voice] Successfully sent {} request", type);
 		}
 	}
 	

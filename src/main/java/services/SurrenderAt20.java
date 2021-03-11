@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * @author Patrick Ubelhor
- * @version 9/21/2020
+ * @version 3/10/2021
  */
 public class SurrenderAt20 extends Service {
 	
@@ -28,7 +28,12 @@ public class SurrenderAt20 extends Service {
 	
 	@Override
 	protected boolean init() {
-		oldLinks.addAll(client.getLinks(3));
+		List<String> newLinks = client.getLinks(NUM_UPDATES);
+		
+		// We want oldest to be last in the list when it gets popped later
+		for (String link : newLinks) {
+			oldLinks.addLast(link);
+		}
 		return true;
 	}
 	

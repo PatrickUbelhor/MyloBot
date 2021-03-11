@@ -6,7 +6,7 @@ import lib.services.Service;
 
 /**
  * @author Patrick Ubelhor
- * @version 3/9/2021
+ * @version 3/10/2021
  */
 public class IPChange extends Service {
 	
@@ -33,8 +33,7 @@ public class IPChange extends Service {
 		
 		if (!ip.equals(currentIp)) {
 			ip = currentIp;
-			String message = String.format("[%s] New IP: %s", "IPChange", ip);
-			MessageSubscriber.getInstance().sendMessage(this.getName(), message);
+			MessageSubscriber.getInstance().sendMessage(this.getName(), "New IP: " + ip);
 		}
 	}
 	
