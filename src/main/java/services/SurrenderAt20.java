@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * @author Patrick Ubelhor
- * @version 3/10/2021
+ * @version 3/15/2021
  */
 public class SurrenderAt20 extends Service {
 	
@@ -32,7 +32,7 @@ public class SurrenderAt20 extends Service {
 		
 		// We want oldest to be last in the list when it gets popped later
 		for (String link : newLinks) {
-			oldLinks.addLast(link);
+			oldLinks.addFirst(link);
 		}
 		return true;
 	}
