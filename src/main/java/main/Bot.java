@@ -2,6 +2,7 @@ package main;
 
 import clients.VoiceTrackerClient;
 import commands.GetVoiceLog;
+import commands.Party;
 import commands.Random;
 import commands.Roll;
 import commands.admin.Ban;
@@ -65,7 +66,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 3/9/2021
+ * @version 3/28/2021
  *
  * TODO: make a simple setStatus method for setting the bot's Discord status?
  */
@@ -73,6 +74,7 @@ public class Bot extends ListenerAdapter {
 	
 	private static final LinkedHashMap<String, Command> commands = new LinkedHashMap<>();
 	private static final LinkedHashMap<String, Service> services = new LinkedHashMap<>();
+	private static final Party partyCommand = new Party(Permission.USER);
 	
 	private static JDA jda;
 	private static MessageInterceptor messageInterceptor;
@@ -124,9 +126,10 @@ public class Bot extends ListenerAdapter {
 					new Pause(),
 					new Unpause(),
 					new PeekQueue(),
-					new Random(),
 					new Reverse(),
+					new Random(),
 					new Roll(Permission.USER),
+					partyCommand,
 					new ClearText(Permission.MOD),
 					new WhoIs(Permission.USER),
 					new Kick(Permission.MOD),
@@ -335,6 +338,8 @@ public class Bot extends ListenerAdapter {
 			tracker.enter(event);
 			trackerClient.logJoinEvent(event.getMember().getIdLong(), event.getChannelJoined().getIdLong());
 		}
+		
+		partyCommand.onGuildVoiceJoin(event);
 	}
 	
 	
@@ -345,6 +350,8 @@ public class Bot extends ListenerAdapter {
 			tracker.exit(event);
 			trackerClient.logLeaveEvent(event.getMember().getIdLong(), event.getChannelLeft().getIdLong());
 		}
+		
+		partyCommand.onGuildVoiceLeave(event);
 	}
 	
 	
@@ -364,6 +371,8 @@ public class Bot extends ListenerAdapter {
 					event.getChannelJoined().getIdLong()
 			);
 		}
+		
+		partyCommand.onGuildVoiceMove(event);
 	}
 	
 }

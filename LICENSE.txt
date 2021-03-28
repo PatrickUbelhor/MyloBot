@@ -1,7 +1,7 @@
 University of Illinois/NCSA
 Open Source License
 
-Copyright © 2020, Patrick Ubelhor. All rights reserved.
+Copyright © 2021, Patrick Ubelhor. All rights reserved.
 
 Developed by:
 Patrick Ubelhor
