@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -29,7 +30,7 @@ public class Party extends Command implements Trigger {
 			"You can stay, but please remain muted to avoid being a distraction. " +
 			"Thanks!";
 	
-	private HashMap<Long, PartyState> parties = new HashMap<>();
+	private final HashMap<Long, PartyState> parties = new HashMap<>();
 	
 	
 	public Party(Permission permission) {
@@ -88,13 +89,13 @@ public class Party extends Command implements Trigger {
 	
 	@Override
 	public void onGuildVoiceLeave(GuildVoiceLeaveEvent event) {
-		handleLeave(event.getChannelLeft(), event.getMember());
+		handleLeave(event.getChannelLeft());
 	}
 	
 	
 	@Override
 	public void onGuildVoiceMove(GuildVoiceMoveEvent event) {
-		handleLeave(event.getChannelLeft(), event.getMember());
+		handleLeave(event.getChannelLeft());
 		handleJoin(event.getChannelJoined(), event.getMember());
 	}
 	
@@ -106,33 +107,52 @@ public class Party extends Command implements Trigger {
 			PartyState party = parties.get(voiceId);
 			Long userId = member.getIdLong();
 			
-			if (!party.currentMembers.contains(userId)) {
+			if (!party.notifiedMembers.contains(userId)) {
 				String message = String.format(MESSAGE_FORMAT, parties.get(voiceId).name);
 				member.getUser()
 						.openPrivateChannel()
 						.flatMap(channel -> channel.sendMessage(message))
 						.queue();
 				
-				party.currentMembers.add(userId);
+				party.notifiedMembers.add(userId);
 			}
 		}
 	}
 	
 	
-	private void handleLeave(VoiceChannel vc, Member member) {
-		// TODO: Destroy party once everyone leaves?
+	// If all original members have left, then destroy party
+	private void handleLeave(VoiceChannel vc) {
+		Long voiceId = vc.getIdLong();
+		if (parties.containsKey(voiceId)) {
+			PartyState party = parties.get(voiceId);
+			
+			// Get list of user IDs for members currently in call
+			Set<Long> currentMembers = vc.getMembers() // We fetch list from API in case we missed a leave event (bot went offline)
+					.stream()
+					.map(ISnowflake::getIdLong)
+					.collect(Collectors.toSet());
+			
+			// Is active if any of the original members is still in call
+			boolean isActive = party.originalMembers
+					.stream()
+					.anyMatch(currentMembers::contains);
+			
+			if (!isActive) {
+				parties.remove(voiceId);
+			}
+		}
 	}
 	
 	
 	private static class PartyState {
 		private final String name;
 		private final HashSet<Long> originalMembers;
-		private final HashSet<Long> currentMembers;
+		private final HashSet<Long> notifiedMembers;
 		
 		private PartyState(String name, Collection<Long> members) {
 			this.name = name;
 			this.originalMembers = new HashSet<>(members);
-			this.currentMembers = new HashSet<>(members);
+			this.notifiedMembers = new HashSet<>(members);
 		}
 	}
 }
