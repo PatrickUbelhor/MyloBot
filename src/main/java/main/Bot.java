@@ -1,16 +1,14 @@
 package main;
 
-import clients.VoiceTrackerClient;
 import commands.GetVoiceLog;
+import commands.Help;
 import commands.Party;
 import commands.Random;
+import commands.Reverse;
 import commands.Roll;
+import commands.Shutdown;
 import commands.admin.Ban;
 import commands.admin.ClearText;
-import lib.commands.Command;
-import commands.Help;
-import commands.Reverse;
-import commands.Shutdown;
 import commands.admin.GetIp;
 import commands.admin.Kick;
 import commands.admin.Mute;
@@ -24,11 +22,13 @@ import commands.music.Skip;
 import commands.music.Unpause;
 import commands.subscription.Subscribe;
 import commands.subscription.Unsubscribe;
+import lib.commands.Command;
 import lib.main.Lexer;
 import lib.main.Permission;
 import lib.main.Token;
 import lib.main.TokenType;
-import log.VoiceTracker;
+import lib.services.Service;
+import log.VoiceTrackerFileWriter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -50,12 +50,10 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import services.IPChange;
-import lib.services.Service;
 import services.SurrenderAt20;
 
 import javax.annotation.Nonnull;
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -66,7 +64,7 @@ import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 3/28/2021
+ * @version 4/30/2021
  *
  * TODO: make a simple setStatus method for setting the bot's Discord status?
  */
@@ -79,8 +77,8 @@ public class Bot extends ListenerAdapter {
 	private static JDA jda;
 	private static MessageInterceptor messageInterceptor;
 	private static Lexer lexer;
-	private static VoiceTracker tracker;
-	private static VoiceTrackerClient trackerClient;
+	private static VoiceTrackerFileWriter tracker;
+	private static VoiceTrackerTrigger voiceTrackerTrigger;
 	private static List<Role> userRoles;
 	private static List<Role> modRoles;
 	
@@ -107,15 +105,7 @@ public class Bot extends ListenerAdapter {
 			// Initialize lexer
 			lexer = new Lexer(); // TODO: make a singleton
 			
-			// Initialize tracker
-			try {
-				tracker = new VoiceTracker();
-			} catch (IOException e) {
-				logger.error("Couldn't create VoiceTracker!");
-				logger.error(e);
-			}
-			
-			trackerClient = new VoiceTrackerClient();
+			voiceTrackerTrigger = new VoiceTrackerTrigger(jda);
 			
 			// Instantiate commands
 			Command[] preInitCommands = {
@@ -148,6 +138,10 @@ public class Bot extends ListenerAdapter {
 					new IPChange(Globals.IP_CHECK_DELAY),
 					new SurrenderAt20(Globals.SURRENDER_DELAY)
 			};
+			
+			
+			// Initialize triggers
+			voiceTrackerTrigger.init();
 			
 			
 			// Initialize commands
@@ -306,6 +300,7 @@ public class Bot extends ListenerAdapter {
 	@Override
 	public void onReconnected(@Nonnull ReconnectedEvent event) {
 		logger.info("Reconnected");
+//		voiceTrackerTrigger.onReconnect();
 	}
 	
 	
@@ -333,46 +328,22 @@ public class Bot extends ListenerAdapter {
 	
 	@Override
 	public void onGuildVoiceJoin(@Nonnull GuildVoiceJoinEvent event) {
-		if (tracker != null) {
-			logger.debug("[Voice] JOIN {} | {}", event.getMember().getEffectiveName(), event.getChannelJoined().getName());
-			tracker.enter(event);
-			trackerClient.logJoinEvent(event.getMember().getIdLong(), event.getChannelJoined().getIdLong());
-		}
-		
 		partyCommand.onGuildVoiceJoin(event);
+		voiceTrackerTrigger.onGuildVoiceJoin(event);
 	}
 	
 	
 	@Override
 	public void onGuildVoiceLeave(@Nonnull GuildVoiceLeaveEvent event) {
-		if (tracker != null) {
-			logger.debug("[Voice] LEAVE {} | {}", event.getMember().getEffectiveName(), event.getChannelLeft().getName());
-			tracker.exit(event);
-			trackerClient.logLeaveEvent(event.getMember().getIdLong(), event.getChannelLeft().getIdLong());
-		}
-		
 		partyCommand.onGuildVoiceLeave(event);
+		voiceTrackerTrigger.onGuildVoiceLeave(event);
 	}
 	
 	
 	@Override
 	public void onGuildVoiceMove(@Nonnull GuildVoiceMoveEvent event) {
-		if (tracker != null) {
-			logger.debug("[Voice] MOVE {} | {} -> {}",
-					event.getMember().getEffectiveName(),
-					event.getChannelLeft().getName(),
-					event.getChannelJoined().getName()
-			);
-			
-			tracker.move(event);
-			trackerClient.logMoveEvent(
-					event.getMember().getIdLong(),
-					event.getChannelLeft().getIdLong(),
-					event.getChannelJoined().getIdLong()
-			);
-		}
-		
 		partyCommand.onGuildVoiceMove(event);
+		voiceTrackerTrigger.onGuildVoiceMove(event);
 	}
 	
 }

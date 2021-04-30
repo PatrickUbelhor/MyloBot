@@ -12,13 +12,13 @@ import java.util.Date;
 
 /**
  * @author Patrick Ubelhor
- * @version 2/12/2021
+ * @version 4/23/2021
  */
-public class VoiceTracker implements Closeable {
+public class VoiceTrackerFileWriter implements Closeable {
 	
 	private final FileWriter fw;
 	
-	public VoiceTracker() throws IOException {
+	public VoiceTrackerFileWriter() throws IOException {
 		 fw = new FileWriter("vclog.csv", true);
 	}
 	

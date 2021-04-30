@@ -1,7 +1,7 @@
 package commands;
 
 import lib.commands.Command;
-import log.VoiceTracker;
+import log.VoiceTrackerFileWriter;
 import main.Globals;
 import lib.main.Permission;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -16,9 +16,9 @@ import java.io.IOException;
  */
 public class GetVoiceLog extends Command {
 	
-	private final VoiceTracker tracker;
+	private final VoiceTrackerFileWriter tracker;
 	
-	public GetVoiceLog(Permission perm, VoiceTracker tracker) {
+	public GetVoiceLog(Permission perm, VoiceTrackerFileWriter tracker) {
 		super("getvclog", perm);
 		this.tracker = tracker;
 	}
