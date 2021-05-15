@@ -1,14 +1,17 @@
 package lib.services;
 
-import java.util.function.BooleanSupplier;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import static main.Globals.logger;
+import java.util.function.BooleanSupplier;
 
 /**
  * @author Patrick Ubelhor
  * @version 2/26/2020
  */
 class PeriodicRunner extends Thread {
+	
+	private static final Logger logger = LogManager.getLogger(PeriodicRunner.class);
 	
 	private final long period;
 	private final BooleanSupplier init;

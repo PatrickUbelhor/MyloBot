@@ -2,14 +2,16 @@ package lib.commands;
 
 import lib.main.Permission;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-
-import static main.Globals.logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * @author Patrick Ubelhor
  * @version 2/26/2020
  */
 public abstract class Command {
+	
+	private static final Logger logger = LogManager.getLogger(Command.class);
 	
 	private final String name;
 	private Permission perm;

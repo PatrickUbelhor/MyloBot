@@ -7,19 +7,21 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import main.Bot;
 import net.dv8tion.jda.api.entities.Activity;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
-import static main.Globals.logger;
-
 /**
  * @author Patrick Ubelhor, Evan Perry Grove
  * @version 2/24/2021, 5/4/2018
  */
 public class TrackScheduler extends AudioEventAdapter {
+	
+	private static final Logger logger = LogManager.getLogger(TrackScheduler.class);
 	
 	private final AudioPlayer player;
 	private final BlockingDeque<AudioTrack> queue;

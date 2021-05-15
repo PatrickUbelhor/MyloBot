@@ -2,10 +2,11 @@ package commands;
 
 import lib.commands.Command;
 import log.VoiceTrackerFileWriter;
-import main.Globals;
 import lib.main.Permission;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +16,8 @@ import java.io.IOException;
  * @version 11/2/2019
  */
 public class GetVoiceLog extends Command {
+	
+	private static final Logger logger = LogManager.getLogger(GetVoiceLog.class);
 	
 	private final VoiceTrackerFileWriter tracker;
 	
@@ -37,7 +40,7 @@ public class GetVoiceLog extends Command {
 		try {
 			tracker.close();
 		} catch (IOException e) {
-			Globals.logger.error(e);
+			logger.error(e);
 			return false;
 		}
 		

@@ -8,6 +8,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -17,6 +19,8 @@ import java.io.IOException;
  * @version 3/9/2021
  */
 public class VoiceTrackerClient {
+	
+	private static final Logger logger = LogManager.getLogger();
 	
 	private final OkHttpClient client;
 	private final MediaType JSON = MediaType.get("application/json; charset=utf-8");
@@ -70,18 +74,18 @@ public class VoiceTrackerClient {
 		
 		@Override
 		public void onFailure(@Nonnull Call call, @Nonnull IOException e) {
-			Globals.logger.error("[Voice] Failed to send {} request", type, e);
+			logger.error("[Voice] Failed to send {} request", type, e);
 		}
 		
 		@Override
 		public void onResponse(@Nonnull Call call, @Nonnull Response response) {
 			if (!response.isSuccessful()) {
-				Globals.logger.error("[Voice] Error on {} request: {}\n{}", type, response.code(), response.body());
+				logger.error("[Voice] Error on {} request: {}\n{}", type, response.code(), response.body());
 				return;
 			}
 			
 			response.close();
-			Globals.logger.debug("[Voice] Successfully sent {} request", type);
+			logger.debug("[Voice] Successfully sent {} request", type);
 		}
 	}
 	

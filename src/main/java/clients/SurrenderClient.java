@@ -1,6 +1,8 @@
 package clients;
 
 import main.Globals;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,13 +11,14 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
-import static main.Globals.logger;
-
 /**
  * @author Patrick Ubelhor
  * @version 3/10/2021
  */
 public class SurrenderClient {
+	
+	private static final Logger logger = LogManager.getLogger(SurrenderClient.class);
+	
 	
 	public SurrenderClient() {}
 	

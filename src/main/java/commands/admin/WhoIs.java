@@ -9,18 +9,20 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
  * @version 8/8/2020
  */
 public class WhoIs extends Command {
+	
+	private static final Logger logger = LogManager.getLogger(WhoIs.class);
 	
 	// Format string for each users' information
 	private static final String format =

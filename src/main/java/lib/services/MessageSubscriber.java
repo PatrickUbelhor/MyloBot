@@ -3,6 +3,8 @@ package lib.services;
 import main.Bot;
 import main.Globals;
 import net.dv8tion.jda.api.entities.TextChannel;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,14 +15,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import static main.Globals.logger;
-
 /**
  * @author Patrick Ubelhor
  * @version 3/9/2021
  */
 public class MessageSubscriber {
 	
+	private static final Logger logger = LogManager.getLogger(MessageSubscriber.class);
 	private static MessageSubscriber messageSubscriber = null;
 	
 	public static MessageSubscriber getInstance() {
@@ -32,7 +33,7 @@ public class MessageSubscriber {
 	}
 	
 	
-	private HashMap<String, LinkedList<Subscriber>> subscribers;
+	private final HashMap<String, LinkedList<Subscriber>> subscribers;
 	
 	public MessageSubscriber() {
 		this.subscribers = new HashMap<>();

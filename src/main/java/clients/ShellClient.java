@@ -1,17 +1,20 @@
 package clients;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
-import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
  * @version 3/9/2021
  */
 public class ShellClient {
+	
+	private static final Logger logger = LogManager.getLogger(ShellClient.class);
 
 	public String getIp() {
 		if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {

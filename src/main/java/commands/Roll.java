@@ -4,16 +4,18 @@ import lib.commands.Command;
 import lib.main.Permission;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Random;
-
-import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
  * @version 2/23/2021
  */
 public class Roll extends Command {
+	
+	private static final Logger logger = LogManager.getLogger(Roll.class);
 	
 	public Roll(Permission permission) {
 		super("roll", permission);

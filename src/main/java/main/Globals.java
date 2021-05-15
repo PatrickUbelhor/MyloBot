@@ -19,7 +19,9 @@ import org.apache.logging.log4j.Logger;
  */
 public class Globals {
 	
-	public static final Logger logger = LogManager.getLogger(Globals.class);
+	private static final Logger logger = LogManager.getLogger(Globals.class);
+	private static final String CONFIG_PATH = "config/config.yaml";
+	
 	public static final String DISCORD_TOKEN;
 	public static final int MUSIC_VOLUME;
 	public static final long SURRENDER_DELAY;
@@ -33,16 +35,18 @@ public class Globals {
 	
 	public static final String SERVICES_SAVE_PATH = "config/services.txt";
 	
-	private static final String CONFIG_PATH = "config/mylobot.properties";
-	private static final Properties properties = new Properties();
-	private static boolean gotAllRequiredProperties = true;
+//	private static final String CONFIG_PATH = "config/mylobot.properties";
+//	private static final Properties properties = new Properties();
+//	private static boolean gotAllRequiredProperties = true;
 	
 	static {
+		// TODO: Generate empty config if no config file exists
+		// TODO:
 		
 		Config config;
 		ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 		try {
-			config = mapper.readValue(new File("config/config.yaml"), Config.class);
+			config = mapper.readValue(new File(CONFIG_PATH), Config.class);
 		} catch (IOException e) {
 			logger.fatal("Couldn't read config file", e);
 			throw new LoadConfigException(e);
@@ -106,24 +110,24 @@ public class Globals {
 	}
 	
 	
-	private static String getOrDefault(String key, String defaultValue) {
-		if (!properties.containsKey(key) || properties.getProperty(key).equals("")) {
-			logger.warn(String.format("Config '%s' does not contain key '%s'. Using default value: '%s'", CONFIG_PATH, key, defaultValue));
-			properties.setProperty(key, defaultValue);
-		}
-		
-		return properties.getProperty(key);
-	}
-	
-	private static String getOrFail(String key) {
-		if (!properties.containsKey(key) || properties.getProperty(key).equals("")) {
-			logger.error(String.format("Config '%s' does not contain value for required key '%s'", CONFIG_PATH, key));
-			gotAllRequiredProperties = false;
-			properties.setProperty(key, ""); // Ensures empty value gets printed to file
-			return null;
-		}
-		
-		return properties.getProperty(key);
-	}
+//	private static String getOrDefault(String key, String defaultValue) {
+//		if (!properties.containsKey(key) || properties.getProperty(key).equals("")) {
+//			logger.warn(String.format("Config '%s' does not contain key '%s'. Using default value: '%s'", CONFIG_PATH, key, defaultValue));
+//			properties.setProperty(key, defaultValue);
+//		}
+//
+//		return properties.getProperty(key);
+//	}
+//
+//	private static String getOrFail(String key) {
+//		if (!properties.containsKey(key) || properties.getProperty(key).equals("")) {
+//			logger.error(String.format("Config '%s' does not contain value for required key '%s'", CONFIG_PATH, key));
+//			gotAllRequiredProperties = false;
+//			properties.setProperty(key, ""); // Ensures empty value gets printed to file
+//			return null;
+//		}
+//
+//		return properties.getProperty(key);
+//	}
 	
 }

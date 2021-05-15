@@ -5,8 +5,8 @@ import lib.main.Permission;
 import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-
-import static main.Globals.logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * @author Patrick Ubelhor
@@ -14,6 +14,7 @@ import static main.Globals.logger;
  */
 public class ClearText extends Command {
 	
+	private static final Logger logger = LogManager.getLogger(ClearText.class);
 	private static final int MAX_MESSAGE_COUNT = 100; // JDA throws exception after this point
 	
 	public ClearText(Permission perm) {

@@ -4,14 +4,17 @@ import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-
-import static main.Globals.logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * @author Patrick Ubelhor
  * @version 8/15/2017
  */
 public class QueueLastAudioLoadResultHandler implements AudioLoadResultHandler {
+	
+	private static final Logger logger = LogManager.getLogger(QueueLastAudioLoadResultHandler.class);
+	
 	private final TrackScheduler trackScheduler;
 	
 	public QueueLastAudioLoadResultHandler(TrackScheduler trackScheduler) {

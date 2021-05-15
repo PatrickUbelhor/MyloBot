@@ -1,9 +1,10 @@
 package log;
 
-import main.Globals;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.Closeable;
 import java.io.FileWriter;
@@ -15,6 +16,8 @@ import java.util.Date;
  * @version 4/23/2021
  */
 public class VoiceTrackerFileWriter implements Closeable {
+	
+	private static final Logger logger = LogManager.getLogger();
 	
 	private final FileWriter fw;
 	
@@ -40,8 +43,8 @@ public class VoiceTrackerFileWriter implements Closeable {
 				fw.append(String.format("M,%d,%d,%d,%d\n", userSnowflake, time, leavingChannelId, joiningChannelId));
 				fw.flush();
 			} catch (IOException e) {
-				Globals.logger.error("Failed to log VC {} event", "M");
-				Globals.logger.error(e);
+				logger.error("Failed to log VC {} event", "M");
+				logger.error(e);
 			}
 		}
 	}
@@ -61,8 +64,8 @@ public class VoiceTrackerFileWriter implements Closeable {
 				fw.append(String.format("%s,%d,%d,%d\n", eventCode, userId, time, channelId));
 				fw.flush();
 			} catch (IOException e) {
-				Globals.logger.error("Failed to log VC {} event", eventCode);
-				Globals.logger.error(e);
+				logger.error("Failed to log VC {} event", eventCode);
+				logger.error(e);
 			}
 		}
 	}

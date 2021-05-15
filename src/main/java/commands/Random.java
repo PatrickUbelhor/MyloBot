@@ -3,14 +3,16 @@ package commands;
 import lib.commands.Command;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-
-import static main.Globals.logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * @author Patrick Ubelhor
  * @version 2/27/2020
  */
 public class Random extends Command {
+	
+	private static final Logger logger = LogManager.getLogger(Random.class);
 	
 	public Random() {
 		super("random");

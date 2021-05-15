@@ -6,17 +6,19 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
-
-import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
  * @version 2/27/2020
  */
 public class Kick extends Command {
-
+	
+	private static final Logger logger = LogManager.getLogger(Kick.class);
+	
 	public Kick(Permission perm) {
 		super("kick", perm);
 	}

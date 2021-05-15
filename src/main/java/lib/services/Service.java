@@ -1,12 +1,15 @@
 package lib.services;
 
-import static main.Globals.logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * @author Patrick Ubelhor
  * @version 9/22/2020
  */
 public abstract class Service {
+	
+	private static final Logger logger = LogManager.getLogger(Service.class);
 	
 	public static void loadSubscribers() {
 		MessageSubscriber.getInstance().loadSubscribers();
