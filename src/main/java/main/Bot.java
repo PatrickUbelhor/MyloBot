@@ -49,6 +49,8 @@ import net.dv8tion.jda.api.events.user.update.UserUpdateOnlineStatusEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import services.IPChange;
 import services.SurrenderAt20;
 
@@ -60,16 +62,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static main.Globals.DISCORD_TOKEN;
-import static main.Globals.logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 4/30/2021
+ * @version 5/15/2021
  *
  * TODO: make a simple setStatus method for setting the bot's Discord status?
  */
 public class Bot extends ListenerAdapter {
 	
+	private static final Logger logger = LogManager.getLogger(Bot.class);
 	private static final LinkedHashMap<String, Command> commands = new LinkedHashMap<>();
 	private static final LinkedHashMap<String, Service> services = new LinkedHashMap<>();
 	private static final Party partyCommand = new Party(Permission.USER);
@@ -77,7 +79,7 @@ public class Bot extends ListenerAdapter {
 	private static JDA jda;
 	private static MessageInterceptor messageInterceptor;
 	private static Lexer lexer;
-	private static VoiceTrackerFileWriter tracker;
+	private static VoiceTrackerFileWriter tracker; // TODO: make sure this is a singleton so it gets closed
 	private static VoiceTrackerTrigger voiceTrackerTrigger;
 	private static List<Role> userRoles;
 	private static List<Role> modRoles;
@@ -167,13 +169,13 @@ public class Bot extends ListenerAdapter {
 			// Get Role object for 'user' and 'mod' (defined in config)
 			logger.info("Getting roles...");
 			// TODO: Check here if role actually exists?
-			userRoles = Arrays.stream(Globals.USER_GROUP_IDS.split(","))
-					.parallel()
+			userRoles = Globals.USER_GROUP_IDS
+					.parallelStream()
 					.map(s -> jda.getRoleById(s))
 					.collect(Collectors.toList());
 			
-			modRoles = Arrays.stream(Globals.MOD_GROUP_IDS.split(","))
-					.parallel()
+			modRoles = Globals.MOD_GROUP_IDS
+					.parallelStream()
 					.map(s -> jda.getRoleById(s))
 					.collect(Collectors.toList());
 			logger.info("Got roles");
@@ -186,6 +188,7 @@ public class Bot extends ListenerAdapter {
 			
 		} catch (Exception e) {
 			logger.fatal("Couldn't initialize bot", e);
+			System.exit(2);
 		}
 		
 	}
