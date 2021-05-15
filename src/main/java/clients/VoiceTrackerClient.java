@@ -20,7 +20,7 @@ import java.io.IOException;
  */
 public class VoiceTrackerClient {
 	
-	private static final Logger logger = LogManager.getLogger();
+	private static final Logger logger = LogManager.getLogger(VoiceTrackerClient.class);
 	
 	private final OkHttpClient client;
 	private final MediaType JSON = MediaType.get("application/json; charset=utf-8");
