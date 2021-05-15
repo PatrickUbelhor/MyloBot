@@ -93,104 +93,102 @@ public class Bot extends ListenerAdapter {
 		}
 		
 		
+		// Log into Discord account
 		try {
-			// Log into Discord account
 			jda = JDABuilder.createDefault(DISCORD_TOKEN)
 					.enableIntents(GatewayIntent.GUILD_MEMBERS)
 					.setMemberCachePolicy(MemberCachePolicy.ALL)
 					.build()
 					.awaitReady();
-			
-			// Initialize interceptor
-			messageInterceptor = new MessageInterceptor();
-			
-			// Initialize lexer
-			lexer = new Lexer(); // TODO: make a singleton
-			
-			voiceTrackerTrigger = new VoiceTrackerTrigger(jda);
-			
-			// Instantiate commands
-			Command[] preInitCommands = {
-					new Help(),
-					new Play(),
-					new PlayNext(),
-					new Skip(),
-					new Pause(),
-					new Unpause(),
-					new PeekQueue(),
-					new Reverse(),
-					new Random(),
-					new Roll(Permission.USER),
-					partyCommand,
-					new ClearText(Permission.MOD),
-					new WhoIs(Permission.USER),
-					new Kick(Permission.MOD),
-					new Ban(Permission.MOD),
-					new Mute(Permission.MOD),
-					new Unmute(Permission.MOD),
-					new Subscribe(Permission.MOD),
-					new Unsubscribe(Permission.MOD),
-					new Shutdown(Permission.MOD),
-					new GetIp(Permission.MOD),
-					new GetVoiceLog(Permission.MOD, tracker)
-			};
-			
-			
-			Service[] preInitServices = {
-					new IPChange(Globals.IP_CHECK_DELAY),
-					new SurrenderAt20(Globals.SURRENDER_DELAY)
-			};
-			
-			
-			// Initialize triggers
-			voiceTrackerTrigger.init();
-			
-			
-			// Initialize commands
-			logger.info("Initializing commands...");
-			Arrays.stream(preInitCommands)
-					.parallel()
-					.filter(Command::init)
-					.forEachOrdered(command -> commands.put(command.getName(), command));
-			logger.info("Initialization finished");
-			
-			
-			// Initialize services
-			logger.info("Initializing services...");
-			Service.loadSubscribers();
-			Arrays.stream(preInitServices)
-					.forEachOrdered(service -> {
-						service.startThread();
-						services.put(service.getName(), service);
-					});
-			logger.info("Initialization finished");
-			
-			
-			// Get Role object for 'user' and 'mod' (defined in config)
-			logger.info("Getting roles...");
-			// TODO: Check here if role actually exists?
-			userRoles = Globals.USER_GROUP_IDS
-					.parallelStream()
-					.map(s -> jda.getRoleById(s))
-					.collect(Collectors.toList());
-			
-			modRoles = Globals.MOD_GROUP_IDS
-					.parallelStream()
-					.map(s -> jda.getRoleById(s))
-					.collect(Collectors.toList());
-			logger.info("Got roles");
-			
-			
-			// Load
-			jda.getGuilds().forEach(Guild::loadMembers);
-			
-			jda.addEventListener(new Bot());
-			
 		} catch (Exception e) {
 			logger.fatal("Couldn't initialize bot", e);
 			System.exit(2);
 		}
 		
+		messageInterceptor = new MessageInterceptor();
+		lexer = new Lexer(); // TODO: make a singleton
+		voiceTrackerTrigger = new VoiceTrackerTrigger(jda);
+		
+		Command[] preInitCommands = {
+				new Help(),
+				new Play(),
+				new PlayNext(),
+				new Skip(),
+				new Pause(),
+				new Unpause(),
+				new PeekQueue(),
+				new Reverse(),
+				new Random(),
+				new Roll(Permission.USER),
+				partyCommand,
+				new ClearText(Permission.MOD),
+				new WhoIs(Permission.USER),
+				new Kick(Permission.MOD),
+				new Ban(Permission.MOD),
+				new Mute(Permission.MOD),
+				new Unmute(Permission.MOD),
+				new Subscribe(Permission.MOD),
+				new Unsubscribe(Permission.MOD),
+				new Shutdown(Permission.MOD),
+				new GetIp(Permission.MOD),
+				new GetVoiceLog(Permission.MOD, tracker)
+		};
+		
+		Service[] preInitServices = {
+				new IPChange(Globals.IP_CHECK_DELAY),
+				new SurrenderAt20(Globals.SURRENDER_DELAY)
+		};
+		
+		
+		// Initialize triggers
+		voiceTrackerTrigger.init();
+		
+		initializeCommands(preInitCommands);
+		initializeServices(preInitServices);
+		
+		loadRoles();
+		
+		// Load
+		jda.getGuilds().forEach(Guild::loadMembers);
+		jda.addEventListener(new Bot());
+	}
+	
+	
+	private static void initializeCommands(Command[] preInitCommands) {
+		logger.info("Initializing commands...");
+		Arrays.stream(preInitCommands)
+				.parallel()
+				.filter(Command::init)
+				.forEachOrdered(command -> commands.put(command.getName(), command));
+		logger.info("Initialization finished");
+	}
+	
+	
+	private static void initializeServices(Service[] preInitServices) {
+		logger.info("Initializing services...");
+		Service.loadSubscribers();
+		Arrays.stream(preInitServices)
+				.forEachOrdered(service -> {
+					service.startThread();
+					services.put(service.getName(), service);
+				});
+		logger.info("Initialization finished");
+	}
+	
+	
+	private static void loadRoles() {
+		logger.info("Getting roles...");
+		// TODO: Check here if role actually exists?
+		userRoles = Globals.USER_GROUP_IDS
+				.parallelStream()
+				.map(s -> jda.getRoleById(s))
+				.collect(Collectors.toList());
+		
+		modRoles = Globals.MOD_GROUP_IDS
+				.parallelStream()
+				.map(s -> jda.getRoleById(s))
+				.collect(Collectors.toList());
+		logger.info("Got roles");
 	}
 	
 	
