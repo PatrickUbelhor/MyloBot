@@ -17,7 +17,7 @@ import java.util.Date;
  */
 public class VoiceTrackerFileWriter implements Closeable {
 	
-	private static final Logger logger = LogManager.getLogger();
+	private final Logger logger = LogManager.getLogger(VoiceTrackerFileWriter.class);
 	
 	private final FileWriter fw;
 	
