@@ -11,16 +11,12 @@ import lib.services.Subscriber;
 
 /**
  * @author Patrick Ubelhor
- * @version 9/19/2020
+ * @version 5/16/2021
  */
 public class Unsubscribe extends Command {
 	
-	public Unsubscribe() {
-		super("unsub");
-	}
-	
-	public Unsubscribe(Permission perm) {
-		super("unsub", perm);
+	public Unsubscribe(Permission permission) {
+		super("unsub", permission);
 	}
 	
 	

@@ -2,7 +2,6 @@ package lib.commands.music;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
-import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import main.Bot;
@@ -10,10 +9,10 @@ import net.dv8tion.jda.api.entities.Activity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.stream.Collectors;
 
 /**
  * @author Patrick Ubelhor, Evan Perry Grove
@@ -51,7 +50,7 @@ public class TrackScheduler extends AudioEventAdapter {
 	private boolean startTrack(AudioTrack track, boolean noInterrupt) {
 		boolean result = player.startTrack(track, noInterrupt);
 		
-		if (result) { // Else if there is a song, and we succeeded in playing it...
+		if (result) { // If there is a song, and we succeeded in playing it...
 			logger.info("Now playing: " + track.getInfo().title);
 		}
 		
@@ -132,6 +131,9 @@ public class TrackScheduler extends AudioEventAdapter {
 	}
 	
 	
+	/**
+	 * @return The title of the currently playing song.
+	 */
 	public String getCurrentSong() {
 		if (player.getPlayingTrack() == null) return null;
 		
@@ -139,12 +141,15 @@ public class TrackScheduler extends AudioEventAdapter {
 	}
 	
 	
+	/**
+	 * @return List of track titles in order within queue.
+	 */
 	public List<String> getQueue() {
-		var titles = new LinkedList<String>();
-		queue.forEach(audioTrack -> titles.addLast(audioTrack.getInfo().title));
-		
-		return titles;
+		return queue.stream()
+				.map(audioTrack -> audioTrack.getInfo().title)
+				.collect(Collectors.toList());
 	}
+	
 	
 	/**
 	 * Pauses the current active track.
@@ -205,13 +210,6 @@ public class TrackScheduler extends AudioEventAdapter {
 		// endReason == REPLACED: Another track started playing while this had not finished
 		// endReason == CLEANUP: Player hasn't been queried for a while, if you want you can put a
 		//                       clone of this back to your queue
-	}
-	
-	
-	@Override
-	public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception) {
-		// An already playing track threw an exception (track end event will still be received separately)
-		logger.warn("Threw exception", exception);
 	}
 	
 	

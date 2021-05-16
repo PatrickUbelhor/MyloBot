@@ -10,16 +10,12 @@ import java.util.List;
 
 /**
  * @author Patrick Ubelhor
- * @version 2/24/2021
+ * @version 5/16/2021
  */
 public class PeekQueue extends Music {
 	
-	public PeekQueue() {
-		super("queue");
-	}
-	
-	public PeekQueue(Permission perm) {
-		super("queue", perm);
+	public PeekQueue(Permission permission) {
+		super("queue", permission);
 	}
 	
 	

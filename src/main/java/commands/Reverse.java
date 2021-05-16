@@ -1,17 +1,18 @@
 package commands;
 
 import lib.commands.Command;
+import lib.main.Permission;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 /**
  * @author Patrick Ubelhor
- * @version 1/29/2019
+ * @version 5/16/2021
  */
 public class Reverse extends Command {
 	
-	public Reverse() {
-		super("reverse");
+	public Reverse(Permission permission) {
+		super("reverse", permission);
 	}
 	
 	

@@ -11,16 +11,12 @@ import lib.services.Subscriber;
 
 /**
  * @author Patrick Ubelhor
- * @version 9/19/2020
+ * @version 5/16/2021
  */
 public class Subscribe extends Command {
 	
-	public Subscribe() {
-		super("sub");
-	}
-	
-	public Subscribe(Permission perm) {
-		super("sub", perm);
+	public Subscribe(Permission permission) {
+		super("sub", permission);
 	}
 	
 	

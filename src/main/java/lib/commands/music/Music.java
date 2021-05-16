@@ -22,13 +22,8 @@ public abstract class Music extends Command {
 	
 	protected static AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
 	private static final AtomicBoolean hasInit = new AtomicBoolean(false);
-	protected static HashMap<Long, TrackScheduler> trackSchedulers = new HashMap<>();
-	private static HashMap<Long, AudioManager> audioManagers = new HashMap<>();
-	
-	
-	protected Music(String name) {
-		super(name);
-	}
+	protected static final HashMap<Long, TrackScheduler> trackSchedulers = new HashMap<>();
+	private static final HashMap<Long, AudioManager> audioManagers = new HashMap<>();
 	
 	
 	protected Music(String name, Permission perm) {
@@ -59,6 +54,10 @@ public abstract class Music extends Command {
 	protected final boolean joinAudioChannel(MessageReceivedEvent event) {
 		AudioManager guildAudioManager = event.getGuild().getAudioManager();
 		VoiceChannel vc = event.getMember().getVoiceState().getChannel();
+		
+		if (guildAudioManager.isConnected() && guildAudioManager.getConnectedChannel().getIdLong() == vc.getIdLong()) {
+			return true;
+		}
 		
 		// Refuses to play if user is not in a voice channel
 		if (vc == null) {

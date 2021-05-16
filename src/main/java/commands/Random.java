@@ -1,6 +1,7 @@
 package commands;
 
 import lib.commands.Command;
+import lib.main.Permission;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.apache.logging.log4j.LogManager;
@@ -8,15 +9,16 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 2/27/2020
+ * @version 5/16/2021
  */
 public class Random extends Command {
 	
 	private static final Logger logger = LogManager.getLogger(Random.class);
 	
-	public Random() {
-		super("random");
+	public Random(Permission permission) {
+		super("random", permission);
 	}
+	
 	
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {

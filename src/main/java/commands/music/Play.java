@@ -3,22 +3,21 @@ package commands.music;
 import lib.commands.music.Music;
 import lib.commands.music.QueueLastAudioLoadResultHandler;
 import lib.commands.music.TrackScheduler;
+import lib.main.Permission;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 /**
  * @author Patrick Ubelhor
- * @version 2/24/2021
+ * @version 5/16/2021
  *
  * TODO: Make bot leave voice channel after some period of inactivity
  * TODO: Ability to loop
  */
 public final class Play extends Music {
 	
-	private boolean active;
 	
-	public Play() {
-		super("play");
-		active = false;
+	public Play(Permission permission) {
+		super("play", permission);
 	}
 	
 	
@@ -28,10 +27,8 @@ public final class Play extends Music {
 		if (args.length < 2) return;
 		
 		// Joins the voice channel if not in one
-		if (!active) {
-			if (!joinAudioChannel(event)) {
-				return; // If we failed to join a voice channel, return
-			}
+		if (!joinAudioChannel(event)) {
+			return; // If we failed to join a voice channel, return
 		}
 		
 		// Directly add song to queue and return if it's a link

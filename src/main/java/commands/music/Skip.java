@@ -2,16 +2,17 @@ package commands.music;
 
 import lib.commands.music.Music;
 import lib.commands.music.TrackScheduler;
+import lib.main.Permission;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 /**
  * @author Patrick Ubelhor
- * @version 2/24/2021
+ * @version 5/16/2021
  */
 public final class Skip extends Music {
 	
-	public Skip() {
-		super("skip");
+	public Skip(Permission permission) {
+		super("skip", permission);
 	}
 	
 	

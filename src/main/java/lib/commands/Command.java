@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 2/26/2020
+ * @version 5/16/2021
  */
 public abstract class Command {
 	
@@ -16,10 +16,6 @@ public abstract class Command {
 	private final String name;
 	private Permission perm;
 	
-	protected Command(String name) {
-		this(name, Permission.USER);
-	}
-
 	
 	protected Command(String name, Permission perm) {
 		this.name = name.toLowerCase();
