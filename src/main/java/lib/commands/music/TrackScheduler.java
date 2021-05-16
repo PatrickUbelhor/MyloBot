@@ -17,7 +17,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * @author Patrick Ubelhor, Evan Perry Grove
- * @version 2/24/2021, 5/4/2018
+ * @version 5/16/2021, 5/4/2018
  */
 public class TrackScheduler extends AudioEventAdapter {
 	
@@ -185,15 +185,15 @@ public class TrackScheduler extends AudioEventAdapter {
 		logger.info("Track has begun");
 		player.getPlayingTrack().setPosition(0);
 		
-		Activity status = Activity.playing("Playing " + track.getInfo().title);
-		Bot.getJDA().getPresence().setActivity(status);
+		Activity status = Activity.playing(track.getInfo().title);
+		Bot.setStatusMessage(status);
 	}
 	
 	
 	@Override
 	public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
 		logger.info("Ended");
-		Bot.getJDA().getPresence().setActivity(null);
+		Bot.setStatusMessage(null);
 		
 		if (endReason.mayStartNext) {
 			playNext();

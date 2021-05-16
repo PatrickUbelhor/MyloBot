@@ -16,13 +16,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Patrick Ubelhor
- * @version 2/24/2021
+ * @version 5/16/2021
  */
 public abstract class Music extends Command {
 	
 	protected static AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
 	private static final AtomicBoolean hasInit = new AtomicBoolean(false);
 	protected static HashMap<Long, TrackScheduler> trackSchedulers = new HashMap<>();
+	private static HashMap<Long, AudioManager> audioManagers = new HashMap<>();
 	
 	
 	protected Music(String name) {
@@ -71,6 +72,22 @@ public abstract class Music extends Command {
 		
 		guildAudioManager.setSendingHandler(new AudioPlayerSendHandler(trackScheduler.getPlayer()));
 		guildAudioManager.openAudioConnection(vc);
+		audioManagers.put(guildId, guildAudioManager);
+		return true;
+	}
+	
+	
+	protected final boolean leaveAudioChannel(MessageReceivedEvent event) {
+		Long guildId = event.getGuild().getIdLong();
+		
+		if (!audioManagers.containsKey(guildId)) {
+			event.getTextChannel().sendMessage("I can't leave a server I'm not in!").queue();
+			return false;
+		}
+		
+		AudioManager audioManager = audioManagers.get(guildId);
+		audioManager.closeAudioConnection();
+		audioManagers.remove(guildId);
 		return true;
 	}
 	

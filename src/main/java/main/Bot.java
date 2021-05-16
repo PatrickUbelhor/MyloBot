@@ -14,6 +14,7 @@ import commands.admin.Kick;
 import commands.admin.Mute;
 import commands.admin.Unmute;
 import commands.admin.WhoIs;
+import commands.music.Disconnect;
 import commands.music.Pause;
 import commands.music.PeekQueue;
 import commands.music.Play;
@@ -31,6 +32,7 @@ import lib.services.Service;
 import log.VoiceTrackerFileWriter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -65,7 +67,7 @@ import static main.Globals.DISCORD_TOKEN;
 
 /**
  * @author Patrick Ubelhor
- * @version 5/15/2021
+ * @version 5/16/2021
  *
  * TODO: make a simple setStatus method for setting the bot's Discord status?
  */
@@ -129,6 +131,7 @@ public class Bot extends ListenerAdapter {
 				new Unmute(Permission.MOD),
 				new Subscribe(Permission.MOD),
 				new Unsubscribe(Permission.MOD),
+				new Disconnect(Permission.MOD),
 				new Shutdown(Permission.MOD),
 				new GetIp(Permission.MOD),
 				new GetVoiceLog(Permission.MOD, tracker)
@@ -194,6 +197,11 @@ public class Bot extends ListenerAdapter {
 	
 	public static JDA getJDA() {
 		return jda;
+	}
+	
+	
+	public static void setStatusMessage(Activity activity) {
+		jda.getPresence().setActivity(activity);
 	}
 	
 	
