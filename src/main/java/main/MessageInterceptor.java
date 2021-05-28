@@ -12,9 +12,16 @@ import java.util.Random;
 
 /**
  * @author Patrick Ubelhor
- * @version 2/4/2021
+ * @version 5/27/2021
  */
 public class MessageInterceptor {
+	
+	private static final String[] LEAGUE_WORDS = {
+			"league", "leage", "leage", "leag", "leeg", "lege",
+			"reague", "reage", "reage", "reag", "reeg", "rege",
+			"aram"
+	};
+	
 	
 	public void intercept(MessageReceivedEvent event) {
 		User author = event.getAuthor();
@@ -27,6 +34,7 @@ public class MessageInterceptor {
 		interceptEvanPost(author, ch);
 		interceptDavidWalterMeme(author, ch, msg);
 		interceptWhoWouldaThoughtMeme(msg, channel);
+		interceptAramMsg(author, msg, channel);
 	}
 	
 	
@@ -92,11 +100,33 @@ public class MessageInterceptor {
 	
 	
 	private void interceptWhoWouldaThoughtMeme(String msg, MessageChannel channel) {
+		if (!Globals.ENABLE_WHO_WOULDA_THOUGHT_MEME) return;
+		
 		String lowercase = msg.toLowerCase();
 		
+		// We want to check that "who" comes before "thought"
+		int indexWho = lowercase.indexOf("who");
+		if (indexWho == -1) return; // "who" not found
+		
 		// Will also proc when someone says "Who thought this was a good idea?", but I don't care
-		if (Globals.ENABLE_WHO_WOULDA_THOUGHT_MEME && lowercase.contains("who") && lowercase.contains("thought")) {
+		if (lowercase.indexOf("thought", indexWho) != -1) {
 			channel.sendMessage("Not me!").queue();
+		}
+	}
+	
+	
+	private void interceptAramMsg(User author, String msg, MessageChannel channel) {
+		// Avoid responding to legit conversation
+		if (msg.length() > 36 || author.getIdLong() != 130424245917319168L) {
+			return;
+		}
+		
+		String lowercase = msg.toLowerCase();
+		for (String word : LEAGUE_WORDS) {
+			if (lowercase.contains(word)) {
+				channel.sendMessage("No").queue();
+				break;
+			}
 		}
 	}
 	
