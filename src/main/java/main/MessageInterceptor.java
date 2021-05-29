@@ -12,7 +12,7 @@ import java.util.Random;
 
 /**
  * @author Patrick Ubelhor
- * @version 5/27/2021
+ * @version 5/29/2021
  */
 public class MessageInterceptor {
 	
@@ -34,7 +34,7 @@ public class MessageInterceptor {
 		interceptEvanPost(author, ch);
 		interceptDavidWalterMeme(author, ch, msg);
 		interceptWhoWouldaThoughtMeme(msg, channel);
-		interceptAramMsg(author, msg, channel);
+		interceptAramMsg(author, message, msg);
 	}
 	
 	
@@ -115,7 +115,7 @@ public class MessageInterceptor {
 	}
 	
 	
-	private void interceptAramMsg(User author, String msg, MessageChannel channel) {
+	private void interceptAramMsg(User author, Message message, String msg) {
 		// Avoid responding to legit conversation
 		if (msg.length() > 36 || author.getIdLong() != 130424245917319168L) {
 			return;
@@ -124,7 +124,7 @@ public class MessageInterceptor {
 		String lowercase = msg.toLowerCase();
 		for (String word : LEAGUE_WORDS) {
 			if (lowercase.contains(word)) {
-				channel.sendMessage("No").queue();
+				message.addReaction("U+1F44E").queue();
 				break;
 			}
 		}
