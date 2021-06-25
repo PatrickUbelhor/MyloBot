@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author Patrick Ubelhor
- * @version 3/28/2021
+ * @version 6/25/2021
  */
 public class Party extends Command implements Trigger {
 	
@@ -46,7 +47,8 @@ public class Party extends Command implements Trigger {
 		
 		TextChannel textChannel = event.getTextChannel();
 		VoiceChannel vc = event.getMember().getVoiceState().getChannel();
-		String partyName = args[1];
+		String partyName = Arrays.stream(Arrays.copyOfRange(args, 1, args.length))
+				.reduce("", (s, s2) -> s + " " + s2);
 		
 		if (vc == null) {
 			textChannel.sendMessage("You must be in a voice channel to create a party.").queue();
