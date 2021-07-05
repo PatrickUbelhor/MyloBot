@@ -243,6 +243,11 @@ public class Bot extends ListenerAdapter {
 			logger.debug(token.getType().name() + " | " + token.getData());
 		}
 		
+		// If message ends with "&", then the message should be removed
+		if (tokens.get(tokens.size() - 1).getType() == TokenType.AMP) {
+			message.delete().queue();
+			tokens = tokens.subList(0, tokens.size() - 1);
+		}
 		
 		switch (event.getChannelType()) {
 			case TEXT:
