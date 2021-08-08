@@ -1,7 +1,7 @@
 package commands.music;
 
-import lib.commands.music.Music;
-import lib.commands.music.TrackScheduler;
+import lib.music.Music;
+import lib.music.TrackScheduler;
 import lib.main.Permission;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 

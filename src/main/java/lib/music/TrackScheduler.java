@@ -1,4 +1,4 @@
-package lib.commands.music;
+package lib.music;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
@@ -188,7 +188,7 @@ public class TrackScheduler extends AudioEventAdapter {
 	@Override
 	public void onTrackStart(AudioPlayer player, AudioTrack track) {
 		logger.info("Track has begun");
-		player.getPlayingTrack().setPosition(0);
+//		player.getPlayingTrack().setPosition(0);
 		
 		Activity status = Activity.playing(track.getInfo().title);
 		Bot.setStatusMessage(status);
