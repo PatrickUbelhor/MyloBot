@@ -1,12 +1,7 @@
-package lib.music;
+package lib.music.v2;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
-import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
-import main.Bot;
-import net.dv8tion.jda.api.entities.Activity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,10 +11,10 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.stream.Collectors;
 
 /**
- * @author Patrick Ubelhor, Evan Perry Grove
- * @version 5/16/2021, 5/4/2018
+ * @author Patrick Ubelhor
+ * @version 8/8/2021
  */
-public class TrackScheduler extends AudioEventAdapter {
+public class TrackScheduler {
 	
 	private static final Logger logger = LogManager.getLogger(TrackScheduler.class);
 	
@@ -33,14 +28,6 @@ public class TrackScheduler extends AudioEventAdapter {
 	
 	
 	/**
-	 * @return The audio player attached to this track scheduler.
-	 */
-	public AudioPlayer getPlayer() {
-		return player;
-	}
-	
-	
-	/**
 	 * Essentially a proxy to player#startTrack(), but updates the bot's Discord status
 	 * with the name of this song.
 	 *
@@ -49,13 +36,14 @@ public class TrackScheduler extends AudioEventAdapter {
 	 * @return True if the track was started
 	 */
 	private boolean startTrack(AudioTrack track, boolean noInterrupt) {
-		boolean result = player.startTrack(track, noInterrupt);
+		boolean isValid = player.startTrack(track, noInterrupt);
 		
-		if (result) { // If there is a song, and we succeeded in playing it...
+		// If this is a valid song, and we succeeded in playing it...
+		if (isValid) {
 			logger.info("Now playing: " + track.getInfo().title);
 		}
 		
-		return result;
+		return isValid;
 	}
 	
 	
@@ -65,8 +53,9 @@ public class TrackScheduler extends AudioEventAdapter {
 	 * @param track The song to enqueue.
 	 */
 	public void queue(AudioTrack track) {
+		boolean trackStarted = startTrack(track, true);
 		
-		if (!startTrack(track, true)) {
+		if (!trackStarted) {
 			logger.info("Adding to queue");
 			queue.offer(track);
 		}
@@ -79,7 +68,9 @@ public class TrackScheduler extends AudioEventAdapter {
 	 * @param track The song to push onto the queue.
 	 */
 	public void queueNext(AudioTrack track) {
-		if (!startTrack(track, true)) {
+		boolean trackStarted = startTrack(track, true);
+		
+		if (!trackStarted) {
 			logger.info("Adding to front of queue");
 			queue.offerFirst(track);
 		}
@@ -167,57 +158,6 @@ public class TrackScheduler extends AudioEventAdapter {
 	 */
 	public void unpause() {
 		player.setPaused(false);
-	}
-	
-	
-	/**
-	 * @return The number of tracks remaining in the playback queue (excluding the active track).
-	 */
-	public int getQueueLength() {
-		return queue.size();
-	}
-	
-	
-	@Override
-	public void onPlayerPause(AudioPlayer player) {}
-	
-	
-	@Override
-	public void onPlayerResume(AudioPlayer player) {}
-	
-	
-	@Override
-	public void onTrackStart(AudioPlayer player, AudioTrack track) {
-		logger.info("Track has begun");
-		player.getPlayingTrack().setPosition(0);
-		
-		Activity status = Activity.playing(track.getInfo().title);
-		Bot.setStatusMessage(status);
-	}
-	
-	
-	@Override
-	public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
-		logger.info("Ended");
-		Bot.setStatusMessage(null);
-		
-		if (endReason.mayStartNext) {
-			playNext();
-		}
-		
-		// endReason == FINISHED: A track finished or died by an exception (mayStartNext = true).
-		// endReason == LOAD_FAILED: Loading of a track failed (mayStartNext = true).
-		// endReason == STOPPED: The player was stopped.
-		// endReason == REPLACED: Another track started playing while this had not finished
-		// endReason == CLEANUP: Player hasn't been queried for a while, if you want you can put a
-		//                       clone of this back to your queue
-	}
-	
-	
-	@Override
-	public void onTrackStuck(AudioPlayer player, AudioTrack track, long thresholdMs) {
-		logger.warn("Track is stuck");
-		playNext();
 	}
 	
 }
