@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author Patrick Ubelhor, Evan Perry Grove
- * @version 5/16/2021, 5/4/2018
+ * @version 8/11/2021, 5/4/2018
  */
 public class TrackScheduler extends AudioEventAdapter {
 	
@@ -179,17 +179,21 @@ public class TrackScheduler extends AudioEventAdapter {
 	
 	
 	@Override
-	public void onPlayerPause(AudioPlayer player) {}
+	public void onPlayerPause(AudioPlayer player) {
+		logger.info("[Music] Track paused");
+	}
 	
 	
 	@Override
-	public void onPlayerResume(AudioPlayer player) {}
+	public void onPlayerResume(AudioPlayer player) {
+		logger.info("[Music] Track resumed");
+	}
 	
 	
 	@Override
 	public void onTrackStart(AudioPlayer player, AudioTrack track) {
-		logger.info("Track has begun");
-		player.getPlayingTrack().setPosition(0);
+		logger.info("[Music] Track has begun");
+//		player.getPlayingTrack().setPosition(0);
 		
 		Activity status = Activity.playing(track.getInfo().title);
 		Bot.setStatusMessage(status);
@@ -198,7 +202,7 @@ public class TrackScheduler extends AudioEventAdapter {
 	
 	@Override
 	public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
-		logger.info("Ended");
+		logger.info("[Music] Track ended");
 		Bot.setStatusMessage(null);
 		
 		if (endReason.mayStartNext) {
@@ -215,8 +219,14 @@ public class TrackScheduler extends AudioEventAdapter {
 	
 	
 	@Override
+	public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception) {
+		logger.error("[Music] Track Exception | {}\n{}", exception.severity.name(), exception.getMessage(), exception);
+	}
+	
+	
+	@Override
 	public void onTrackStuck(AudioPlayer player, AudioTrack track, long thresholdMs) {
-		logger.warn("Track is stuck");
+		logger.warn("[Music] Track is stuck | Threshold {}ms", thresholdMs);
 		playNext();
 	}
 	

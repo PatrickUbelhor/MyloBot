@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/15/2017
+ * @version 8/11/2021
  */
 public class QueueLastAudioLoadResultHandler implements AudioLoadResultHandler {
 	
@@ -23,13 +23,13 @@ public class QueueLastAudioLoadResultHandler implements AudioLoadResultHandler {
 	
 	@Override
 	public void trackLoaded(AudioTrack track) {
-		logger.info("Loaded track");
+		logger.info("[Music] Loaded track to end of playback queue");
 		trackScheduler.queue(track);
 	}
 	
 	@Override
 	public void playlistLoaded(AudioPlaylist playlist) {
-		logger.info("Loaded playlist");
+		logger.info("[Music] Loaded playlist to end of playback queue");
 		for (AudioTrack track : playlist.getTracks()) {
 			trackScheduler.queue(track);
 		}
@@ -38,14 +38,13 @@ public class QueueLastAudioLoadResultHandler implements AudioLoadResultHandler {
 	@Override
 	public void noMatches() {
 		// Notify the user that we've got nothing
-		logger.info("No matches!");
+		logger.info("[Music] No matches!");
 	}
 	
 	@Override
-	public void loadFailed(FriendlyException throwable) {
+	public void loadFailed(FriendlyException exception) {
 		// Notify the user that everything exploded
-		logger.error("Load failed!");
-		logger.error(throwable.severity.name());
-		logger.error(throwable.getMessage());
+		logger.error("[Music] Load failed!", exception);
+		logger.error("[Music] Severity: {}", exception.severity.name());
 	}
 }
