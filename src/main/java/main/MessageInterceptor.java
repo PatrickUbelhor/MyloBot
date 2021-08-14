@@ -12,7 +12,7 @@ import java.util.Random;
 
 /**
  * @author Patrick Ubelhor
- * @version 5/29/2021
+ * @version 8/13/2021
  */
 public class MessageInterceptor {
 	
@@ -32,7 +32,7 @@ public class MessageInterceptor {
 		
 		interceptAtEveryone(message, channel);
 		interceptEvanPost(author, ch);
-		interceptDavidWalterMeme(author, ch, msg);
+		interceptDavidMeme(author, ch, msg);
 		interceptWhoWouldaThoughtMeme(msg, channel);
 		interceptAramMsg(author, message, msg);
 	}
@@ -82,7 +82,7 @@ public class MessageInterceptor {
 	 * @param ch The channel to which the message was sent
 	 * @param msg The content of the message
 	 */
-	private void interceptDavidWalterMeme(User author, TextChannel ch, String msg) {
+	private void interceptDavidMeme(User author, TextChannel ch, String msg) {
 		if (!author.isBot() && ch.getName().equals("david")) {
 			if (msg.toLowerCase().contains("david")) {
 				ch.sendMessage("David").queue();
@@ -94,6 +94,26 @@ public class MessageInterceptor {
 			
 			if (msg.toLowerCase().contains("coming") && author.getIdLong() == 104400026993709056L) {
 				ch.sendMessage("David is coming").queue();
+			}
+			
+			if (msg.toLowerCase().contains("rick") || msg.toLowerCase().contains("morty")) {
+				ch.sendMessage("Rick & Morty").queue();
+			}
+			
+			if (msg.toLowerCase().contains("julia") || msg.toLowerCase().contains("10th letter") || msg.toLowerCase().contains("tenth letter")) {
+				ch.sendMessage("Daily reminder").queue();
+			}
+			
+			if (msg.toLowerCase().contains("what") && msg.toLowerCase().contains("is")) {
+				ch.sendMessage("me").queue();
+			}
+			
+			if (msg.toLowerCase().contains("jeff")) {
+				ch.sendMessage("Mah namma Jeeefffff").queue();
+			}
+			
+			if (msg.toLowerCase().contains("minion") || msg.toLowerCase().contains("minin")) {
+				ch.sendMessage("MINION").queue();
 			}
 		}
 	}
