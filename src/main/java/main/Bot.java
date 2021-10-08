@@ -2,7 +2,6 @@ package main;
 
 import commands.GetVoiceLog;
 import commands.Help;
-import commands.Party;
 import commands.Random;
 import commands.Reverse;
 import commands.Roll;
@@ -21,6 +20,8 @@ import commands.music.Play;
 import commands.music.PlayNext;
 import commands.music.Skip;
 import commands.music.Unpause;
+import commands.party.Party;
+import commands.party.Unparty;
 import commands.subscription.Subscribe;
 import commands.subscription.Unsubscribe;
 import lib.commands.Command;
@@ -67,22 +68,20 @@ import static main.Globals.DISCORD_TOKEN;
 
 /**
  * @author Patrick Ubelhor
- * @version 5/16/2021
- *
- * TODO: make a simple setStatus method for setting the bot's Discord status?
+ * @version 9/30/2021
  */
 public class Bot extends ListenerAdapter {
 	
 	private static final Logger logger = LogManager.getLogger(Bot.class);
 	private static final LinkedHashMap<String, Command> commands = new LinkedHashMap<>();
 	private static final LinkedHashMap<String, Service> services = new LinkedHashMap<>();
-	private static final Party partyCommand = new Party(Permission.USER);
 	
 	private static JDA jda;
 	private static MessageInterceptor messageInterceptor;
 	private static Lexer lexer;
 	private static VoiceTrackerFileWriter tracker; // TODO: make sure this is a singleton so it gets closed
 	private static VoiceTrackerTrigger voiceTrackerTrigger;
+	private static PartyTrigger partyTrigger;
 	private static List<Role> userRoles;
 	private static List<Role> modRoles;
 	
@@ -107,8 +106,9 @@ public class Bot extends ListenerAdapter {
 			System.exit(2);
 		}
 		
-		messageInterceptor = new MessageInterceptor();
 		lexer = new Lexer(); // TODO: make a singleton
+		messageInterceptor = new MessageInterceptor();
+		partyTrigger = new PartyTrigger();
 		voiceTrackerTrigger = new VoiceTrackerTrigger(jda);
 		
 		Command[] preInitCommands = {
@@ -122,7 +122,8 @@ public class Bot extends ListenerAdapter {
 				new Reverse(Permission.USER),
 				new Random(Permission.USER),
 				new Roll(Permission.USER),
-				partyCommand,
+				new Party(Permission.USER),
+				new Unparty(Permission.USER),
 				new WhoIs(Permission.USER),
 				new ClearText(Permission.MOD),
 				new Kick(Permission.MOD),
@@ -342,21 +343,21 @@ public class Bot extends ListenerAdapter {
 	
 	@Override
 	public void onGuildVoiceJoin(@Nonnull GuildVoiceJoinEvent event) {
-		partyCommand.onGuildVoiceJoin(event);
+		partyTrigger.onGuildVoiceJoin(event);
 		voiceTrackerTrigger.onGuildVoiceJoin(event);
 	}
 	
 	
 	@Override
 	public void onGuildVoiceLeave(@Nonnull GuildVoiceLeaveEvent event) {
-		partyCommand.onGuildVoiceLeave(event);
+		partyTrigger.onGuildVoiceLeave(event);
 		voiceTrackerTrigger.onGuildVoiceLeave(event);
 	}
 	
 	
 	@Override
 	public void onGuildVoiceMove(@Nonnull GuildVoiceMoveEvent event) {
-		partyCommand.onGuildVoiceMove(event);
+		partyTrigger.onGuildVoiceMove(event);
 		voiceTrackerTrigger.onGuildVoiceMove(event);
 	}
 	
