@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author Patrick Ubelhor
- * @version 9/30/2021
+ * @version 10/12/2021
  */
 public class Party extends AbstractParty {
 	
@@ -48,6 +48,7 @@ public class Party extends AbstractParty {
 				.collect(Collectors.toList());
 		
 		createParty(vc.getIdLong(), partyName, members);
+		textChannel.sendMessage("Created party '%s'".formatted(partyName)).queue();
 	}
 	
 	

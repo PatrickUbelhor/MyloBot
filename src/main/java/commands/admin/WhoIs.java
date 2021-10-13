@@ -18,22 +18,23 @@ import java.util.Set;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/8/2020
+ * @version 10/12/2021
  */
 public class WhoIs extends Command {
 	
 	private static final Logger logger = LogManager.getLogger(WhoIs.class);
 	
 	// Format string for each users' information
-	private static final String format =
-			"   User: %s#%s\n" +
-			"     ID: %s\n" +
-			"   Name: %s\n" +
-			"Created: %s\n" +
-			" Joined: %s\n" +
-			" Status: %s\n" +
-			" Avatar: %s\n" +
-			"  Roles: %s\n";
+	private static final String format = """
+			   User: %s#%s
+			     ID: %s
+			   Name: %s
+			Created: %s
+			 Joined: %s
+			 Status: %s
+			 Avatar: %s
+			  Roles: %s
+			""";
 	
 	
 	public WhoIs(Permission perm) {
@@ -64,12 +65,13 @@ public class WhoIs extends Command {
 		for (Member member : uniqueMembers) {
 			User user = member.getUser();
 			
-			String messageContent = String.format(format,
+			String messageContent = String.format(
+					format,
 					user.getName(), user.getDiscriminator(),
 					user.getId(),
 					member.getEffectiveName(),
-					user.getTimeCreated().toString(),
-					member.getTimeJoined().toString(),
+					user.getTimeCreated(),
+					member.getTimeJoined(),
 					member.getOnlineStatus().getKey(),
 					user.getEffectiveAvatarUrl(),
 					rolesToString(member.getRoles())

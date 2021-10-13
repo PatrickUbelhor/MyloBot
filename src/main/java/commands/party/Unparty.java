@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 /**
  * @author Patrick Ubelhor
- * @version 9/30/2021
+ * @version 10/12/2021
  */
 public class Unparty extends AbstractParty {
 	
@@ -41,7 +41,7 @@ public class Unparty extends AbstractParty {
 		}
 		
 		PartyState party = removeParty(vc.getIdLong());
-		String response = String.format("Disbanded party '%s'.", party.getName());
+		String response = "Disbanded party '%s'".formatted(party.getName());
 		
 		textChannel.sendMessage(response).queue();
 	}
