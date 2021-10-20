@@ -55,14 +55,14 @@ public abstract class Music extends Command {
 		AudioManager guildAudioManager = event.getGuild().getAudioManager();
 		VoiceChannel vc = event.getMember().getVoiceState().getChannel();
 		
-		if (guildAudioManager.isConnected() && guildAudioManager.getConnectedChannel().getIdLong() == vc.getIdLong()) {
-			return true;
-		}
-		
 		// Refuses to play if user is not in a voice channel
 		if (vc == null) {
 			event.getTextChannel().sendMessage("You must be in a voice channel to begin playing music.").queue();
 			return false;
+		}
+		
+		if (guildAudioManager.isConnected() && guildAudioManager.getConnectedChannel().getIdLong() == vc.getIdLong()) {
+			return true;
 		}
 		
 		Long guildId = event.getGuild().getIdLong();

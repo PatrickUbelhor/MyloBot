@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author Patrick Ubelhor
- * @version 4/23/2021
+ * @version 10/19/2021
  *
  * TODO: Could divide into a FileWriterTrigger and WebTrigger????
  * TODO: Add code to onReconnect in Bot.java to send proper events to all triggers
@@ -91,7 +91,7 @@ public class VoiceTrackerTrigger implements Trigger {
 	
 	@Override
 	public void onGuildVoiceMove(GuildVoiceMoveEvent event) {
-		logger.debug("[VOICE] MOVE {} | {} -> {}",
+		logger.debug("[Voice] MOVE {} | {} -> {}",
 				event.getMember().getEffectiveName(),
 				event.getChannelLeft().getName(),
 				event.getChannelJoined().getName()
