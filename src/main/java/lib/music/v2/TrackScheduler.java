@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/8/2021
+ * @version 8/10/2021
  */
 public class TrackScheduler {
 	
@@ -24,6 +24,11 @@ public class TrackScheduler {
 	TrackScheduler(AudioPlayer player) {
 		this.player = player;
 		this.queue = new LinkedBlockingDeque<>();
+	}
+	
+	
+	public void listen(PlayerEventHandler handler) {
+		handler.subscribe(this::playNext);
 	}
 	
 	
