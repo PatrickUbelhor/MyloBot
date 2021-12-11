@@ -3,6 +3,7 @@ package commands;
 import lib.commands.Command;
 import lib.main.Permission;
 import main.Bot;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -11,11 +12,10 @@ import java.util.List;
 
 /**
  * @author Patrick Ubelhor
- * @version 5/16/2021
+ * @version 12/10/2021
  */
 public class Help extends Command {
 	
-	private static final int MAX_MSG_LENGTH = 2000; // Defined by Discord TODO: see if there's a predefined constant for this
 	private static final char BACKTICK = '`';
 	
 	public Help(Permission permission) {
@@ -59,7 +59,7 @@ public class Help extends Command {
 		
 		StringBuilder msg = new StringBuilder();
 		for (String entry : entries) {
-			if (msg.length() + entry.length() + 2 > MAX_MSG_LENGTH) { // +2 for extra "\n\n"
+			if (msg.length() + entry.length() + 2 > Message.MAX_CONTENT_LENGTH) { // +2 for extra "\n\n"
 				messages.addLast(msg.toString());
 				msg = new StringBuilder();
 			}
