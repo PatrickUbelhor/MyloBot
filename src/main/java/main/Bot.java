@@ -6,6 +6,7 @@ import commands.Random;
 import commands.Reverse;
 import commands.Roll;
 import commands.Shutdown;
+import commands.admin.AddRole;
 import commands.admin.Ban;
 import commands.admin.ClearText;
 import commands.admin.GetIp;
@@ -68,7 +69,7 @@ import static main.Globals.DISCORD_TOKEN;
 
 /**
  * @author Patrick Ubelhor
- * @version 9/30/2021
+ * @version 12/13/2021
  */
 public class Bot extends ListenerAdapter {
 	
@@ -126,6 +127,7 @@ public class Bot extends ListenerAdapter {
 				new Unparty(Permission.USER),
 				new WhoIs(Permission.USER),
 				new ClearText(Permission.MOD),
+				new AddRole(Permission.MOD),
 				new Kick(Permission.MOD),
 				new Ban(Permission.MOD),
 				new Mute(Permission.MOD),

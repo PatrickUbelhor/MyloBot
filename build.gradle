@@ -1,11 +1,11 @@
 group 'com.patrickubelhor'
-version '4.12.3'
+version '4.12.4'
 
 apply plugin: 'java'
 apply plugin: 'application'
 
-sourceCompatibility = 1.16
-targetCompatibility = 1.16
+sourceCompatibility = 1.17
+targetCompatibility = 1.17
 mainClassName = 'main.Bot'
 
 repositories {
