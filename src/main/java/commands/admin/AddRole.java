@@ -34,11 +34,6 @@ public class AddRole extends Command {
 		TextChannel channel = event.getTextChannel();
 		Member self = guild.getSelfMember();
 		
-		if (args.length < 3) {
-			channel.sendMessage("Usage: " + this.getUsage()).queue();
-			return;
-		}
-		
 		// Check if any users were @mentioned
 		if (members.isEmpty()) {
 			channel.sendMessage("You must @mention 1 or more users to modify.").queue();
@@ -51,11 +46,19 @@ public class AddRole extends Command {
 			return;
 		}
 		
-		// Returns a list of roles (can have multiple matches due to case sensitivity
-		String roleName = args[1];
-		List<Role> possibleRoles = guild.getRolesByName(roleName, true);
-		if (possibleRoles.isEmpty()) {
-			channel.sendMessage("I can't find a role with the name '%s'".formatted(roleName)).queue();
+		// Get role if @mentioned, else get role by name
+		List<Role> possibleRoles;
+		if (event.getMessage().getMentionedRoles().isEmpty()) {
+			// Returns a list of roles (can have multiple matches due to case sensitivity
+			String roleName = args[1];
+			possibleRoles = guild.getRolesByName(roleName, true);
+			
+			if (possibleRoles.isEmpty()) {
+				channel.sendMessage("I can't find a role with the name '%s'".formatted(roleName)).queue();
+				return;
+			}
+		} else {
+			possibleRoles = event.getMessage().getMentionedRoles();
 		}
 		
 		// Check if we are higher in the role hierarchy than the target role.
