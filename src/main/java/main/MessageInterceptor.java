@@ -12,14 +12,14 @@ import java.util.Random;
 
 /**
  * @author Patrick Ubelhor
- * @version 8/13/2021
+ * @version 12/15/2021
  */
 public class MessageInterceptor {
 	
 	private static final String[] LEAGUE_WORDS = {
-			"league", "leage", "leage", "leag", "leeg", "lege",
-			"reague", "reage", "reage", "reag", "reeg", "rege",
-			"aram"
+			"league", "leage", "leege", "leag", "leegue", "leeg", "lege",
+			"reague", "reage", "reege", "reag", "reegue", "reeg", "rege",
+			"aram", "norms"
 	};
 	
 	
