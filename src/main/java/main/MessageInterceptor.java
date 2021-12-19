@@ -12,10 +12,11 @@ import java.util.Random;
 
 /**
  * @author Patrick Ubelhor
- * @version 12/15/2021
+ * @version 12/19/2021
  */
 public class MessageInterceptor {
 	
+	private static final String THUMBS_DOWN = "U+1F44E";
 	private static final String[] LEAGUE_WORDS = {
 			"league", "leage", "leege", "leag", "leegue", "leeg", "lege",
 			"reague", "reage", "reege", "reag", "reegue", "reeg", "rege",
@@ -141,10 +142,16 @@ public class MessageInterceptor {
 			return;
 		}
 		
-		String lowercase = msg.toLowerCase();
+		String lowercase = msg.toLowerCase()
+				.replace('1', 'l')
+				.replace('3', 'e')
+				.replace('4', 'a')
+				.replace('6', 'g')
+				.replace('7', 'l')
+				.replace('8', 'g');
 		for (String word : LEAGUE_WORDS) {
 			if (lowercase.contains(word)) {
-				message.addReaction("U+1F44E").queue();
+				message.addReaction(THUMBS_DOWN).queue(); // Thumbs down
 				break;
 			}
 		}
