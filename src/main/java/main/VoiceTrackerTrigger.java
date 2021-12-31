@@ -18,11 +18,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Patrick Ubelhor
- * @version 10/19/2021
+ * @version 12/31/2021
  *
  * TODO: Could divide into a FileWriterTrigger and WebTrigger????
  * TODO: Add code to onReconnect in Bot.java to send proper events to all triggers
@@ -51,6 +50,18 @@ public class VoiceTrackerTrigger implements Trigger {
 	}
 	
 	
+	public void onGuildVoiceJoin(VoiceChannel channel, Member member) {
+		logger.debug("[Voice] JOIN {} | {}", member.getEffectiveName(), channel.getName());
+		
+		handleJoin(channel, member);
+		voiceTrackerClient.logJoinEvent(member.getIdLong(), channel.getIdLong());
+		
+		if (voiceTrackerFileWriter != null) {
+			voiceTrackerFileWriter.enter(channel, member);
+		}
+	}
+	
+	
 	@Override
 	public void onGuildVoiceJoin(GuildVoiceJoinEvent event) {
 		logger.debug("[Voice] JOIN {} | {}", event.getMember().getEffectiveName(), event.getChannelJoined().getName());
@@ -65,7 +76,19 @@ public class VoiceTrackerTrigger implements Trigger {
 		);
 		
 		if (voiceTrackerFileWriter != null) {
-			voiceTrackerFileWriter.enter(event);
+			voiceTrackerFileWriter.enter(channelJoined, member);
+		}
+	}
+	
+	
+	public void onGuildVoiceLeave(VoiceChannel channel, Member member) {
+		logger.debug("[Voice] LEAVE {} | {}", member.getEffectiveName(), channel.getName());
+		
+		handleLeave(channel, member);
+		voiceTrackerClient.logLeaveEvent(member.getIdLong(), channel.getIdLong());
+		
+		if (voiceTrackerFileWriter != null) {
+			voiceTrackerFileWriter.exit(channel, member);
 		}
 	}
 	
@@ -84,7 +107,7 @@ public class VoiceTrackerTrigger implements Trigger {
 		);
 		
 		if (voiceTrackerFileWriter != null) {
-			voiceTrackerFileWriter.exit(event);
+			voiceTrackerFileWriter.exit(channelLeft, member);
 		}
 	}
 	
@@ -122,9 +145,9 @@ public class VoiceTrackerTrigger implements Trigger {
 		for (VoiceChannel channel : updatedChannels) {
 			HashSet<Long> activeUserIds = new HashSet<>(
 					channel.getMembers()
-						.stream()
-						.map(ISnowflake::getIdLong)
-						.collect(Collectors.toUnmodifiableList())
+							.stream()
+							.map(ISnowflake::getIdLong)
+							.toList()
 			);
 			
 			if (channels.containsKey(channel.getIdLong())) {

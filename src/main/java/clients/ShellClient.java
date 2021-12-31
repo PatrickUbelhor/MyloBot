@@ -10,7 +10,7 @@ import java.io.InputStreamReader;
 
 /**
  * @author Patrick Ubelhor
- * @version 3/9/2021
+ * @version 12/31/2021
  */
 public class ShellClient {
 	
@@ -58,8 +58,7 @@ public class ShellClient {
 		try {
 			process = builder.start();
 		} catch (IOException e) {
-			logger.error("Failed to start shell process");
-			logger.error(e);
+			logger.error("Failed to start shell process", e);
 			return null;
 		}
 		
@@ -76,8 +75,7 @@ public class ShellClient {
 		try {
 			br.close();
 		} catch (IOException e) {
-			logger.error("Failed to close BufferedReader");
-			logger.error(e);
+			logger.error("Failed to close BufferedReader", e);
 		}
 		
 		// Wait for process to terminate
@@ -91,8 +89,7 @@ public class ShellClient {
 			logger.debug("Shell responded with '{}'", result.toString().strip());
 			return result.toString();
 		} catch (InterruptedException e) {
-			logger.error("Failed while waiting for shell to exit");
-			logger.error(e);
+			logger.error("Failed while waiting for shell to exit", e);
 		}
 		
 		return null;

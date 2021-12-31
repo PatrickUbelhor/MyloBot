@@ -1,7 +1,7 @@
 package log;
 
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,7 +13,7 @@ import java.util.Date;
 
 /**
  * @author Patrick Ubelhor
- * @version 4/23/2021
+ * @version 12/31/2021
  */
 public class VoiceTrackerFileWriter implements Closeable {
 	
@@ -26,8 +26,8 @@ public class VoiceTrackerFileWriter implements Closeable {
 	}
 	
 	
-	public void enter(GuildVoiceJoinEvent event) {
-		this.logEvent("J", event.getMember().getIdLong(), event.getChannelJoined().getIdLong());
+	public void enter(VoiceChannel channel, Member member) {
+		this.logEvent("J", member.getIdLong(), channel.getIdLong());
 	}
 	
 	
@@ -43,15 +43,14 @@ public class VoiceTrackerFileWriter implements Closeable {
 				fw.append(String.format("M,%d,%d,%d,%d\n", userSnowflake, time, leavingChannelId, joiningChannelId));
 				fw.flush();
 			} catch (IOException e) {
-				logger.error("Failed to log VC {} event", "M");
-				logger.error(e);
+				logger.error("Failed to log VC {} event", "M", e);
 			}
 		}
 	}
 	
 	
-	public void exit(GuildVoiceLeaveEvent event) {
-		this.logEvent("L", event.getMember().getIdLong(), event.getChannelLeft().getIdLong());
+	public void exit(VoiceChannel channel, Member member) {
+		this.logEvent("L", member.getIdLong(), channel.getIdLong());
 	}
 	
 	
@@ -64,15 +63,20 @@ public class VoiceTrackerFileWriter implements Closeable {
 				fw.append(String.format("%s,%d,%d,%d\n", eventCode, userId, time, channelId));
 				fw.flush();
 			} catch (IOException e) {
-				logger.error("Failed to log VC {} event", eventCode);
-				logger.error(e);
+				logger.error("Failed to log VC {} event", eventCode, e);
 			}
 		}
 	}
 	
 	
 	public void close() throws IOException {
-		fw.close();
+		synchronized (fw) {
+			try {
+				fw.close();
+			} catch (IOException e) {
+				logger.error("Failed to close FileWriter for VoiceTracker", e);
+			}
+		}
 	}
 	
 }
