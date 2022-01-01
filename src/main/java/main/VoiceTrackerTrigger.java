@@ -21,7 +21,7 @@ import java.util.List;
 
 /**
  * @author Patrick Ubelhor
- * @version 12/31/2021
+ * @version 1/1/2022
  *
  * TODO: Could divide into a FileWriterTrigger and WebTrigger????
  * TODO: Add code to onReconnect in Bot.java to send proper events to all triggers
@@ -45,7 +45,7 @@ public class VoiceTrackerTrigger implements Trigger {
 		try {
 			this.voiceTrackerFileWriter = new VoiceTrackerFileWriter();
 		} catch (IOException e) {
-			logger.error("Couldn't create VoiceTracker file writer!", e);
+			logger.error("[Voice] Couldn't create VoiceTracker file writer!", e);
 		}
 	}
 	
@@ -185,4 +185,45 @@ public class VoiceTrackerTrigger implements Trigger {
 		channels.put(channelId, new HashSet<>()); // Do we need this?
 		channels.get(channelId).remove(userId);
 	}
+	
+	
+	private String saveData() {
+		StringBuilder output = new StringBuilder();
+		for (Long channelId : channels.keySet()) {
+			// Don't log empty channels
+			if (channels.get(channelId).isEmpty()) {
+				continue;
+			}
+			
+			output.append(channelId);
+			for (Long userId : channels.get(channelId)) {
+				output.append(',');
+				output.append(userId);
+			}
+			
+			output.append('\n');
+		}
+		
+		return output.toString().stripTrailing();
+	}
+	
+	
+	private HashMap<Long, HashSet<Long>> loadData(String data) {
+		HashMap<Long, HashSet<Long>> result = new HashMap<>();
+		
+		for (String line : data.split("\n")) {
+			// First ID is channel ID. Rest are User IDs.
+			String[] ids = line.split(",");
+			HashSet<Long> userIds = new HashSet<>();
+			for (int i = 1; i < ids.length; i++) {
+				userIds.add(Long.parseUnsignedLong(ids[i]));
+			}
+			
+			Long channelId = Long.parseUnsignedLong(ids[0]);
+			result.put(channelId, userIds);
+		}
+		
+		return result;
+	}
+	
 }
