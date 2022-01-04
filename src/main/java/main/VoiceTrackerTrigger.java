@@ -13,6 +13,10 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,7 +25,7 @@ import java.util.List;
 
 /**
  * @author Patrick Ubelhor
- * @version 1/1/2022
+ * @version 1/4/2022
  *
  * TODO: Could divide into a FileWriterTrigger and WebTrigger????
  * TODO: Add code to onReconnect in Bot.java to send proper events to all triggers
@@ -29,7 +33,7 @@ import java.util.List;
 public class VoiceTrackerTrigger implements Trigger {
 	
 	// Map of channelId -> set of userIds
-	private final HashMap<Long, HashSet<Long>> channels = new HashMap<>(); // TODO: Might need thread safety
+	private HashMap<Long, HashSet<Long>> channels = new HashMap<>(); // TODO: Might need thread safety
 	private final VoiceTrackerClient voiceTrackerClient = new VoiceTrackerClient();
 	private VoiceTrackerFileWriter voiceTrackerFileWriter = null;
 	private final JDA jda;
@@ -45,7 +49,43 @@ public class VoiceTrackerTrigger implements Trigger {
 		try {
 			this.voiceTrackerFileWriter = new VoiceTrackerFileWriter();
 		} catch (IOException e) {
-			logger.error("[Voice] Couldn't create VoiceTracker file writer!", e);
+			logger.error("[Voice] Could not create VoiceTracker file writer!", e);
+		}
+		
+		// Load data from file
+		try (BufferedReader br = new BufferedReader(new FileReader("example.csv"))) {
+			
+			StringBuilder saveData = new StringBuilder();
+			String line;
+			while ((line = br.readLine()) != null) {
+				saveData.append(line).append("\n");
+			}
+			
+			this.channels = loadData(saveData.toString()); // TODO: this should modify, rather than replace
+			
+		} catch (FileNotFoundException e) {
+			logger.error("[Voice] Could not file save file", e);
+		} catch (IOException e) {
+			logger.error("[Voice] Could not read data from save file", e);
+		}
+	}
+	
+	
+	public void end() {
+		if (this.voiceTrackerFileWriter != null) {
+			try {
+				this.voiceTrackerFileWriter.close();
+			} catch (IOException e) {
+				logger.error("[Voice] Failed to close VoiceTracker file writer!", e);
+			}
+		}
+		
+		// Save data to file
+		try (FileWriter fw = new FileWriter("example.csv")) {
+			fw.append(this.saveData());
+			fw.flush();
+		} catch (IOException e) {
+			logger.error("[Voice] Could not write data to save file");
 		}
 	}
 	

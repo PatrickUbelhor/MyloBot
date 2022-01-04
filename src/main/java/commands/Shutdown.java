@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 2/27/2020
+ * @version 1/4/2022
  */
 public class Shutdown extends Command {
 	
@@ -42,6 +42,10 @@ public class Shutdown extends Command {
 					logger.info("\tKilled {}", service.getName());
 				});
 		logger.info("All services killed");
+		
+		logger.info("Killing VoiceTracker trigger...");
+		Bot.getVoiceTrackerTrigger().end();
+		logger.info("All triggers killed");
 		
 		event.getJDA().shutdown();
 		logger.info("Shutdown complete");

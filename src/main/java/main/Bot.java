@@ -224,6 +224,11 @@ public class Bot extends ListenerAdapter {
 	}
 	
 	
+	public static VoiceTrackerTrigger getVoiceTrackerTrigger() {
+		return voiceTrackerTrigger;
+	}
+	
+	
 	@Override
 	public void onMessageReceived(MessageReceivedEvent event) {
 		
