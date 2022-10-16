@@ -4,11 +4,16 @@ import lib.music.Music;
 import lib.music.QueueLastAudioLoadResultHandler;
 import lib.music.TrackScheduler;
 import lib.main.Permission;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 /**
  * @author Patrick Ubelhor
- * @version 5/16/2021
+ * @version 10/16/2022
  *
  * TODO: Make bot leave voice channel after some period of inactivity
  * TODO: Ability to loop
@@ -19,7 +24,6 @@ public final class Play extends Music {
 	public Play(Permission permission) {
 		super("play", permission);
 	}
-	
 	
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
@@ -51,16 +55,43 @@ public final class Play extends Music {
 				
 	}
 	
+	@Override
+	public void runSlash(SlashCommandEvent event) {
+		String link = "";
+		for (OptionMapping option : event.getOptionsByName("link")) {
+			link = option.getAsString();
+		}
+		
+		if (!link.startsWith("http")) {
+			event.reply("Song must be given as a webpage link").queue();
+			return;
+		}
+		
+		TrackScheduler trackScheduler = Music.trackSchedulers.get(event.getGuild().getIdLong());
+		playerManager.loadItem(link, new QueueLastAudioLoadResultHandler(trackScheduler));
+		event.reply("Adding song to queue: " + link).queue();
+	}
 	
 	@Override
 	public String getUsage() {
 		return getName() + " <url>";
 	}
 	
-	
 	@Override
 	public String getDescription() {
 		return "Plays the audio from a YouTube video, given as 'url'";
+	}
+	
+	public String getShortDescription() {
+		return "Plays the audio from a YouTube video, or appends to queue";
+	}
+	
+	@Override
+	public CommandData getCommandData() {
+		return super.getDefaultCommandData(getShortDescription())
+			.addOptions(
+				new OptionData(OptionType.STRING, "link", "URL of a song", true)
+			);
 	}
 	
 }

@@ -8,6 +8,7 @@ import lib.commands.Command;
 import main.Globals;
 import lib.main.Permission;
 import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.managers.AudioManager;
 
@@ -16,7 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Patrick Ubelhor
- * @version 5/16/2021
+ * @version 10/16/2022
  */
 public abstract class Music extends Command {
 	
@@ -81,6 +82,21 @@ public abstract class Music extends Command {
 		
 		if (!audioManagers.containsKey(guildId)) {
 			event.getTextChannel().sendMessage("I can't leave a server I'm not in!").queue();
+			return false;
+		}
+		
+		AudioManager audioManager = audioManagers.get(guildId);
+		audioManager.closeAudioConnection();
+		audioManagers.remove(guildId);
+		return true;
+	}
+	
+	
+	protected final boolean leaveAudioChannel(SlashCommandEvent event) {
+		Long guildId = event.getGuild().getIdLong();
+		
+		if (!audioManagers.containsKey(guildId)) {
+			event.reply("I can't leave a server I'm not in!").queue();
 			return false;
 		}
 		

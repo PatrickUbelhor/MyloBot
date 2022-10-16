@@ -4,11 +4,15 @@ import lib.music.Music;
 import lib.music.QueueNextAudioLoadResultHandler;
 import lib.music.TrackScheduler;
 import lib.main.Permission;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 /**
- * @author Patrick Ubelhor, Evan Perry Grove
- * @version 5/16/2021, 5/4/2018
+ * @author Patrick Ubelhor
+ * @version 10/16/2022
  *
  */
 public final class PlayNext extends Music {
@@ -16,7 +20,6 @@ public final class PlayNext extends Music {
 	public PlayNext(Permission permission) {
 		super("playnext", permission);
 	}
-	
 	
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
@@ -34,16 +37,41 @@ public final class PlayNext extends Music {
 		}
 	}
 	
+	@Override
+	public void runSlash(SlashCommandEvent event) {
+		String link = "";
+		for (OptionMapping option : event.getOptionsByName("link")) {
+			link = option.getAsString();
+		}
+		
+		if (!link.startsWith("http")) {
+			event.reply("Song must be given as a webpage link").queue();
+			return;
+		}
+		
+		TrackScheduler trackScheduler = Music.trackSchedulers.get(event.getGuild().getIdLong());
+		playerManager.loadItem(link, new QueueNextAudioLoadResultHandler(trackScheduler));
+		event.reply("Adding song to front of queue: " + link).queue();
+	}
 	
 	@Override
 	public String getUsage() {
 		return getName() + " <url>";
 	}
 	
-	
 	@Override
 	public String getDescription() {
 		return "Plays the audio from a YouTube video, placing it at the front of the playback queue instead of the rear. given as 'url'";
+	}
+	
+	public String getShortDescription() {
+		return "Plays the audio from a YouTube video, or prepends to queue";
+	}
+	
+	@Override
+	public CommandData getCommandData() {
+		return super.getDefaultCommandData(getShortDescription())
+			.addOption(OptionType.STRING, "link", "URL of a song", true);
 	}
 	
 }

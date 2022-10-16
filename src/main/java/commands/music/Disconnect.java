@@ -3,11 +3,13 @@ package commands.music;
 import lib.music.Music;
 import lib.music.TrackScheduler;
 import lib.main.Permission;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 /**
  * @author Patrick Ubelhor
- * @version 5/16/2021
+ * @version 10/16/2022
  */
 public class Disconnect extends Music {
 	
@@ -24,6 +26,14 @@ public class Disconnect extends Music {
 	}
 	
 	@Override
+	public void runSlash(SlashCommandEvent event) {
+		if (super.leaveAudioChannel(event)) {
+			TrackScheduler trackScheduler = Music.trackSchedulers.get(event.getGuild().getIdLong());
+			trackScheduler.clearQueue();
+		}
+	}
+	
+	@Override
 	public String getUsage() {
 		return getName();
 	}
@@ -31,6 +41,11 @@ public class Disconnect extends Music {
 	@Override
 	public String getDescription() {
 		return "Disconnects from the voice chat";
+	}
+	
+	@Override
+	public CommandData getCommandData() {
+		return super.getDefaultCommandData();
 	}
 	
 }
