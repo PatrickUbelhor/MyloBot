@@ -107,8 +107,7 @@ public class Random extends Command {
 	
 	@Override
 	public String getDescription() {
-		return "Generates a random number between 'min' and 'max' (inclusive). " +
-				"If no min is specified, it defaults to 0";
+		return "Generates a random number in the given range";
 	}
 	
 	@Override
