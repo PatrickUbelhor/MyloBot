@@ -27,6 +27,7 @@ public class Disconnect extends Music {
 	
 	@Override
 	public void runSlash(SlashCommandEvent event) {
+		event.reply("Leaving call").queue();
 		if (super.leaveAudioChannel(event)) {
 			TrackScheduler trackScheduler = Music.trackSchedulers.get(event.getGuild().getIdLong());
 			trackScheduler.clearQueue();
