@@ -16,7 +16,7 @@ import java.util.Random;
 
 /**
  * @author Patrick Ubelhor
- * @version 10/15/2022
+ * @version 10/16/2022
  */
 public class Roll extends Command {
 	
@@ -56,9 +56,7 @@ public class Roll extends Command {
 		}
 		
 		long result = run(numDice, sides);
-		event.getChannel()
-			.sendMessage(result + "")
-			.queue();
+		event.reply(result + "").queue();
 	}
 	
 	private long run(long numDice, long sides) {
@@ -90,7 +88,7 @@ public class Roll extends Command {
 	public CommandData getCommandData() {
 		return super.getDefaultCommandData()
 			.addOptions(
-				new OptionData(OptionType.INTEGER, "numDice", "Number of dice to roll", true),
+				new OptionData(OptionType.INTEGER, "num_dice", "Number of dice to roll", true),
 				new OptionData(OptionType.INTEGER, "sides", "Type of die to roll; ie. 6 for a d6 or 20 for a d20", true)
 			);
 	}

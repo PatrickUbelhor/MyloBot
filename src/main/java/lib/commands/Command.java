@@ -103,17 +103,18 @@ public abstract class Command {
 	
 	
 	public CommandData getCommandData() {
-		return new CommandData(this.getName(), "NOT YET IMPLEMENTED - " + this.getDescription());
+		String desc = "NOT YET IMPLEMENTED - " + this.getDescription();
+		return new CommandData(this.getName(), desc.substring(0, Math.min(100, desc.length())));
 	}
 	
 	
 	protected CommandData getDefaultCommandData() {
-		return new CommandData(this.getName(), this.getDescription());
+		return new CommandData(this.getName(), this.getDescription().substring(0, Math.min(100, this.getDescription().length())));
 	}
 	
 	
 	public void runSlash(SlashCommandEvent event) {
-		event.getChannel().sendMessage("Not yet implemented").queue();
+		event.reply("Not yet implemented").queue();
 	}
 	
 	

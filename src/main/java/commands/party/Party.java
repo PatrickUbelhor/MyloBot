@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author Patrick Ubelhor
- * @version 10/14/2022
+ * @version 10/16/2022
  */
 public class Party extends AbstractParty {
 	
@@ -72,7 +72,7 @@ public class Party extends AbstractParty {
 		return super.getCommandData()
 			.addOption(
 				OptionType.STRING,
-				"Party name",
+				"party_name",
 				"The name of the party. This name will be used to inform anyone that joins what is going on.",
 				true
 			);

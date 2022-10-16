@@ -58,20 +58,6 @@ public class Random extends Command {
 			}
 		}
 		
-//		// Make sure 'max' is positive
-//		if (max <= 0) {
-//			logger.debug("User entered non-positive upper bound: '{}'", max);
-//			channel.sendMessage("The upper bound must be positive!").queue();
-//			return;
-//		}
-		
-//		// Make sure 'min' is non-negative
-//		if (min < 0) {
-//			logger.debug("User entered negative lower bound: '{}'", min);
-//			channel.sendMessage("The lower bound can't be negative!").queue();
-//			return;
-//		}
-		
 		long rand = generateRandomNumber(min, max);
 		channel.sendMessage(rand + "").queue();
 	}
@@ -89,7 +75,7 @@ public class Random extends Command {
 		}
 		
 		long rand = generateRandomNumber(min, max);
-		event.getChannel().sendMessage(rand + "").queue();
+		event.reply(rand + "").queue();
 	}
 	
 	private long generateRandomNumber(long min, long max) {
@@ -107,7 +93,8 @@ public class Random extends Command {
 	
 	@Override
 	public String getDescription() {
-		return "Generates a random number in the given range";
+		return "Generates a random number between 'min' and 'max' (inclusive). " +
+				"If no min is specified, it defaults to 0";
 	}
 	
 	@Override

@@ -3,7 +3,9 @@ package commands;
 import lib.commands.Command;
 import lib.main.Permission;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
@@ -11,7 +13,7 @@ import java.util.Arrays;
 
 /**
  * @author Patrick Ubelhor
- * @version 10/14/2022
+ * @version 10/16/2022
  */
 public class Reverse extends Command {
 	
@@ -22,23 +24,27 @@ public class Reverse extends Command {
 	
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
-		
 		MessageChannel channel = event.getChannel();
-		StringBuilder msg = new StringBuilder();
-		
-		String result = this.run(Arrays.copyOfRange(args, 1, args.length));
-		// Print first token. Then add a space before every following token
-		msg.append(args[1]);
-		for (int i = 2; i < args.length; i++) {
-			msg.append(' ');
-			msg.append(args[i]);
-		}
-		
-		channel.sendMessage(msg.reverse().toString()).queue();
+		String result = this.reverseText(Arrays.copyOfRange(args, 1, args.length));
+		channel.sendMessage(result).queue();
 	}
 	
 	
-	private String run(String[] words) {
+	@Override
+	public void runSlash(SlashCommandEvent event) {
+		String input = "";
+		for (OptionMapping option : event.getOptions()) {
+			if (option.getName().equals("string")) {
+				input = option.getAsString();
+			}
+		}
+		
+		String result = this.reverseText(input.split(" "));
+		event.reply(result).queue();
+	}
+	
+	
+	private String reverseText(String[] words) {
 		StringBuilder msg = new StringBuilder();
 		
 		// Print first token. Then add a space before every following token
