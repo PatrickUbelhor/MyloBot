@@ -85,7 +85,7 @@ public final class Skip extends Music {
 	@Override
 	public CommandData getCommandData() {
 		return super.getDefaultCommandData()
-			.addOption(OptionType.UNKNOWN, "quantity", "Number of songs to skip", false);
+			.addOption(OptionType.STRING, "quantity", "Number of songs to skip", false);
 	}
 	
 }
