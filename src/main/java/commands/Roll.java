@@ -84,6 +84,10 @@ public class Roll extends Command {
 		return "Rolls a number of dice";
 	}
 	
+	public String getShortDescription() {
+		return getDescription();
+	}
+	
 	@Override
 	public CommandData getCommandData() {
 		return super.getDefaultCommandData()

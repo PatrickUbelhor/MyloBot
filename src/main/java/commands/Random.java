@@ -97,9 +97,13 @@ public class Random extends Command {
 				"If no min is specified, it defaults to 0";
 	}
 	
+	public String getShortDescription() {
+		return "Generates a random number in a specified range";
+	}
+	
 	@Override
 	public CommandData getCommandData() {
-		return super.getDefaultCommandData()
+		return super.getDefaultCommandData(getShortDescription())
 			.addOptions(
 				new OptionData(OptionType.INTEGER, "max", "The max number in the range (exclusive)", true),
 				new OptionData(OptionType.INTEGER, "min", "The min number in the range (inclusive)", false)

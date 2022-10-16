@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 10/14/2022
+ * @version 10/16/2022
  */
 public class Shutdown extends Command {
 	
@@ -25,15 +25,15 @@ public class Shutdown extends Command {
 	
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
-		this.run(event.getJDA());
+		shutdown(event.getJDA());
 	}
 	
 	@Override
 	public void runSlash(SlashCommandEvent event) {
-		this.run(event.getJDA());
+		shutdown(event.getJDA());
 	}
 	
-	private void run(JDA jda) {
+	private void shutdown(JDA jda) {
 		logger.info("Shutting down...");
 		killCommands();
 		killServices();
@@ -78,6 +78,10 @@ public class Shutdown extends Command {
 	@Override
 	public String getDescription() {
 		return "Safely shuts down the bot";
+	}
+	
+	public String getShortDescription() {
+		return getDescription();
 	}
 	
 	@Override

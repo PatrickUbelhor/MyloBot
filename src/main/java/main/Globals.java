@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 5/15/2021
+ * @version 10/16/2022
  */
 public class Globals {
 	
@@ -30,6 +30,7 @@ public class Globals {
 	public static final String SURRENDER_URL;
 	public static final boolean ENABLE_WHO_WOULDA_THOUGHT_MEME;
 	
+	public static final int MAX_SLASH_COMMAND_DESC_LENGTH = 100;
 	public static final String SERVICES_SAVE_PATH = "config/services.txt";
 	
 	static {

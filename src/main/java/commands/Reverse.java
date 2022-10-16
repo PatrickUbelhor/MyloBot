@@ -69,9 +69,14 @@ public class Reverse extends Command {
 	}
 	
 	
+	public String getShortDescription() {
+		return "Reverses the character order in some text";
+	}
+	
+	
 	@Override
 	public CommandData getCommandData() {
-		return super.getDefaultCommandData()
+		return super.getDefaultCommandData(getShortDescription())
 			.addOption(
 				OptionType.STRING,
 				"string",

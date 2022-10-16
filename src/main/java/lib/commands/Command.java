@@ -1,6 +1,7 @@
 package lib.commands;
 
 import lib.main.Permission;
+import main.Globals;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -103,13 +104,27 @@ public abstract class Command {
 	
 	
 	public CommandData getCommandData() {
-		String desc = "NOT YET IMPLEMENTED - " + this.getDescription();
+		String desc = "NOT YET IMPLEMENTED - " + getDescription();
 		return new CommandData(this.getName(), desc.substring(0, Math.min(100, desc.length())));
 	}
 	
 	
 	protected CommandData getDefaultCommandData() {
-		return new CommandData(this.getName(), this.getDescription().substring(0, Math.min(100, this.getDescription().length())));
+		return this.getDefaultCommandData(getDescription());
+	}
+	
+	
+	protected CommandData getDefaultCommandData(String desc) {
+		if (desc.length() > Globals.MAX_SLASH_COMMAND_DESC_LENGTH) {
+			desc = desc.substring(0, Globals.MAX_SLASH_COMMAND_DESC_LENGTH);
+			logger.error("Command '{}' description longer than {} characters: {}",
+				this.getName(),
+				Globals.MAX_SLASH_COMMAND_DESC_LENGTH,
+				this.getDescription()
+			);
+		}
+		
+		return new CommandData(this.getName(), desc);
 	}
 	
 	
