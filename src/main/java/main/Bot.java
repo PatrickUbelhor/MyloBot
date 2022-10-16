@@ -169,15 +169,13 @@ public class Bot extends ListenerAdapter {
 	}
 	
 	
-	private static List<Command> initializeCommands(Command[] preInitCommands) {
+	private static void initializeCommands(Command[] preInitCommands) {
 		logger.info("Initializing commands...");
-		Stream<Command> successfulCommands = Arrays.stream(preInitCommands)
+		Arrays.stream(preInitCommands)
 			.parallel()
-			.filter(Command::init);
-		successfulCommands.forEachOrdered(command -> commands.put(command.getName(), command));
+			.filter(Command::init)
+			.forEachOrdered(command -> commands.put(command.getName(), command));
 		logger.info("Initialization finished");
-		
-		return successfulCommands.toList();
 	}
 	
 	
