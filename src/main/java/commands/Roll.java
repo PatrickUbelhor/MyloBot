@@ -21,6 +21,8 @@ import java.util.Random;
 public class Roll extends Command {
 	
 	private static final Logger logger = LogManager.getLogger(Roll.class);
+	private static final String OPTION_NUM_DICE = "num_dice";
+	private static final String OPTION_NUM_FACES = "num_faces";
 	
 	public Roll(Permission permission) {
 		super("roll", permission);
@@ -38,7 +40,7 @@ public class Roll extends Command {
 		long numDice = Long.parseLong(splitDieArg[0]);
 		long maxVal = Long.parseLong(splitDieArg[1]);
 		
-		long result = run(numDice, maxVal);
+		long result = roll(numDice, maxVal);
 		TextChannel channel = event.getTextChannel();
 		channel.sendMessage(result + "").queue();
 	}
@@ -50,16 +52,17 @@ public class Roll extends Command {
 		
 		for (OptionMapping option : event.getOptions()) {
 			switch (option.getName()) {
-				case "numDice" -> numDice = option.getAsLong();
-				case "sides" -> sides = option.getAsLong();
+				case OPTION_NUM_DICE -> numDice = option.getAsLong();
+				case OPTION_NUM_FACES -> sides = option.getAsLong();
 			}
 		}
 		
-		long result = run(numDice, sides);
-		event.reply(result + "").queue();
+		long result = roll(numDice, sides);
+		String response = "Roll %dd%d:\n%d".formatted(numDice, sides, result);
+		event.reply(response).queue();
 	}
 	
-	private long run(long numDice, long sides) {
+	private long roll(long numDice, long sides) {
 		if (numDice < 1 || sides == 0) {
 			return 0;
 		}
@@ -92,8 +95,8 @@ public class Roll extends Command {
 	public CommandData getCommandData() {
 		return super.getDefaultCommandData()
 			.addOptions(
-				new OptionData(OptionType.INTEGER, "num_dice", "Number of dice to roll", true),
-				new OptionData(OptionType.INTEGER, "sides", "Type of die to roll; ie. 6 for a d6 or 20 for a d20", true)
+				new OptionData(OptionType.INTEGER, OPTION_NUM_DICE, "Number of dice to roll", true),
+				new OptionData(OptionType.INTEGER, OPTION_NUM_FACES, "Number of faces on the die", true)
 			);
 	}
 	
