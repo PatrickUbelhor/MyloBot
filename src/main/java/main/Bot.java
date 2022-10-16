@@ -48,10 +48,13 @@ import net.dv8tion.jda.api.events.ResumedEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateOnlineStatusEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -61,15 +64,17 @@ import services.SurrenderAt20;
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static main.Globals.DISCORD_TOKEN;
 
 /**
  * @author Patrick Ubelhor
- * @version 12/13/2021
+ * @version 10/16/2022
  */
 public class Bot extends ListenerAdapter {
 	
@@ -98,14 +103,20 @@ public class Bot extends ListenerAdapter {
 		// Log into Discord account
 		try {
 			jda = JDABuilder.createDefault(DISCORD_TOKEN)
-					.enableIntents(GatewayIntent.GUILD_MEMBERS)
-					.setMemberCachePolicy(MemberCachePolicy.ALL)
-					.build()
-					.awaitReady();
+				.enableIntents(GatewayIntent.GUILD_MEMBERS)
+				.setMemberCachePolicy(MemberCachePolicy.ALL)
+				.setBulkDeleteSplittingEnabled(false)
+				.setCompression(Compression.NONE)
+				.build()
+				.awaitReady();
 		} catch (Exception e) {
 			logger.fatal("Couldn't initialize bot", e);
 			System.exit(2);
 		}
+		
+		// Load
+		List<Guild> guilds = jda.getGuilds();
+		guilds.forEach(Guild::loadMembers);
 		
 		lexer = new Lexer(); // TODO: make a singleton
 		messageInterceptor = new MessageInterceptor();
@@ -113,60 +124,60 @@ public class Bot extends ListenerAdapter {
 		voiceTrackerTrigger = new VoiceTrackerTrigger(jda);
 		
 		Command[] preInitCommands = {
-				new Help(Permission.USER),
-				new Play(Permission.USER),
-				new PlayNext(Permission.USER),
-				new Skip(Permission.USER),
-				new Pause(Permission.USER),
-				new Unpause(Permission.USER),
-				new PeekQueue(Permission.USER),
-				new Reverse(Permission.USER),
-				new Random(Permission.USER),
-				new Roll(Permission.USER),
-				new Party(Permission.USER),
-				new Unparty(Permission.USER),
-				new WhoIs(Permission.USER),
-				new ClearText(Permission.MOD),
-				new AddRole(Permission.MOD),
-				new Kick(Permission.MOD),
-				new Ban(Permission.MOD),
-				new Mute(Permission.MOD),
-				new Unmute(Permission.MOD),
-				new Subscribe(Permission.MOD),
-				new Unsubscribe(Permission.MOD),
-				new Disconnect(Permission.MOD),
-				new Shutdown(Permission.MOD),
-				new GetIp(Permission.MOD),
-				new GetVoiceLog(Permission.MOD, tracker)
+			new Help(Permission.USER),
+			new Play(Permission.USER),
+			new PlayNext(Permission.USER),
+			new Skip(Permission.USER),
+			new Pause(Permission.USER),
+			new Unpause(Permission.USER),
+			new PeekQueue(Permission.USER),
+			new Reverse(Permission.USER),
+			new Random(Permission.USER),
+			new Roll(Permission.USER),
+			new Party(Permission.USER),
+			new Unparty(Permission.USER),
+			new WhoIs(Permission.USER),
+			new ClearText(Permission.MOD),
+			new AddRole(Permission.MOD),
+			new Kick(Permission.MOD),
+			new Ban(Permission.MOD),
+			new Mute(Permission.MOD),
+			new Unmute(Permission.MOD),
+			new Subscribe(Permission.MOD),
+			new Unsubscribe(Permission.MOD),
+			new Disconnect(Permission.MOD),
+			new Shutdown(Permission.MOD),
+			new GetIp(Permission.MOD),
+			new GetVoiceLog(Permission.MOD, tracker)
 		};
 		
 		Service[] preInitServices = {
-				new IPChange(Globals.IP_CHECK_DELAY),
-				new SurrenderAt20(Globals.SURRENDER_DELAY)
+			new IPChange(Globals.IP_CHECK_DELAY),
+			new SurrenderAt20(Globals.SURRENDER_DELAY)
 		};
 		
 		
 		// Initialize triggers
 		voiceTrackerTrigger.init();
 		
+		loadRoles();
 		initializeCommands(preInitCommands);
 		initializeServices(preInitServices);
+		registerGuildSlashCommands(guilds, commands.values());
 		
-		loadRoles();
-		
-		// Load
-		jda.getGuilds().forEach(Guild::loadMembers);
 		jda.addEventListener(new Bot());
 	}
 	
 	
-	private static void initializeCommands(Command[] preInitCommands) {
+	private static List<Command> initializeCommands(Command[] preInitCommands) {
 		logger.info("Initializing commands...");
-		Arrays.stream(preInitCommands)
-				.parallel()
-				.filter(Command::init)
-				.forEachOrdered(command -> commands.put(command.getName(), command));
+		Stream<Command> successfulCommands = Arrays.stream(preInitCommands)
+			.parallel()
+			.filter(Command::init);
+		successfulCommands.forEachOrdered(command -> commands.put(command.getName(), command));
 		logger.info("Initialization finished");
+		
+		return successfulCommands.toList();
 	}
 	
 	
@@ -174,11 +185,24 @@ public class Bot extends ListenerAdapter {
 		logger.info("Initializing services...");
 		Service.loadSubscribers();
 		Arrays.stream(preInitServices)
-				.forEachOrdered(service -> {
-					service.startThread();
-					services.put(service.getName(), service);
-				});
+			.forEachOrdered(service -> {
+				service.startThread();
+				services.put(service.getName(), service);
+			});
 		logger.info("Initialization finished");
+	}
+	
+	
+	private static void registerGuildSlashCommands(Collection<Guild> guilds, Collection<Command> commands) {
+		logger.info("Registering guild slash commands...");
+		List<CommandData> commandData = commands.parallelStream()
+			.map(Command::getCommandData)
+			.toList();
+		
+		guilds.forEach(guild -> guild.updateCommands()
+			.addCommands(commandData)
+			.queue()
+		);
 	}
 	
 	
@@ -186,14 +210,14 @@ public class Bot extends ListenerAdapter {
 		logger.info("Getting roles...");
 		// TODO: Check here if role actually exists?
 		userRoles = Globals.USER_GROUP_IDS
-				.parallelStream()
-				.map(s -> jda.getRoleById(s))
-				.collect(Collectors.toList());
+			.parallelStream()
+			.map(s -> jda.getRoleById(s))
+			.collect(Collectors.toList());
 		
 		modRoles = Globals.MOD_GROUP_IDS
-				.parallelStream()
-				.map(s -> jda.getRoleById(s))
-				.collect(Collectors.toList());
+			.parallelStream()
+			.map(s -> jda.getRoleById(s))
+			.collect(Collectors.toList());
 		logger.info("Got roles");
 	}
 	
@@ -281,10 +305,10 @@ public class Bot extends ListenerAdapter {
 			List<Role> authorRoles = event.getMember().getRoles();
 			
 			boolean isUser = userRoles.parallelStream()
-					.anyMatch(authorRoles::contains);
+				.anyMatch(authorRoles::contains);
 			
 			boolean isMod = modRoles.parallelStream()
-					.anyMatch(authorRoles::contains);
+				.anyMatch(authorRoles::contains);
 			
 			
 			// Call the command, given the user has proper permissions
@@ -316,6 +340,53 @@ public class Bot extends ListenerAdapter {
 			channel.sendMessage("Unknown or unavailable command").queue();
 		}
 		
+	}
+	
+	
+	@Override
+	public void onSlashCommand(SlashCommandEvent event) {
+		String commandName = event.getName();
+		MessageChannel channel = event.getChannel();
+		
+		if (!commands.containsKey(event.getName())) {
+			channel.sendMessage("Unknown or unavailable command").queue();
+			return;
+		}
+		
+		Command command = commands.get(commandName);
+		List<Role> authorRoles = event.getMember().getRoles();
+		
+		boolean isUser = userRoles.parallelStream()
+			.anyMatch(authorRoles::contains);
+		
+		boolean isMod = modRoles.parallelStream()
+			.anyMatch(authorRoles::contains);
+		
+		// Call the command, given the user has proper permissions
+		String response;
+		User user = event.getUser();
+		switch (command.getPerm()) {
+			case DISABLED:
+				response = String.format("``%s`` has been disabled by the bot admin, sorry!", commandName);
+				user.openPrivateChannel().complete().sendMessage(response).queue();
+				break;
+			case USER:
+				if (isUser || isMod) {
+					command.runSlash(event);
+				} else {
+					response = String.format("You do not have permission to use ``%s``, sorry!", commandName);
+					user.openPrivateChannel().complete().sendMessage(response).queue();
+				}
+				break;
+			case MOD:
+				if (isMod) {
+					command.runSlash(event);
+				} else {
+					response = String.format("You do not have permission to use ``%s``, sorry!", commandName);
+					user.openPrivateChannel().complete().sendMessage(response).queue();
+				}
+				break;
+		}
 	}
 	
 	

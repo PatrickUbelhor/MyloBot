@@ -5,6 +5,8 @@ import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.util.Arrays;
 import java.util.List;
@@ -12,7 +14,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author Patrick Ubelhor
- * @version 10/12/2021
+ * @version 10/14/2022
  */
 public class Party extends AbstractParty {
 	
@@ -60,7 +62,20 @@ public class Party extends AbstractParty {
 	
 	@Override
 	public String getDescription() {
-		return "Creates a party in the voice chat and notifies anyone who joins to be quiet";
+		return "Creates a party in the voice chat and notifies anyone who joins to be quiet." +
+			"A single voice channel may only have one active party at a time.";
+	}
+	
+	
+	@Override
+	public CommandData getCommandData() {
+		return super.getCommandData()
+			.addOption(
+				OptionType.STRING,
+				"Party name",
+				"The name of the party. This name will be used to inform anyone that joins what is going on.",
+				true
+			);
 	}
 	
 }

@@ -15,7 +15,6 @@ public class Disconnect extends Music {
 		super("disconnect", permission);
 	}
 	
-	
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
 		if (super.leaveAudioChannel(event)) {
@@ -24,15 +23,14 @@ public class Disconnect extends Music {
 		}
 	}
 	
-	
 	@Override
 	public String getUsage() {
 		return getName();
 	}
 	
-	
 	@Override
 	public String getDescription() {
 		return "Disconnects from the voice chat";
 	}
+	
 }

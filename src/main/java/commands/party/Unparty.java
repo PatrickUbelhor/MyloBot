@@ -22,7 +22,7 @@ public class Unparty extends AbstractParty {
 	
 	@Override
 	public String getDescription() {
-		return "Disbands an active party";
+		return "Disbands the active party in your current voice channel.";
 	}
 	
 	@Override

@@ -3,13 +3,18 @@ package commands;
 import lib.commands.Command;
 import lib.main.Permission;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 5/16/2021
+ * @version 10/16/2022
  */
 public class Random extends Command {
 	
@@ -28,13 +33,13 @@ public class Random extends Command {
 		}
 		
 		TextChannel channel = event.getTextChannel();
-		int min = 1;
-		int max;
+		long min = 1;
+		long max;
 		
 		// Parse upper bound
 		String maxString = (args.length == 2) ? args[1] : args[2]; // arg number depends on whether a min was specified
 		try {
-			max = Integer.parseInt(maxString);
+			max = Long.parseLong(maxString);
 		} catch (NumberFormatException e) {
 			logger.debug("User entered invalid upper bound: '{}'", maxString);
 			channel.sendMessage("I think you specified an invalid upper bound: '" + maxString + "'").queue();
@@ -45,7 +50,7 @@ public class Random extends Command {
 		if (args.length > 2) {
 			// Parse the lower bound
 			try {
-				min = Integer.parseInt(args[1]);
+				min = Long.parseLong(args[1]);
 			} catch (NumberFormatException e) {
 				logger.debug("User entered invalid number: '{}'", args[1]);
 				channel.sendMessage("I think you specified an invalid number: '" + args[1] + "'").queue();
@@ -53,37 +58,66 @@ public class Random extends Command {
 			}
 		}
 		
-		// Make sure 'max' is positive
-		if (max <= 0) {
-			logger.debug("User entered non-positive upper bound: '{}'", max);
-			channel.sendMessage("The upper bound must be positive!").queue();
-			return;
-		}
+//		// Make sure 'max' is positive
+//		if (max <= 0) {
+//			logger.debug("User entered non-positive upper bound: '{}'", max);
+//			channel.sendMessage("The upper bound must be positive!").queue();
+//			return;
+//		}
 		
-		// Make sure 'min' is non-negative
-		if (min < 0) {
-			logger.debug("User entered negative lower bound: '{}'", min);
-			channel.sendMessage("The lower bound can't be negative!").queue();
-			return;
-		}
+//		// Make sure 'min' is non-negative
+//		if (min < 0) {
+//			logger.debug("User entered negative lower bound: '{}'", min);
+//			channel.sendMessage("The lower bound can't be negative!").queue();
+//			return;
+//		}
 		
-		
-		int rand = new java.util.Random().nextInt(max - min) + min; // Generate random number in range, plus minimum value
-		logger.info("Generated: {}", rand);
+		long rand = generateRandomNumber(min, max);
 		channel.sendMessage(rand + "").queue();
 	}
 	
+	@Override
+	public void runSlash(SlashCommandEvent event) {
+		long min = 0;
+		long max = 1;
+		
+		for (OptionMapping option : event.getOptions()) {
+			switch (option.getName()) {
+				case "min" -> min = option.getAsLong();
+				case "max" -> max = option.getAsLong();
+			}
+		}
+		
+		long rand = generateRandomNumber(min, max);
+		event.getChannel().sendMessage(rand + "").queue();
+	}
+	
+	private long generateRandomNumber(long min, long max) {
+		long range = max - min;
+		long rand = new java.util.Random().nextLong(range) + min;
+		logger.debug("Generated: {}", rand);
+		
+		return rand;
+	}
 	
 	@Override
 	public String getUsage() {
 		return "random [min] <max>";
 	}
 	
-	
 	@Override
 	public String getDescription() {
 		return "Generates a random number between 'min' and 'max' (inclusive). " +
 				"If no min is specified, it defaults to 0";
+	}
+	
+	@Override
+	public CommandData getCommandData() {
+		return super.getDefaultCommandData()
+			.addOptions(
+				new OptionData(OptionType.INTEGER, "max", "The max number in the range (exclusive)", true),
+				new OptionData(OptionType.INTEGER, "min", "The min number in the range (inclusive)", false)
+			);
 	}
 	
 }

@@ -28,7 +28,7 @@ public class Pause extends Music {
 	
 	@Override
 	public String getDescription() {
-		return "Pauses the current track. Can be continued with '!unpause'";
+		return "Pauses the current track. Can be continued with '!unpause'.";
 	}
 	
 }

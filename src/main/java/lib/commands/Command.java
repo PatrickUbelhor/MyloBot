@@ -1,13 +1,15 @@
 package lib.commands;
 
 import lib.main.Permission;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 5/16/2021
+ * @version 10/16/2022
  */
 public abstract class Command {
 	
@@ -100,8 +102,24 @@ public abstract class Command {
 	}
 	
 	
+	public CommandData getCommandData() {
+		return new CommandData(this.getName(), "NOT YET IMPLEMENTED - " + this.getDescription());
+	}
+	
+	
+	protected CommandData getDefaultCommandData() {
+		return new CommandData(this.getName(), this.getDescription());
+	}
+	
+	
+	public void runSlash(SlashCommandEvent event) {
+		event.getChannel().sendMessage("Not yet implemented").queue();
+	}
+	
+	
 	public abstract void run(MessageReceivedEvent event, String[] args);
 	public abstract String getUsage();
 	public abstract String getDescription();
+//	public abstract CommandData getCommandData();
 	
 }

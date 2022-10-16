@@ -66,4 +66,5 @@ public class PeekQueue extends Music {
 	public String getDescription() {
 		return "Lists the songs remaining in the queue";
 	}
+	
 }
