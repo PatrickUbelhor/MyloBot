@@ -1,5 +1,5 @@
 group 'com.patrickubelhor'
-version '4.13.3'
+version '5.0.0-SNAPSHOT'
 
 apply plugin: 'java'
 apply plugin: 'application'
