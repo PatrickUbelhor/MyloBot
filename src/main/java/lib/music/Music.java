@@ -7,6 +7,8 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import lib.commands.Command;
 import main.Globals;
 import lib.main.Permission;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -52,13 +54,12 @@ public abstract class Music extends Command {
 	
 	
 	// TODO: Should return track scheduler. On failure, should throw exception.
-	protected final boolean joinAudioChannel(MessageReceivedEvent event) {
-		AudioManager guildAudioManager = event.getGuild().getAudioManager();
-		VoiceChannel vc = event.getMember().getVoiceState().getChannel();
+	protected final boolean joinAudioChannel(Guild guild, Member member) {
+		AudioManager guildAudioManager = guild.getAudioManager();
+		VoiceChannel vc = member.getVoiceState().getChannel();
 		
 		// Refuses to play if user is not in a voice channel
 		if (vc == null) {
-			event.getTextChannel().sendMessage("You must be in a voice channel to begin playing music.").queue();
 			return false;
 		}
 		
@@ -66,7 +67,7 @@ public abstract class Music extends Command {
 			return true;
 		}
 		
-		Long guildId = event.getGuild().getIdLong();
+		Long guildId = guild.getIdLong();
 		trackSchedulers.putIfAbsent(guildId, generatePlayer());
 		TrackScheduler trackScheduler = trackSchedulers.get(guildId);
 		
