@@ -27,7 +27,8 @@ public final class PlayNext extends Music {
 		if (args.length < 2) return;
 		
 		// Joins the voice channel if not in one
-		if (!joinAudioChannel(event)) {
+		if (!joinAudioChannel(event.getGuild(), event.getMember())) {
+			event.getChannel().sendMessage("You must be in a voice channel to begin playing music.").queue();
 			return; // If we failed to join a voice channel, return
 		}
 		
@@ -39,6 +40,12 @@ public final class PlayNext extends Music {
 	
 	@Override
 	public void runSlash(SlashCommandEvent event) {
+		// Joins the voice channel if not in one
+		if (!joinAudioChannel(event.getGuild(), event.getMember())) {
+			event.reply("You must be in a voice channel to begin playing music.").queue();
+			return; // If we failed to join a voice channel, return
+		}
+		
 		String link = "";
 		for (OptionMapping option : event.getOptionsByName("link")) {
 			link = option.getAsString();
