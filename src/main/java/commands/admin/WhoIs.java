@@ -5,20 +5,25 @@ import lib.main.Permission;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 /**
  * @author Patrick Ubelhor
- * @version 10/12/2021
+ * @version 10/16/2022
  */
 public class WhoIs extends Command {
 	
@@ -36,15 +41,13 @@ public class WhoIs extends Command {
 			  Roles: %s
 			""";
 	
-	
 	public WhoIs(Permission perm) {
 		super("whois", perm);
 	}
 
-
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
-		TextChannel channel = event.getMessage().getTextChannel();
+		MessageChannel channel = event.getMessage().getChannel();
 		List<Member> members = event.getMessage().getMentionedMembers();
 		List<Role> roles = event.getMessage().getMentionedRoles();
 		
@@ -62,10 +65,29 @@ public class WhoIs extends Command {
 		}
 		
 		// Send a message of information for each user requested
-		for (Member member : uniqueMembers) {
-			User user = member.getUser();
-			
-			String messageContent = String.format(
+		List<Message> memberInfo = getInfoAboutMembers(uniqueMembers);
+		for (Message msg : memberInfo) {
+			channel.sendMessage(msg).queue();
+		}
+	}
+	
+	@Override
+	public void runSlash(SlashCommandEvent event) {
+		Member member = null;
+		for (OptionMapping option : event.getOptionsByName("user")) {
+			member = option.getAsMember();
+		}
+		
+		assert member != null;
+		getInfoAboutMembers(List.of(member))
+			.forEach(message -> event.reply(message).queue());
+	}
+	
+	private List<Message> getInfoAboutMembers(Collection<Member> members) {
+		return members.parallelStream()
+			.map(member -> {
+				User user = member.getUser();
+				return String.format(
 					format,
 					user.getName(), user.getDiscriminator(),
 					user.getId(),
@@ -75,16 +97,14 @@ public class WhoIs extends Command {
 					member.getOnlineStatus().getKey(),
 					user.getEffectiveAvatarUrl(),
 					rolesToString(member.getRoles())
-			);
-			
-			Message message = new MessageBuilder()
-					.appendCodeBlock(messageContent, "yaml")
-					.build();
-			
-			channel.sendMessage(message).queue();
-		}
+				);
+			})
+			.map(info -> new MessageBuilder()
+				.appendCodeBlock(info, "yaml")
+				.build()
+			)
+			.toList();
 	}
-	
 	
 	/**
 	 * Converts a list of roles into a comma-space separated string.
@@ -103,16 +123,25 @@ public class WhoIs extends Command {
 		
 		return sb.toString();
 	}
-	
 
 	@Override
 	public String getUsage() {
 		return "whois @users";
 	}
 	
-
 	@Override
 	public String getDescription() {
 		return "Gives information about the target users";
 	}
+	
+	public String getShortDescription() {
+		return "Gives information about the target user";
+	}
+	
+	@Override
+	public CommandData getCommandData() {
+		return super.getDefaultCommandData(getShortDescription())
+			.addOption(OptionType.USER, "user", "The user to lookup", true);
+	}
+	
 }
