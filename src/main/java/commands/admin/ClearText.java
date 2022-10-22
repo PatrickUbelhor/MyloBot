@@ -4,13 +4,18 @@ import lib.commands.Command;
 import lib.main.Permission;
 import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 10/11/2019
+ * @version 10/21/2022
  */
 public class ClearText extends Command {
 	
@@ -20,7 +25,6 @@ public class ClearText extends Command {
 	public ClearText(Permission perm) {
 		super("clear", perm);
 	}
-	
 	
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
@@ -39,6 +43,27 @@ public class ClearText extends Command {
 			return;
 		}
 		
+		deleteMessages(num, channel);
+	}
+	
+	@Override
+	public void runSlash(SlashCommandEvent event) {
+		event.reply("Deleting messages...")
+			.setEphemeral(true)
+			.queue();
+		
+		int num = 1;
+		for (OptionMapping option : event.getOptionsByName("num")) {
+			num = Math.toIntExact(option.getAsLong());
+		}
+		
+		deleteMessages(num, event.getTextChannel());
+		event.reply("Finished deleting messages")
+			.setEphemeral(true)
+			.queue();
+	}
+	
+	private void deleteMessages(int num, TextChannel channel) {
 		logger.info("Retrieving and deleting message history...");
 		MessageHistory messageHistory = new MessageHistory(channel);
 		
@@ -52,16 +77,28 @@ public class ClearText extends Command {
 		logger.info("Message history deleted.");
 	}
 	
-	
 	@Override
 	public String getUsage() {
 		return getName() + " <num>";
 	}
 	
-	
 	@Override
 	public String getDescription() {
 		return "Deletes 'num' amount of messages from the chat";
+	}
+	
+	public String getShortDescription() {
+		return "Deletes a collection of messages from the chat";
+	}
+	
+	@Override
+	public CommandData getCommandData() {
+		return super.getDefaultCommandData(getShortDescription())
+			.addOptions(
+				new OptionData(OptionType.INTEGER, "num", "The number of messages to delete", true)
+					.setMinValue(1)
+					.setMaxValue(Integer.MAX_VALUE)
+			);
 	}
 	
 }
