@@ -13,10 +13,11 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Patrick Ubelhor
- * @version 3/9/2021
+ * @version 3/24/2023
  */
 public class VoiceTrackerClient {
 	
@@ -27,7 +28,11 @@ public class VoiceTrackerClient {
 	private final String bodyFormat = "{\"leavingChannelId\": \"%s\",\"joiningChannelId\": \"%s\"}";
 	
 	public VoiceTrackerClient() {
-		client = new OkHttpClient();
+		client = new OkHttpClient.Builder()
+			.connectTimeout(60, TimeUnit.SECONDS)
+			.readTimeout(60, TimeUnit.SECONDS)
+			.writeTimeout(60, TimeUnit.SECONDS)
+			.build();
 	}
 	
 	

@@ -89,7 +89,8 @@ public class WhoIs extends Command {
 				User user = member.getUser();
 				return String.format(
 					format,
-					user.getName(), user.getDiscriminator(),
+					user.getName(),
+					user.getDiscriminator(),
 					user.getId(),
 					member.getEffectiveName(),
 					user.getTimeCreated(),
