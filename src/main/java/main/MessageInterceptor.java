@@ -12,7 +12,7 @@ import java.util.Random;
 
 /**
  * @author Patrick Ubelhor
- * @version 12/19/2021
+ * @version 11/14/2023
  */
 public class MessageInterceptor {
 	
@@ -36,6 +36,7 @@ public class MessageInterceptor {
 		interceptDavidMeme(author, ch, msg);
 		interceptWhoWouldaThoughtMeme(msg, channel);
 		interceptAramMsg(author, message, msg);
+		interceptTwitterLink(message, msg);
 	}
 	
 	
@@ -153,6 +154,22 @@ public class MessageInterceptor {
 			if (lowercase.contains(word)) {
 				message.addReaction(THUMBS_DOWN).queue(); // Thumbs down
 				break;
+			}
+		}
+	}
+
+
+	private void interceptTwitterLink(Message message, String msg) {
+		String[] words = msg.split(" ");
+		for (String word : words) {
+			if (word.startsWith("https://x.com")) {
+				String response = word.replace("x.com", "vxtwitter.com");
+				message.reply(response).queue();
+			}
+
+			if (word.startsWith("https://twitter.com")) {
+				String response = word.replace("twitter.com", "vxtwitter.com");
+				message.reply(response).queue();
 			}
 		}
 	}

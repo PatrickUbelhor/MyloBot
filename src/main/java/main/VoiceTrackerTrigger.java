@@ -25,7 +25,7 @@ import java.util.List;
 
 /**
  * @author Patrick Ubelhor
- * @version 1/4/2022
+ * @version 11/14/2023
  *
  * TODO: Could divide into a FileWriterTrigger and WebTrigger????
  * TODO: Add code to onReconnect in Bot.java to send proper events to all triggers
@@ -64,7 +64,7 @@ public class VoiceTrackerTrigger implements Trigger {
 			this.channels = loadData(saveData.toString()); // TODO: this should modify, rather than replace
 			
 		} catch (FileNotFoundException e) {
-			logger.error("[Voice] Could not file save file", e);
+			logger.error("[Voice] Could not find save file", e);
 		} catch (IOException e) {
 			logger.error("[Voice] Could not read data from save file", e);
 		}
