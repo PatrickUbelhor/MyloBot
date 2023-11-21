@@ -12,7 +12,7 @@ import java.util.Random;
 
 /**
  * @author Patrick Ubelhor
- * @version 11/14/2023
+ * @version 11/21/2023
  */
 public class MessageInterceptor {
 	
@@ -37,6 +37,7 @@ public class MessageInterceptor {
 		interceptWhoWouldaThoughtMeme(msg, channel);
 		interceptAramMsg(author, message, msg);
 		interceptTwitterLink(message, msg);
+		interceptMudaeBotRoll(message, msg);
 	}
 	
 	
@@ -172,6 +173,33 @@ public class MessageInterceptor {
 				message.reply(response).queue();
 			}
 		}
+	}
+
+
+	private void interceptMudaeBotRoll(Message message, String msg) {
+		if (!msg.startsWith("$")) {
+			return;
+		}
+
+		String command = msg.split(" ")[0].toLowerCase();
+		String replacement = switch (command) {
+			case "$m"	-> "~smx";
+			case "$mg"	-> "~smg";
+			case "$ma"	-> "~sma";
+			case "$h"	-> "~shx";
+			case "$hg"	-> "~shg";
+			case "$ha"	-> "~sha";
+			case "$w"	-> "~swx";
+			case "$wg"	-> "~swg";
+			case "$wa"	-> "~swa";
+			default -> null;
+		};
+
+		if (replacement == null) {
+			return;
+		}
+
+		message.reply("https://api.memegen.link/images/drake/" + command + "/" + replacement + ".jpg").queue();
 	}
 	
 }
