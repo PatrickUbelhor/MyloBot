@@ -59,7 +59,6 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.IPChange;
-import services.SurrenderAt20;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -73,7 +72,7 @@ import static main.Globals.DISCORD_TOKEN;
 
 /**
  * @author Patrick Ubelhor
- * @version 10/16/2022
+ * @version 11/21/2023
  */
 public class Bot extends ListenerAdapter {
 	
@@ -149,21 +148,20 @@ public class Bot extends ListenerAdapter {
 			new GetIp(Permission.MOD),
 			new GetVoiceLog(Permission.MOD, tracker)
 		};
-		
+
 		Service[] preInitServices = {
 			new IPChange(Globals.IP_CHECK_DELAY),
-			new SurrenderAt20(Globals.SURRENDER_DELAY)
 		};
-		
-		
+
+
 		// Initialize triggers
 		voiceTrackerTrigger.init();
-		
+
 		loadRoles();
 		initializeCommands(preInitCommands);
 		initializeServices(preInitServices);
 		registerGuildSlashCommands(guilds, commands.values());
-		
+
 		jda.addEventListener(new Bot());
 	}
 	
