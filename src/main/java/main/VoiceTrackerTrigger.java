@@ -6,7 +6,7 @@ import log.VoiceTrackerFileWriter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
@@ -25,7 +25,7 @@ import java.util.List;
 
 /**
  * @author Patrick Ubelhor
- * @version 11/14/2023
+ * @version 11/22/2023
  *
  * TODO: Could divide into a FileWriterTrigger and WebTrigger????
  * TODO: Add code to onReconnect in Bot.java to send proper events to all triggers

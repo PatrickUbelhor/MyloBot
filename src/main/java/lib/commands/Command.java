@@ -2,7 +2,7 @@ package lib.commands;
 
 import lib.main.Permission;
 import main.Globals;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.apache.logging.log4j.LogManager;
@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 10/16/2022
+ * @version 11/22/2023
  */
 public abstract class Command {
 	
@@ -128,7 +128,7 @@ public abstract class Command {
 	}
 	
 	
-	public void runSlash(SlashCommandEvent event) {
+	public void runSlash(SlashCommandInteractionEvent event) {
 		event.reply("Not yet implemented").queue();
 	}
 	
