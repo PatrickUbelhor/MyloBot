@@ -2,8 +2,8 @@ package commands;
 
 import lib.commands.Command;
 import lib.main.Permission;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -16,7 +16,7 @@ import java.util.Random;
 
 /**
  * @author Patrick Ubelhor
- * @version 10/16/2022
+ * @version 11/22/2023
  */
 public class Roll extends Command {
 	
@@ -41,12 +41,12 @@ public class Roll extends Command {
 		long maxVal = Long.parseLong(splitDieArg[1]);
 		
 		long result = roll(numDice, maxVal);
-		TextChannel channel = event.getTextChannel();
+		MessageChannel channel = event.getChannel();
 		channel.sendMessage(result + "").queue();
 	}
 	
 	@Override
-	public void runSlash(SlashCommandEvent event) {
+	public void runSlash(SlashCommandInteractionEvent event) {
 		long numDice = 0;
 		long sides = 0;
 		
@@ -68,9 +68,9 @@ public class Roll extends Command {
 		}
 		
 		// Roll the dice and sum them
-		int roll = 0;
+		long roll = 0;
 		Random random = new Random();
-		for (int i = 0; i < numDice; i++) {
+		for (long i = 0; i < numDice; i++) {
 			roll += random.nextLong(sides) + 1;
 		}
 		

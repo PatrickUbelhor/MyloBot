@@ -1,8 +1,8 @@
 package commands.party;
 
 import lib.main.Permission;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 /**
@@ -27,20 +27,20 @@ public class Unparty extends AbstractParty {
 	
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
-		TextChannel textChannel = event.getTextChannel();
-		VoiceChannel vc = event.getMember().getVoiceState().getChannel();
-		
-		if (vc == null) {
+		MessageChannel textChannel = event.getChannel();
+		AudioChannel audioChannel = event.getMember().getVoiceState().getChannel();
+
+		if (audioChannel == null) {
 			textChannel.sendMessage("You must be in a voice channel to disband a party").queue();
 			return;
 		}
-		
-		if (!partyExists(vc.getIdLong())) {
+
+		if (!partyExists(audioChannel.getIdLong())) {
 			textChannel.sendMessage("This voice channel doesn't have a party.").queue();
 			return;
 		}
 		
-		PartyState party = removeParty(vc.getIdLong());
+		PartyState party = removeParty(audioChannel.getIdLong());
 		String response = "Disbanded party '%s'".formatted(party.getName());
 		
 		textChannel.sendMessage(response).queue();

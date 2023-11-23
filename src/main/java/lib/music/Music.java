@@ -10,7 +10,7 @@ import lib.main.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.managers.AudioManager;
 
@@ -93,7 +93,7 @@ public abstract class Music extends Command {
 	}
 	
 	
-	protected final boolean leaveAudioChannel(SlashCommandEvent event) {
+	protected final boolean leaveAudioChannel(SlashCommandInteractionEvent event) {
 		Long guildId = event.getGuild().getIdLong();
 		
 		if (!audioManagers.containsKey(guildId)) {

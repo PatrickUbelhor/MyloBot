@@ -4,7 +4,7 @@ import lib.commands.Command;
 import lib.main.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,7 +27,7 @@ public class Unmute extends Command {
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
 		Guild guild = event.getGuild();
-		TextChannel channel = event.getMessage().getTextChannel();
+		MessageChannel channel = event.getMessage().getChannel();
 		List<Member> members = event.getMessage().getMentionedMembers();
 		
 		// Make sure the user entered at least one @mention

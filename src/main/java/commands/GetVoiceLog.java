@@ -3,8 +3,9 @@ package commands;
 import lib.commands.Command;
 import log.VoiceTrackerFileWriter;
 import lib.main.Permission;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.utils.FileUpload;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,10 +29,11 @@ public class GetVoiceLog extends Command {
 	
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
-		TextChannel channel = event.getTextChannel();
+		MessageChannel channel = event.getChannel();
 		File logFile = new File("vclog.csv");
-		
-		channel.sendFile(logFile).queue();
+
+		FileUpload upload = FileUpload.fromData(logFile);
+		channel.sendFiles(upload).queue();
 	}
 	
 	

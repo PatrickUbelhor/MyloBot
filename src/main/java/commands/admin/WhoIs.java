@@ -5,10 +5,10 @@ import lib.main.Permission;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -72,7 +72,7 @@ public class WhoIs extends Command {
 	}
 	
 	@Override
-	public void runSlash(SlashCommandEvent event) {
+	public void runSlash(SlashCommandInteractionEvent event) {
 		Member member = null;
 		for (OptionMapping option : event.getOptionsByName("user")) {
 			member = option.getAsMember();

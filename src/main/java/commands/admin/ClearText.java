@@ -3,8 +3,8 @@ package commands.admin;
 import lib.commands.Command;
 import lib.main.Permission;
 import net.dv8tion.jda.api.entities.MessageHistory;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -28,7 +28,7 @@ public class ClearText extends Command {
 	
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
-		TextChannel channel = event.getTextChannel();
+		MessageChannel channel = event.getChannel();
 		
 		if (args.length < 2) {
 			event.getChannel().sendMessage("Usage: " + getUsage()).queue();
@@ -47,7 +47,7 @@ public class ClearText extends Command {
 	}
 	
 	@Override
-	public void runSlash(SlashCommandEvent event) {
+	public void runSlash(SlashCommandInteractionEvent event) {
 		event.reply("Deleting messages...")
 			.setEphemeral(true)
 			.queue();
@@ -57,13 +57,13 @@ public class ClearText extends Command {
 			num = Math.toIntExact(option.getAsLong());
 		}
 		
-		deleteMessages(num, event.getTextChannel());
+		deleteMessages(num, event.getChannel());
 		event.reply("Finished deleting messages")
 			.setEphemeral(true)
 			.queue();
 	}
 	
-	private void deleteMessages(int num, TextChannel channel) {
+	private void deleteMessages(int num, MessageChannel channel) {
 		logger.info("Retrieving and deleting message history...");
 		MessageHistory messageHistory = new MessageHistory(channel);
 		

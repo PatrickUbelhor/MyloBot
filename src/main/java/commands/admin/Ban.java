@@ -4,7 +4,7 @@ import lib.commands.Command;
 import lib.main.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,7 +29,7 @@ public class Ban extends Command {
 	public void run(MessageReceivedEvent event, String[] args) {
 		List<Member> members = event.getMessage().getMentionedMembers();
 		Guild guild = event.getGuild();
-		TextChannel channel = event.getTextChannel();
+		MessageChannel channel = event.getChannel();
 		Member self = guild.getSelfMember();
 		
 		// Check to see if any users were @mentioned

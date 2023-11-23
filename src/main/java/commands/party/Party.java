@@ -2,8 +2,8 @@ package commands.party;
 
 import lib.main.Permission;
 import net.dv8tion.jda.api.entities.ISnowflake;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -29,27 +29,27 @@ public class Party extends AbstractParty {
 			return;
 		}
 		
-		TextChannel textChannel = event.getTextChannel();
-		VoiceChannel vc = event.getMember().getVoiceState().getChannel();
+		MessageChannel textChannel = event.getChannel();
+		AudioChannel audioChannel = event.getMember().getVoiceState().getChannel();
 		String partyName = Arrays.stream(Arrays.copyOfRange(args, 1, args.length))
 				.reduce("", (s, s2) -> s + " " + s2);
 		
-		if (vc == null) {
+		if (audioChannel == null) {
 			textChannel.sendMessage("You must be in a voice channel to create a party.").queue();
 			return;
 		}
 		
-		if (partyExists(vc.getIdLong())) {
+		if (partyExists(audioChannel.getIdLong())) {
 			textChannel.sendMessage("This voice channel already has a party.").queue();
 			return;
 		}
 		
-		List<Long> members = vc.getMembers()
+		List<Long> members = audioChannel.getMembers()
 				.stream()
 				.map(ISnowflake::getIdLong)
 				.collect(Collectors.toList());
 		
-		createParty(vc.getIdLong(), partyName, members);
+		createParty(audioChannel.getIdLong(), partyName, members);
 		textChannel.sendMessage("Created party '%s'".formatted(partyName)).queue();
 	}
 	

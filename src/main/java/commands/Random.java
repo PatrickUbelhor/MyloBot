@@ -2,8 +2,8 @@ package commands;
 
 import lib.commands.Command;
 import lib.main.Permission;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -32,7 +32,7 @@ public class Random extends Command {
 			return;
 		}
 		
-		TextChannel channel = event.getTextChannel();
+		MessageChannel channel = event.getChannel();
 		long min = 1;
 		long max;
 		
@@ -63,7 +63,7 @@ public class Random extends Command {
 	}
 	
 	@Override
-	public void runSlash(SlashCommandEvent event) {
+	public void runSlash(SlashCommandInteractionEvent event) {
 		long min = 0;
 		long max = 1;
 		

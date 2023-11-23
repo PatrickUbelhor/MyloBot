@@ -3,9 +3,8 @@ package commands.admin;
 import clients.ShellClient;
 import lib.commands.Command;
 import lib.main.Permission;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
@@ -35,7 +34,7 @@ public class GetIp extends Command {
 	}
 	
 	@Override
-	public void runSlash(SlashCommandEvent event) {
+	public void runSlash(SlashCommandInteractionEvent event) {
 		String ip = shellClient.getIp();
 		
 		if (ip == null) {

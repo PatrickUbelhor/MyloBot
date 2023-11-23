@@ -2,9 +2,9 @@ package commands.party;
 
 import lib.commands.Command;
 import lib.main.Permission;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 
 import java.util.HashMap;
 import java.util.List;

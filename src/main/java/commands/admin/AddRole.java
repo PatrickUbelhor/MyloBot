@@ -5,8 +5,8 @@ import lib.main.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,7 +31,7 @@ public class AddRole extends Command {
 		User author = event.getAuthor();
 		List<Member> members = event.getMessage().getMentionedMembers();
 		Guild guild = event.getGuild();
-		TextChannel channel = event.getTextChannel();
+		MessageChannel channel = event.getChannel();
 		Member self = guild.getSelfMember();
 		
 		// Check if any users were @mentioned
