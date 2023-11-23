@@ -49,6 +49,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
@@ -189,7 +190,7 @@ public class Bot extends ListenerAdapter {
 
 	private static void registerGuildSlashCommands(Collection<Guild> guilds, Collection<Command> commands) {
 		logger.info("Registering guild slash commands...");
-		List<CommandData> commandData = commands.parallelStream()
+		List<SlashCommandData> commandData = commands.parallelStream()
 			.map(Command::getCommandData)
 			.toList();
 

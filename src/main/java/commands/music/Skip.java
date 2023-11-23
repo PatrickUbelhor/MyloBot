@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 /**
  * @author Patrick Ubelhor
@@ -83,7 +83,7 @@ public final class Skip extends Music {
 	}
 	
 	@Override
-	public CommandData getCommandData() {
+	public SlashCommandData getCommandData() {
 		return super.getDefaultCommandData()
 			.addOption(OptionType.STRING, "quantity", "Number of songs to skip", false);
 	}

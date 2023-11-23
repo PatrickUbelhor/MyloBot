@@ -8,8 +8,8 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,23 +18,23 @@ import org.apache.logging.log4j.Logger;
  * @version 10/21/2022
  */
 public class ClearText extends Command {
-	
+
 	private static final Logger logger = LogManager.getLogger(ClearText.class);
 	private static final int MAX_MESSAGE_COUNT = 100; // JDA throws exception after this point
-	
+
 	public ClearText(Permission perm) {
 		super("clear", perm);
 	}
-	
+
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
 		MessageChannel channel = event.getChannel();
-		
+
 		if (args.length < 2) {
 			event.getChannel().sendMessage("Usage: " + getUsage()).queue();
 			return;
 		}
-		
+
 		int num;
 		try {
 			num = Integer.parseInt(args[1]) + 1; // Plus one to delete the command itself too
@@ -42,57 +42,57 @@ public class ClearText extends Command {
 			channel.sendMessage("I think you specified an invalid number of messages to delete: '" + args[1] + "'").queue();
 			return;
 		}
-		
+
 		deleteMessages(num, channel);
 	}
-	
+
 	@Override
 	public void runSlash(SlashCommandInteractionEvent event) {
 		event.reply("Deleting messages...")
 			.setEphemeral(true)
 			.queue();
-		
+
 		int num = 1;
 		for (OptionMapping option : event.getOptionsByName("num")) {
 			num = Math.toIntExact(option.getAsLong());
 		}
-		
+
 		deleteMessages(num, event.getChannel());
 		event.reply("Finished deleting messages")
 			.setEphemeral(true)
 			.queue();
 	}
-	
+
 	private void deleteMessages(int num, MessageChannel channel) {
 		logger.info("Retrieving and deleting message history...");
 		MessageHistory messageHistory = new MessageHistory(channel);
-		
+
 		// Retrieve the list of messages to delete
 		for (int i = 0; i < num / MAX_MESSAGE_COUNT; i++) {
 			messageHistory.retrievePast(MAX_MESSAGE_COUNT).complete();
 		}
 		messageHistory.retrievePast(num % MAX_MESSAGE_COUNT).complete();
-		
+
 		channel.purgeMessages(messageHistory.getRetrievedHistory());
 		logger.info("Message history deleted.");
 	}
-	
+
 	@Override
 	public String getUsage() {
 		return getName() + " <num>";
 	}
-	
+
 	@Override
 	public String getDescription() {
 		return "Deletes 'num' amount of messages from the chat";
 	}
-	
+
 	public String getShortDescription() {
 		return "Deletes a collection of messages from the chat";
 	}
-	
+
 	@Override
-	public CommandData getCommandData() {
+	public SlashCommandData getCommandData() {
 		return super.getDefaultCommandData(getShortDescription())
 			.addOptions(
 				new OptionData(OptionType.INTEGER, "num", "The number of messages to delete", true)
@@ -100,5 +100,5 @@ public class ClearText extends Command {
 					.setMaxValue(Integer.MAX_VALUE)
 			);
 	}
-	
+
 }
