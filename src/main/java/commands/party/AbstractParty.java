@@ -4,7 +4,7 @@ import lib.commands.Command;
 import lib.main.Permission;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +47,7 @@ public abstract class AbstractParty extends Command {
 
 
 	// If not a member of the party, then send them a message
-	public static void handleJoin(VoiceChannel vc, Member member) {
+	public static void handleJoin(AudioChannel vc, Member member) {
 		Long voiceId = vc.getIdLong();
 		if (parties.containsKey(voiceId)) {
 			PartyState party = parties.get(voiceId);
@@ -67,7 +67,7 @@ public abstract class AbstractParty extends Command {
 
 
 	// If all original members have left, then destroy the party
-	public static void handleLeave(VoiceChannel vc) {
+	public static void handleLeave(AudioChannel vc) {
 		Long voiceId = vc.getIdLong();
 		if (parties.containsKey(voiceId)) {
 			PartyState party = parties.get(voiceId);

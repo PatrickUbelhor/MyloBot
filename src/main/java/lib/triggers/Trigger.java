@@ -1,17 +1,15 @@
 package lib.triggers;
 
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 
 /**
  * @author Patrick Ubelhor
- * @version 3/28/2021
+ * @version 11/23/2023
  */
 public interface Trigger {
 	
-	void onGuildVoiceJoin(GuildVoiceJoinEvent event);
-	void onGuildVoiceLeave(GuildVoiceLeaveEvent event);
-	void onGuildVoiceMove(GuildVoiceMoveEvent event);
+	void onGuildVoiceJoin(GuildVoiceUpdateEvent event);
+	void onGuildVoiceLeave(GuildVoiceUpdateEvent event);
+	void onGuildVoiceMove(GuildVoiceUpdateEvent event);
 	
 }

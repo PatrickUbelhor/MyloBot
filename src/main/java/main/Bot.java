@@ -48,7 +48,6 @@ import net.dv8tion.jda.api.events.session.SessionResumeEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.Compression;
@@ -333,7 +332,6 @@ public class Bot extends ListenerAdapter {
 		} else {
 			channel.sendMessage("Unknown or unavailable command").queue();
 		}
-
 	}
 
 
@@ -407,25 +405,22 @@ public class Bot extends ListenerAdapter {
 	@Override
 	public void onGuildVoiceUpdate(GuildVoiceUpdateEvent event) {
 		super.onGuildVoiceUpdate(event);
-		// TODO: overhaul user detection...
-	}
 
-	@Override
-	public void onGuildVoiceJoin(GuildVoiceJoinEvent event) {
-		partyTrigger.onGuildVoiceJoin(event);
-		voiceTrackerTrigger.onGuildVoiceJoin(event);
-	}
+		// If user joined
+		if (event.getChannelLeft() == null) {
+			partyTrigger.onGuildVoiceJoin(event);
+			voiceTrackerTrigger.onGuildVoiceJoin(event);
+			return;
+		}
 
+		// If user left
+		if (event.getChannelJoined() == null) {
+			partyTrigger.onGuildVoiceLeave(event);
+			voiceTrackerTrigger.onGuildVoiceLeave(event);
+			return;
+		}
 
-	@Override
-	public void onGuildVoiceLeave(GuildVoiceLeaveEvent event) {
-		partyTrigger.onGuildVoiceLeave(event);
-		voiceTrackerTrigger.onGuildVoiceLeave(event);
-	}
-
-
-	@Override
-	public void onGuildVoiceMove(GuildVoiceMoveEvent event) {
+		// Else, user moved
 		partyTrigger.onGuildVoiceMove(event);
 		voiceTrackerTrigger.onGuildVoiceMove(event);
 	}

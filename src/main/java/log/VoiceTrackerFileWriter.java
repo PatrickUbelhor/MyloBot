@@ -1,8 +1,8 @@
 package log;
 
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -26,12 +26,12 @@ public class VoiceTrackerFileWriter implements Closeable {
 	}
 
 
-	public void enter(VoiceChannel channel, Member member) {
+	public void enter(AudioChannel channel, Member member) {
 		this.logEvent("J", member.getIdLong(), channel.getIdLong());
 	}
 
 
-	public void move(GuildVoiceMoveEvent event) {
+	public void move(GuildVoiceUpdateEvent event) {
 		Long userSnowflake = event.getMember().getIdLong();
 		Long time = new Date().getTime(); // Get it now before potential lockout
 		Long leavingChannelId = event.getChannelLeft().getIdLong();
@@ -49,7 +49,7 @@ public class VoiceTrackerFileWriter implements Closeable {
 	}
 
 
-	public void exit(VoiceChannel channel, Member member) {
+	public void exit(AudioChannel channel, Member member) {
 		this.logEvent("L", member.getIdLong(), channel.getIdLong());
 	}
 

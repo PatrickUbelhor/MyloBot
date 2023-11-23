@@ -6,13 +6,14 @@ import lib.main.Permission;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 10/16/2022
+ * @version 11/23/2023
  */
 public class Shutdown extends Command {
 	
@@ -85,8 +86,9 @@ public class Shutdown extends Command {
 	}
 	
 	@Override
-	public CommandData getCommandData() {
-		return super.getDefaultCommandData();
+	public SlashCommandData getCommandData() {
+		return super.getDefaultCommandData()
+			.setDefaultPermissions(DefaultMemberPermissions.DISABLED);
 	}
 	
 }
