@@ -27,7 +27,7 @@ public class PeekQueue extends Music {
 		TrackScheduler trackScheduler = Music.trackSchedulers.get(event.getGuild().getIdLong());
 		String result = generateQueueMessage(trackScheduler);
 		MessageChannel channel = event.getChannel();
-		
+
 		new MessageBuilder()
 			.setContent(result)
 			.buildAll(MessageBuilder.SplitPolicy.NEWLINE)

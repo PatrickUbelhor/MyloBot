@@ -16,9 +16,9 @@ import java.util.List;
  * @version 2/27/2020
  */
 public class Kick extends Command {
-	
+
 	private static final Logger logger = LogManager.getLogger(Kick.class);
-	
+
 	public Kick(Permission perm) {
 		super("kick", perm);
 	}
@@ -26,9 +26,9 @@ public class Kick extends Command {
 
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
-		List<Member> members = event.getMessage().getMentionedMembers();
+		List<Member> members = event.getMessage().getMentions().getMembers();
 		Guild guild = event.getGuild();
-		MessageChannel channel = event.getTextChannel();
+		MessageChannel channel = event.getChannel();
 		Member self = guild.getSelfMember();
 
 		// Check to see if any users were @mentioned
@@ -52,9 +52,9 @@ public class Kick extends Command {
 			if (!self.canInteract(member)) {
 				logger.debug("Can't kick {} due to hierarchy restriction", member.getEffectiveName());
 				channel.sendMessage("I'm not ranked high enough to kick ")
-						.append(member.getEffectiveName())
-						.append("!")
-						.queue();
+					.addContent(member.getEffectiveName())
+					.addContent("!")
+					.queue();
 
 				continue; // Move on to next user
 			}
@@ -62,15 +62,20 @@ public class Kick extends Command {
 
 			// Finally kick the member
 			guild.kick(member).queue(
-					success -> {
-						logger.info("Successfully kicked {}", member.getEffectiveName());
-						channel.sendMessage("Successfully kicked ").append(member.getEffectiveName()).append("!").queue();
-					},
+				success -> {
+					logger.info("Successfully kicked {}", member.getEffectiveName());
+					channel.sendMessage("Successfully kicked ")
+						.addContent(member.getEffectiveName())
+						.addContent("!")
+						.queue();
+				},
 
-					error -> {
-						logger.warn("Error kicking user: {}\n{}", member.getEffectiveName(), error.toString());
-						channel.sendMessage("Error kicking user: ").append(member.getEffectiveName()).queue();
-					}
+				error -> {
+					logger.warn("Error kicking user: {}\n{}", member.getEffectiveName(), error.toString());
+					channel.sendMessage("Error kicking user: ")
+						.addContent(member.getEffectiveName())
+						.queue();
+				}
 			);
 		}
 	}
