@@ -1,8 +1,8 @@
 package log;
 
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,27 +16,27 @@ import java.util.Date;
  * @version 12/31/2021
  */
 public class VoiceTrackerFileWriter implements Closeable {
-	
+
 	private final Logger logger = LogManager.getLogger(VoiceTrackerFileWriter.class);
-	
+
 	private final FileWriter fw;
-	
+
 	public VoiceTrackerFileWriter() throws IOException {
-		 fw = new FileWriter("vclog.csv", true);
+		fw = new FileWriter("vclog.csv", true);
 	}
-	
-	
-	public void enter(VoiceChannel channel, Member member) {
+
+
+	public void enter(AudioChannel channel, Member member) {
 		this.logEvent("J", member.getIdLong(), channel.getIdLong());
 	}
-	
-	
-	public void move(GuildVoiceMoveEvent event) {
+
+
+	public void move(GuildVoiceUpdateEvent event) {
 		Long userSnowflake = event.getMember().getIdLong();
 		Long time = new Date().getTime(); // Get it now before potential lockout
 		Long leavingChannelId = event.getChannelLeft().getIdLong();
 		Long joiningChannelId = event.getChannelJoined().getIdLong();
-		
+
 		synchronized (fw) {
 			try {
 				// Flush to print immediately. If bot goes down, we don't lose data.
@@ -47,15 +47,15 @@ public class VoiceTrackerFileWriter implements Closeable {
 			}
 		}
 	}
-	
-	
-	public void exit(VoiceChannel channel, Member member) {
+
+
+	public void exit(AudioChannel channel, Member member) {
 		this.logEvent("L", member.getIdLong(), channel.getIdLong());
 	}
-	
-	
+
+
 	private void logEvent(String eventCode, Long userId, Long channelId) {
-		
+
 		Long time = new Date().getTime(); // Get it now before potential lockout
 		synchronized (fw) {
 			try {
@@ -67,8 +67,8 @@ public class VoiceTrackerFileWriter implements Closeable {
 			}
 		}
 	}
-	
-	
+
+
 	public void close() throws IOException {
 		synchronized (fw) {
 			try {
@@ -78,5 +78,5 @@ public class VoiceTrackerFileWriter implements Closeable {
 			}
 		}
 	}
-	
+
 }

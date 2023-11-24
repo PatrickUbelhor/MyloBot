@@ -9,8 +9,10 @@ import main.Globals;
 import lib.main.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.managers.AudioManager;
 
@@ -56,13 +58,14 @@ public abstract class Music extends Command {
 	// TODO: Should return track scheduler. On failure, should throw exception.
 	protected final boolean joinAudioChannel(Guild guild, Member member) {
 		AudioManager guildAudioManager = guild.getAudioManager();
-		VoiceChannel vc = member.getVoiceState().getChannel();
-		
+		AudioChannelUnion audioChannel = member.getVoiceState().getChannel();
+
 		// Refuses to play if user is not in a voice channel
-		if (vc == null) {
+		if (audioChannel == null || audioChannel.getType() != ChannelType.VOICE) {
 			return false;
 		}
-		
+
+		VoiceChannel vc = audioChannel.asVoiceChannel();
 		if (guildAudioManager.isConnected() && guildAudioManager.getConnectedChannel().getIdLong() == vc.getIdLong()) {
 			return true;
 		}
@@ -82,7 +85,7 @@ public abstract class Music extends Command {
 		Long guildId = event.getGuild().getIdLong();
 		
 		if (!audioManagers.containsKey(guildId)) {
-			event.getTextChannel().sendMessage("I can't leave a server I'm not in!").queue();
+			event.getChannel().sendMessage("I can't leave a server I'm not in!").queue();
 			return false;
 		}
 		
@@ -93,7 +96,7 @@ public abstract class Music extends Command {
 	}
 	
 	
-	protected final boolean leaveAudioChannel(SlashCommandEvent event) {
+	protected final boolean leaveAudioChannel(SlashCommandInteractionEvent event) {
 		Long guildId = event.getGuild().getIdLong();
 		
 		if (!audioManagers.containsKey(guildId)) {

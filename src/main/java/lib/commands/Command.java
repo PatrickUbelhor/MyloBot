@@ -1,31 +1,31 @@
 package lib.commands;
 
 import lib.main.Permission;
-import main.Globals;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 10/16/2022
+ * @version 11/23/2023
  */
 public abstract class Command {
-	
+
 	private static final Logger logger = LogManager.getLogger(Command.class);
-	
+
 	private final String name;
 	private Permission perm;
-	
-	
+
+
 	protected Command(String name, Permission perm) {
 		this.name = name.toLowerCase();
 		this.perm = perm;
 	}
-	
-	
+
+
 	/**
 	 * Runs any initialization code that the command needs before being called,
 	 * like creating or counting files. Removes the command from data the HashMap
@@ -36,12 +36,12 @@ public abstract class Command {
 			logger.info("\tInitialized command: !{}", this.getName());
 			return true;
 		}
-		
+
 		logger.error("\tFailed to initialize command: !{}", this.getName());
 		return false;
 	}
-	
-	
+
+
 	/**
 	 * Runs any initialization code that the command needs before being called,
 	 * like creating or counting files.
@@ -51,8 +51,8 @@ public abstract class Command {
 	protected boolean subInit() {
 		return true;
 	}
-	
-	
+
+
 	/**
 	 * Runs finalization code that runs when the bot shuts down. Sends failure
 	 * message to console if an error occurs when closing a command.
@@ -62,8 +62,8 @@ public abstract class Command {
 			logger.warn("Failed to safely shut down command: {}", this.getName());
 		}
 	}
-	
-	
+
+
 	/**
 	 * Runs finalization code that runs when the bot shuts down.
 	 *
@@ -72,8 +72,8 @@ public abstract class Command {
 	protected boolean subEnd() {
 		return true;
 	}
-	
-	
+
+
 	/**
 	 * Gets the String the user calls (minus the prefix) to invoke this command.
 	 * For example, the name in "!clear 100" is "clear".
@@ -83,8 +83,8 @@ public abstract class Command {
 	public final String getName() {
 		return name;
 	}
-	
-	
+
+
 	/**
 	 * @return The permission level required to call this command.
 	 */
@@ -101,41 +101,47 @@ public abstract class Command {
 	public final void setPerm(Permission perm) {
 		this.perm = perm;
 	}
-	
-	
-	public CommandData getCommandData() {
+
+
+	public SlashCommandData getCommandData() {
 		String desc = "NOT YET IMPLEMENTED - " + getDescription();
-		return new CommandData(this.getName(), desc.substring(0, Math.min(100, desc.length())));
+		if (desc.length() > SlashCommandData.MAX_DESCRIPTION_LENGTH) {
+			desc = desc.substring(0, SlashCommandData.MAX_DESCRIPTION_LENGTH - 3) + "...";
+		}
+
+		return Commands.slash(this.getName(), desc);
 	}
-	
-	
-	protected CommandData getDefaultCommandData() {
+
+
+	protected SlashCommandData getDefaultCommandData() {
 		return this.getDefaultCommandData(getDescription());
 	}
-	
-	
-	protected CommandData getDefaultCommandData(String desc) {
-		if (desc.length() > Globals.MAX_SLASH_COMMAND_DESC_LENGTH) {
-			desc = desc.substring(0, Globals.MAX_SLASH_COMMAND_DESC_LENGTH);
+
+
+	protected SlashCommandData getDefaultCommandData(String desc) {
+		if (desc.length() > SlashCommandData.MAX_DESCRIPTION_LENGTH) {
+			desc = desc.substring(0, SlashCommandData.MAX_DESCRIPTION_LENGTH - 3) + "...";
 			logger.error("Command '{}' description longer than {} characters: {}",
 				this.getName(),
-				Globals.MAX_SLASH_COMMAND_DESC_LENGTH,
+				SlashCommandData.MAX_DESCRIPTION_LENGTH,
 				this.getDescription()
 			);
 		}
-		
-		return new CommandData(this.getName(), desc);
+
+		return Commands.slash(this.getName(), desc);
 	}
-	
-	
-	public void runSlash(SlashCommandEvent event) {
+
+
+	public void runSlash(SlashCommandInteractionEvent event) {
 		event.reply("Not yet implemented").queue();
 	}
-	
-	
+
+
 	public abstract void run(MessageReceivedEvent event, String[] args);
+
 	public abstract String getUsage();
+
 	public abstract String getDescription();
 //	public abstract CommandData getCommandData();
-	
+
 }

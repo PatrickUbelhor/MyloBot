@@ -4,12 +4,12 @@ import lib.music.Music;
 import lib.music.QueueLastAudioLoadResultHandler;
 import lib.music.TrackScheduler;
 import lib.main.Permission;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 /**
  * @author Patrick Ubelhor
@@ -57,7 +57,7 @@ public final class Play extends Music {
 	}
 	
 	@Override
-	public void runSlash(SlashCommandEvent event) {
+	public void runSlash(SlashCommandInteractionEvent event) {
 		// Joins the voice channel if not in one
 		if (!joinAudioChannel(event.getGuild(), event.getMember())) {
 			event.reply("You must be in a voice channel to begin playing music.").queue();
@@ -94,7 +94,7 @@ public final class Play extends Music {
 	}
 	
 	@Override
-	public CommandData getCommandData() {
+	public SlashCommandData getCommandData() {
 		return super.getDefaultCommandData(getShortDescription())
 			.addOptions(
 				new OptionData(OptionType.STRING, "link", "URL of a song", true)

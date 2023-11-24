@@ -7,13 +7,12 @@ import java.util.List;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lib.exception.LoadConfigException;
-import net.dv8tion.jda.api.entities.Message;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 10/16/2022
+ * @version 11/23/2023
  */
 public class Globals {
 	
@@ -31,8 +30,6 @@ public class Globals {
 	public static final String SURRENDER_URL;
 	public static final boolean ENABLE_WHO_WOULDA_THOUGHT_MEME;
 	
-	public static final int MAX_SLASH_COMMAND_DESC_LENGTH = 100;
-	public static final int MAX_MSG_LENGTH = Message.MAX_CONTENT_LENGTH;
 	public static final String SERVICES_SAVE_PATH = "config/services.txt";
 	
 	static {

@@ -2,7 +2,7 @@ package lib.services;
 
 import main.Bot;
 import main.Globals;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -105,7 +105,6 @@ public class MessageSubscriber {
 	
 	
 	public void loadSubscribers() {
-		
 		File saveFile = new File(Globals.SERVICES_SAVE_PATH);
 		if (!saveFile.exists()) {
 			return;

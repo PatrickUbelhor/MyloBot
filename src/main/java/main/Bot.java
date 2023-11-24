@@ -37,22 +37,18 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.DisconnectEvent;
-import net.dv8tion.jda.api.events.ReadyEvent;
-import net.dv8tion.jda.api.events.ReconnectedEvent;
-import net.dv8tion.jda.api.events.ResumedEvent;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
+import net.dv8tion.jda.api.events.session.ReadyEvent;
+import net.dv8tion.jda.api.events.session.SessionDisconnectEvent;
+import net.dv8tion.jda.api.events.session.SessionRecreateEvent;
+import net.dv8tion.jda.api.events.session.SessionResumeEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.events.user.update.UserUpdateOnlineStatusEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
@@ -60,7 +56,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.IPChange;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
@@ -72,14 +68,14 @@ import static main.Globals.DISCORD_TOKEN;
 
 /**
  * @author Patrick Ubelhor
- * @version 11/21/2023
+ * @version 11/22/2023
  */
 public class Bot extends ListenerAdapter {
-	
+
 	private static final Logger logger = LogManager.getLogger(Bot.class);
 	private static final LinkedHashMap<String, Command> commands = new LinkedHashMap<>();
 	private static final LinkedHashMap<String, Service> services = new LinkedHashMap<>();
-	
+
 	private static JDA jda;
 	private static MessageInterceptor messageInterceptor;
 	private static Lexer lexer;
@@ -88,20 +84,23 @@ public class Bot extends ListenerAdapter {
 	private static PartyTrigger partyTrigger;
 	private static List<Role> userRoles;
 	private static List<Role> modRoles;
-	
+
 	public static void main(String[] args) {
-		
+
 		// Create 'AtEveryone' directory if not found
 		File pics = new File(Globals.AT_EVERYONE_PATH);
 		if (!pics.exists() && !pics.mkdir()) {
 			logger.error("Could not create 'AtEveryone' directory!");
 		}
-		
-		
+
+
 		// Log into Discord account
 		try {
 			jda = JDABuilder.createDefault(DISCORD_TOKEN)
-				.enableIntents(GatewayIntent.GUILD_MEMBERS)
+				.enableIntents(
+					GatewayIntent.GUILD_MEMBERS,
+					GatewayIntent.MESSAGE_CONTENT
+				)
 				.setMemberCachePolicy(MemberCachePolicy.ALL)
 				.setBulkDeleteSplittingEnabled(false)
 				.setCompression(Compression.NONE)
@@ -111,16 +110,16 @@ public class Bot extends ListenerAdapter {
 			logger.fatal("Couldn't initialize bot", e);
 			System.exit(2);
 		}
-		
+
 		// Load
 		List<Guild> guilds = jda.getGuilds();
 		guilds.forEach(Guild::loadMembers);
-		
+
 		lexer = new Lexer(); // TODO: make a singleton
 		messageInterceptor = new MessageInterceptor();
 		partyTrigger = new PartyTrigger();
 		voiceTrackerTrigger = new VoiceTrackerTrigger(jda);
-		
+
 		Command[] preInitCommands = {
 			new Help(Permission.USER),
 			new Play(Permission.USER),
@@ -164,8 +163,8 @@ public class Bot extends ListenerAdapter {
 
 		jda.addEventListener(new Bot());
 	}
-	
-	
+
+
 	private static void initializeCommands(Command[] preInitCommands) {
 		logger.info("Initializing commands...");
 		Arrays.stream(preInitCommands)
@@ -174,8 +173,8 @@ public class Bot extends ListenerAdapter {
 			.forEachOrdered(command -> commands.put(command.getName(), command));
 		logger.info("Initialization finished");
 	}
-	
-	
+
+
 	private static void initializeServices(Service[] preInitServices) {
 		logger.info("Initializing services...");
 		Service.loadSubscribers();
@@ -186,21 +185,21 @@ public class Bot extends ListenerAdapter {
 			});
 		logger.info("Initialization finished");
 	}
-	
-	
+
+
 	private static void registerGuildSlashCommands(Collection<Guild> guilds, Collection<Command> commands) {
 		logger.info("Registering guild slash commands...");
-		List<CommandData> commandData = commands.parallelStream()
+		List<SlashCommandData> commandData = commands.parallelStream()
 			.map(Command::getCommandData)
 			.toList();
-		
+
 		guilds.forEach(guild -> guild.updateCommands()
 			.addCommands(commandData)
 			.queue()
 		);
 	}
-	
-	
+
+
 	private static void loadRoles() {
 		logger.info("Getting roles...");
 		// TODO: Check here if role actually exists?
@@ -208,74 +207,73 @@ public class Bot extends ListenerAdapter {
 			.parallelStream()
 			.map(s -> jda.getRoleById(s))
 			.collect(Collectors.toList());
-		
+
 		modRoles = Globals.MOD_GROUP_IDS
 			.parallelStream()
 			.map(s -> jda.getRoleById(s))
 			.collect(Collectors.toList());
 		logger.info("Got roles");
 	}
-	
-	
+
+
 	public static JDA getJDA() {
 		return jda;
 	}
-	
-	
+
+
 	public static void setStatusMessage(Activity activity) {
 		jda.getPresence().setActivity(activity);
 	}
-	
-	
+
+
 	/**
 	 * @return A HashMap containing all active commands, referenced by their first required argument
 	 */
 	public static LinkedHashMap<String, Command> getCommands() {
 		return commands;
 	}
-	
-	
+
+
 	/**
 	 * @return A list of all services that were started
 	 */
 	public static LinkedHashMap<String, Service> getServices() {
 		return services;
 	}
-	
-	
+
+
 	public static VoiceTrackerTrigger getVoiceTrackerTrigger() {
 		return voiceTrackerTrigger;
 	}
-	
-	
+
+
 	@Override
 	public void onMessageReceived(MessageReceivedEvent event) {
-		
+
 		User author = event.getAuthor();
 		Message message = event.getMessage();
 		MessageChannel channel = event.getChannel();
-		TextChannel ch = event.getTextChannel();
 		String msg = message.getContentDisplay().trim();
-		
+
 		messageInterceptor.intercept(event);
-		
-		
+
+
 		// Tokenize and parse message
 		List<Token> tokens = lexer.lex(msg);
 		if (tokens.isEmpty() || tokens.get(0).getType() != TokenType.COMMAND || author.isBot())
 			return; // Checking isBot() prevents user from spamming a !reverse
 		logger.info("Received: '" + msg + "'");
-		
+
 		for (Token token : tokens) {
 			logger.debug(token.getType().name() + " | " + token.getData());
 		}
-		
+
 		// If message ends with "&", then the message should be removed
 		if (tokens.get(tokens.size() - 1).getType() == TokenType.AMP) {
 			message.delete().queue();
 			tokens = tokens.subList(0, tokens.size() - 1);
 		}
-		
+
 		switch (event.getChannelType()) {
 			case TEXT:
 				// Do nothing here (for now)
@@ -287,25 +285,25 @@ public class Bot extends ListenerAdapter {
 				// If from a group message, do special stuff here
 				return;
 		}
-		
+
 		String[] args = new String[tokens.size()];
 		for (int i = 0; i < args.length; i++) {
 			args[i] = tokens.get(i).getData();
 		}
 		args[0] = args[0].substring(1).toLowerCase();
-		
+
 		// Runs the command, if it exists and the user has valid permission levels. Otherwise prints an error message
 		if (commands.containsKey(args[0])) {
 			Command command = commands.get(args[0]);
 			List<Role> authorRoles = event.getMember().getRoles();
-			
+
 			boolean isUser = userRoles.parallelStream()
 				.anyMatch(authorRoles::contains);
-			
+
 			boolean isMod = modRoles.parallelStream()
 				.anyMatch(authorRoles::contains);
-			
-			
+
+
 			// Call the command, given the user has proper permissions
 			String response;
 			switch (command.getPerm()) {
@@ -330,34 +328,26 @@ public class Bot extends ListenerAdapter {
 					}
 					break;
 			}
-			
+
 		} else {
 			channel.sendMessage("Unknown or unavailable command").queue();
 		}
-		
 	}
-	
-	
+
+
 	@Override
-	public void onSlashCommand(SlashCommandEvent event) {
+	public void onSlashCommandInteraction(@Nonnull SlashCommandInteractionEvent event) {
+		super.onSlashCommandInteraction(event);
 		String commandName = event.getName();
-		MessageChannel channel = event.getChannel();
-		
-		if (!commands.containsKey(event.getName())) {
-			channel.sendMessage("Unknown or unavailable command").queue();
-			return;
-		}
-		
 		Command command = commands.get(commandName);
 		List<Role> authorRoles = event.getMember().getRoles();
-		
+
 		boolean isUser = userRoles.parallelStream()
 			.anyMatch(authorRoles::contains);
-		
+
 		boolean isMod = modRoles.parallelStream()
 			.anyMatch(authorRoles::contains);
-		
-		// Call the command, given the user has proper permissions
+
 		String response;
 		User user = event.getUser();
 		switch (command.getPerm()) {
@@ -383,55 +373,54 @@ public class Bot extends ListenerAdapter {
 				break;
 		}
 	}
-	
-	
+
+
 	@Override
-	public void onReconnected(@Nonnull ReconnectedEvent event) {
+	public void onSessionRecreate(@Nonnull SessionRecreateEvent event) {
 		logger.info("Reconnected");
 //		voiceTrackerTrigger.onReconnect();
 	}
-	
-	
+
+
 	@Override
 	public void onReady(@Nonnull ReadyEvent event) {
 		logger.info("Ready");
 	}
-	
-	
+
+
 	@Override
-	public void onResumed(@Nonnull ResumedEvent event) {
+	public void onSessionResume(@Nonnull SessionResumeEvent event) {
 		logger.info("Resumed");
 	}
-	
-	
+
+
 	@Override
-	public void onDisconnect(@Nonnull DisconnectEvent event) {
+	public void onSessionDisconnect(@Nonnull SessionDisconnectEvent event) {
 		logger.info("Disconnected");
 	}
-	
-	
+
+
 	@Override
-	public void onUserUpdateOnlineStatus(@Nonnull UserUpdateOnlineStatusEvent event) {}
-	
-	
-	@Override
-	public void onGuildVoiceJoin(@Nonnull GuildVoiceJoinEvent event) {
-		partyTrigger.onGuildVoiceJoin(event);
-		voiceTrackerTrigger.onGuildVoiceJoin(event);
-	}
-	
-	
-	@Override
-	public void onGuildVoiceLeave(@Nonnull GuildVoiceLeaveEvent event) {
-		partyTrigger.onGuildVoiceLeave(event);
-		voiceTrackerTrigger.onGuildVoiceLeave(event);
-	}
-	
-	
-	@Override
-	public void onGuildVoiceMove(@Nonnull GuildVoiceMoveEvent event) {
+	public void onGuildVoiceUpdate(@Nonnull GuildVoiceUpdateEvent event) {
+		super.onGuildVoiceUpdate(event);
+
+		// If user joined
+		if (event.getChannelLeft() == null) {
+			partyTrigger.onGuildVoiceJoin(event);
+			voiceTrackerTrigger.onGuildVoiceJoin(event);
+			return;
+		}
+
+		// If user left
+		if (event.getChannelJoined() == null) {
+			partyTrigger.onGuildVoiceLeave(event);
+			voiceTrackerTrigger.onGuildVoiceLeave(event);
+			return;
+		}
+
+		// Else, user moved
 		partyTrigger.onGuildVoiceMove(event);
 		voiceTrackerTrigger.onGuildVoiceMove(event);
 	}
-	
+
 }

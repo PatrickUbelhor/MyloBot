@@ -3,7 +3,7 @@ package commands.subscription;
 import lib.commands.Command;
 import main.Bot;
 import lib.main.Permission;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import lib.services.MessageSubscriber;
 import lib.services.Service;
@@ -22,7 +22,7 @@ public class Subscribe extends Command {
 	
 	@Override
 	public final void run(MessageReceivedEvent event, String[] args) {
-		TextChannel channel = event.getTextChannel();
+		MessageChannel channel = event.getChannel();
 		
 		if (args.length < 2) {
 			channel.sendMessage("Too few args").queue();
