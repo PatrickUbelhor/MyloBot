@@ -35,7 +35,7 @@ public class MessageInterceptor {
 
 		interceptAtEveryone(message, channel);
 		interceptEvanPost(author, ch);
-		interceptDavidMeme(author, ch, msg);
+		interceptDavidMeme(author, channel, msg);
 		interceptWhoWouldaThoughtMeme(msg, channel);
 		interceptAramMsg(author, message, msg);
 		interceptTwitterLink(message, msg);
@@ -89,7 +89,7 @@ public class MessageInterceptor {
 	 * @param ch     The channel to which the message was sent
 	 * @param msg    The content of the message
 	 */
-	private void interceptDavidMeme(User author, TextChannel ch, String msg) {
+	private void interceptDavidMeme(User author, MessageChannel ch, String msg) {
 		if (!author.isBot() && ch.getName().equals("david")) {
 			if (msg.toLowerCase().contains("david")) {
 				ch.sendMessage("David").queue();
