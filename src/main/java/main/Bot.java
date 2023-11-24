@@ -56,7 +56,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.IPChange;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
@@ -336,11 +336,9 @@ public class Bot extends ListenerAdapter {
 
 
 	@Override
-	public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
+	public void onSlashCommandInteraction(@Nonnull SlashCommandInteractionEvent event) {
 		super.onSlashCommandInteraction(event);
 		String commandName = event.getName();
-		MessageChannel channel = event.getChannel();
-
 		Command command = commands.get(commandName);
 		List<Role> authorRoles = event.getMember().getRoles();
 
@@ -378,32 +376,32 @@ public class Bot extends ListenerAdapter {
 
 
 	@Override
-	public void onSessionRecreate(SessionRecreateEvent event) {
+	public void onSessionRecreate(@Nonnull SessionRecreateEvent event) {
 		logger.info("Reconnected");
 //		voiceTrackerTrigger.onReconnect();
 	}
 
 
 	@Override
-	public void onReady(ReadyEvent event) {
+	public void onReady(@Nonnull ReadyEvent event) {
 		logger.info("Ready");
 	}
 
 
 	@Override
-	public void onSessionResume(SessionResumeEvent event) {
+	public void onSessionResume(@Nonnull SessionResumeEvent event) {
 		logger.info("Resumed");
 	}
 
 
 	@Override
-	public void onSessionDisconnect(SessionDisconnectEvent event) {
+	public void onSessionDisconnect(@Nonnull SessionDisconnectEvent event) {
 		logger.info("Disconnected");
 	}
 
 
 	@Override
-	public void onGuildVoiceUpdate(GuildVoiceUpdateEvent event) {
+	public void onGuildVoiceUpdate(@Nonnull GuildVoiceUpdateEvent event) {
 		super.onGuildVoiceUpdate(event);
 
 		// If user joined
