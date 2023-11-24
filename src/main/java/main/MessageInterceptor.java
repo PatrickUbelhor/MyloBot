@@ -14,7 +14,7 @@ import java.util.Random;
 
 /**
  * @author Patrick Ubelhor
- * @version 11/22/2023
+ * @version 11/24/2023
  */
 public class MessageInterceptor {
 
@@ -127,7 +127,9 @@ public class MessageInterceptor {
 
 
 	private void interceptWhoWouldaThoughtMeme(String msg, MessageChannel channel) {
-		if (!Globals.ENABLE_WHO_WOULDA_THOUGHT_MEME) return;
+		if (!Globals.WHO_WOULDA_THOUGHT_ENABLED) {
+			return;
+		}
 
 		String lowercase = msg.toLowerCase();
 
@@ -165,6 +167,10 @@ public class MessageInterceptor {
 
 
 	private void interceptTwitterLink(Message message, String msg) {
+		if (!Globals.TWITTER_LINK_EMBED_ENABLED) {
+			return;
+		}
+
 		String[] words = msg.split(" ");
 		for (String word : words) {
 			if (word.startsWith("https://x.com")) {
@@ -181,6 +187,10 @@ public class MessageInterceptor {
 
 
 	private void interceptMudaeBotRoll(Message message, String msg) {
+		if (!Globals.MUDAE_BOT_ROLLS_ENABLED) {
+			return;
+		}
+
 		if (!msg.startsWith("$")) {
 			return;
 		}

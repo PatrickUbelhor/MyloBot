@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * @author Patrick Ubelhor
- * @version 5/15/2021
+ * @version 11/24/2023
  */
 public class Config {
 
@@ -17,7 +17,7 @@ public class Config {
 	private final Group GROUP;
 	private final Url URL;
 	private final Delay DELAY;
-	private final boolean WHO_WOULDA_THOUGHT_ENABLED;
+	private final Interceptors INTERCEPTORS;
 
 
 	@JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
@@ -28,7 +28,7 @@ public class Config {
 		@JsonProperty("Group") Group group,
 		@JsonProperty("Url") Url url,
 		@JsonProperty("Delay") Delay delay,
-		@JsonProperty("Who_Woulda_Thought_Enabled") boolean whoWouldaThoughtIsEnabled
+		@JsonProperty("Interceptors") Interceptors interceptors
 	) {
 		this.DISCORD_TOKEN = discordToken;
 		this.MUSIC_VOLUME = musicVolume;
@@ -36,7 +36,7 @@ public class Config {
 		this.GROUP = group;
 		this.URL = url;
 		this.DELAY = delay;
-		this.WHO_WOULDA_THOUGHT_ENABLED = whoWouldaThoughtIsEnabled;
+		this.INTERCEPTORS = interceptors;
 	}
 
 
@@ -47,11 +47,6 @@ public class Config {
 
 	public int getMusicVolume() {
 		return MUSIC_VOLUME;
-	}
-
-
-	public long getSurrenderDelay() {
-		return DELAY.SURRENDER;
 	}
 
 
@@ -80,13 +75,8 @@ public class Config {
 	}
 
 
-	public String getSurrenderUrl() {
-		return URL.SURRENDER;
-	}
-
-
-	public boolean getWhoWouldaThoughtisEnabled() {
-		return WHO_WOULDA_THOUGHT_ENABLED;
+	public Interceptors getInterceptors() {
+		return this.INTERCEPTORS;
 	}
 
 
@@ -106,29 +96,43 @@ public class Config {
 
 	static class Url {
 		private final String VOICE_TRACKER;
-		private final String SURRENDER;
 
 		@JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
 		Url(
-			@JsonProperty("Voice_Tracker") String voiceTracker,
-			@JsonProperty("Surrender") String surrender
+			@JsonProperty("Voice_Tracker") String voiceTracker
 		) {
 			this.VOICE_TRACKER = voiceTracker;
-			this.SURRENDER = surrender;
 		}
 	}
 
 
+	/**
+	 * Represent the delay between runs of the service
+	 */
 	static class Delay {
-		private final long SURRENDER;
 		private final long IP;
 
 		Delay(
-			@JsonProperty("Surrender") long surrender,
 			@JsonProperty("Ip") long ip
 		) {
-			this.SURRENDER = surrender;
 			this.IP = ip;
+		}
+	}
+
+
+	static class Interceptors {
+		public final boolean WHO_WOULDA_THOUGHT;
+		public final boolean TWITTER_LINK_EMBED;
+		public final boolean MUDAE_BOT_ROLLS;
+
+		Interceptors(
+			@JsonProperty("Who_Woulda_Thought") boolean whoWouldaThought,
+			@JsonProperty("Twitter_Link_Embed") boolean twitterLinkEmbed,
+			@JsonProperty("Mudae_Bot_Rolls") boolean mudaeBotRolls
+		) {
+			this.WHO_WOULDA_THOUGHT = whoWouldaThought;
+			this.TWITTER_LINK_EMBED = twitterLinkEmbed;
+			this.MUDAE_BOT_ROLLS = mudaeBotRolls;
 		}
 	}
 
