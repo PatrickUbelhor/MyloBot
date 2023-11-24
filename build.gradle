@@ -4,9 +4,15 @@ version '6.0.0'
 apply plugin: 'java'
 apply plugin: 'application'
 
-sourceCompatibility = 1.17
-targetCompatibility = 1.17
-mainClassName = 'main.Bot'
+java {
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
+}
+
+application {
+	mainClass.set('main.Bot')
+}
+
 
 repositories {
 	mavenCentral()
@@ -29,12 +35,12 @@ dependencies {
 jar {
 	duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
-	manifest({
+	manifest {
 		attributes(
-				'Implementation-Title': 'MyloBot',
-				'Main-Class': mainClassName
+			'Implementation-Title': 'MyloBot',
+			'Main-Class': application.mainClass
 		)
-	})
+	}
 
 	from {
 		configurations.runtimeClasspath.collect {
