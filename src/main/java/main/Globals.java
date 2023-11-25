@@ -1,18 +1,13 @@
 package main;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import lib.exception.LoadConfigException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 /**
  * @author Patrick Ubelhor
- * @version 11/24/2023
+ * @version 11/25/2023
  */
 public class Globals {
 
@@ -35,14 +30,7 @@ public class Globals {
 	static {
 		// TODO: Generate empty config if no config file exists
 
-		Config config;
-		ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-		try {
-			config = mapper.readValue(new File(CONFIG_PATH), Config.class);
-		} catch (IOException e) {
-			logger.fatal("Couldn't read config file", e);
-			throw new LoadConfigException(e);
-		}
+		Config config = Config.load(CONFIG_PATH);
 
 		DISCORD_TOKEN = config.getDiscordToken();
 		MUSIC_VOLUME = config.getMusicVolume();
@@ -51,9 +39,9 @@ public class Globals {
 		MOD_GROUP_IDS = config.getModGroupIds();
 		AT_EVERYONE_PATH = config.getAtEveryonePath();
 		VOICE_TRACKER_BASE_URL = config.getVoiceTrackerBaseUrl();
-		WHO_WOULDA_THOUGHT_ENABLED = config.getInterceptors().getOrDefault("Who_Woulda_Thought", true);
-		TWITTER_LINK_EMBED_ENABLED = config.getInterceptors().getOrDefault("Twitter_Link_Embed", true);
-		MUDAE_BOT_ROLLS_ENABLED = config.getInterceptors().getOrDefault("Mudae_Bot_Rolls", true);
+		WHO_WOULDA_THOUGHT_ENABLED = config.getInterceptors().getOrDefault(Config.InterceptorFlag.whoWouldaThought, true);
+		TWITTER_LINK_EMBED_ENABLED = config.getInterceptors().getOrDefault(Config.InterceptorFlag.twitterEmbed, true);
+		MUDAE_BOT_ROLLS_ENABLED = config.getInterceptors().getOrDefault(Config.InterceptorFlag.mudaeRolls, true);
 	}
 
 }
