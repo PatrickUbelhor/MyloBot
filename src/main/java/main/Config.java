@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Patrick Ubelhor
@@ -17,7 +18,7 @@ public class Config {
 	private final Group GROUP;
 	private final Url URL;
 	private final Delay DELAY;
-	private final Interceptors INTERCEPTORS;
+	private final Map<String, Boolean> INTERCEPTORS;
 
 
 	@JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
@@ -28,7 +29,8 @@ public class Config {
 		@JsonProperty("Group") Group group,
 		@JsonProperty("Url") Url url,
 		@JsonProperty("Delay") Delay delay,
-		@JsonProperty("Interceptors") Interceptors interceptors
+		@JsonProperty("Interceptors") Map<String, Boolean> interceptors
+//		@JsonProperty("Interceptors") Interceptors interceptors
 	) {
 		this.DISCORD_TOKEN = discordToken;
 		this.MUSIC_VOLUME = musicVolume;
@@ -75,7 +77,7 @@ public class Config {
 	}
 
 
-	public Interceptors getInterceptors() {
+	public Map<String, Boolean> getInterceptors() {
 		return this.INTERCEPTORS;
 	}
 
@@ -119,6 +121,18 @@ public class Config {
 		}
 	}
 
+
+//	static enum EInterceptors {
+//		whoWouldaThought("Who_Woulda_Thought"),
+//		twitterLinkEmbed("Twitter_Link_Embed"),
+//		mudaeBotRolls("Mudae_Bot_Rolls")
+//		;
+//
+//		public final String value;
+//		EInterceptors(String value) {
+//			this.value = value;
+//		}
+//	}
 
 	static class Interceptors {
 		public final boolean WHO_WOULDA_THOUGHT;
