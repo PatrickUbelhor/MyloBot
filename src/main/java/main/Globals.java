@@ -32,16 +32,16 @@ public class Globals {
 
 		Config config = Config.load(CONFIG_PATH);
 
-		DISCORD_TOKEN = config.getDiscordToken();
-		MUSIC_VOLUME = config.getMusicVolume();
-		IP_CHECK_DELAY = config.getIpCheckDelay();
-		USER_GROUP_IDS = config.getUserGroupIds();
-		MOD_GROUP_IDS = config.getModGroupIds();
-		AT_EVERYONE_PATH = config.getAtEveryonePath();
-		VOICE_TRACKER_BASE_URL = config.getVoiceTrackerBaseUrl();
-		WHO_WOULDA_THOUGHT_ENABLED = config.getInterceptors().getOrDefault(Config.InterceptorFlag.whoWouldaThought, true);
-		TWITTER_LINK_EMBED_ENABLED = config.getInterceptors().getOrDefault(Config.InterceptorFlag.twitterEmbed, true);
-		MUDAE_BOT_ROLLS_ENABLED = config.getInterceptors().getOrDefault(Config.InterceptorFlag.mudaeRolls, true);
+		DISCORD_TOKEN = config.discordToken();
+		MUSIC_VOLUME = config.musicVolume();
+		IP_CHECK_DELAY = config.delay().IP();
+		USER_GROUP_IDS = config.group().USERS();
+		MOD_GROUP_IDS = config.group().MODS();
+		AT_EVERYONE_PATH = config.atEveryonePath();
+		VOICE_TRACKER_BASE_URL = config.url().VOICE_TRACKER();
+		WHO_WOULDA_THOUGHT_ENABLED = config.interceptors().getOrDefault(Config.InterceptorFlag.whoWouldaThought, true);
+		TWITTER_LINK_EMBED_ENABLED = config.interceptors().getOrDefault(Config.InterceptorFlag.twitterEmbed, true);
+		MUDAE_BOT_ROLLS_ENABLED = config.interceptors().getOrDefault(Config.InterceptorFlag.mudaeRolls, true);
 	}
 
 }

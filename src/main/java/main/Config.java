@@ -17,17 +17,18 @@ import java.util.Map;
  * @author Patrick Ubelhor
  * @version 11/25/2023
  */
-public class Config {
+//@JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+public record Config(
+	@JsonProperty("Discord_Token") String discordToken,
+	@JsonProperty("Music_Volume") int musicVolume,
+	@JsonProperty("At_Everyone_Path") String atEveryonePath,
+	@JsonProperty("Group") Group group,
+	@JsonProperty("Url") Url url,
+	@JsonProperty("Delay") Delay delay,
+	@JsonProperty("Interceptors") Map<InterceptorFlag, Boolean> interceptors
+) {
 
 	private static final Logger logger = LogManager.getLogger(Config.class);
-
-	private final String DISCORD_TOKEN;
-	private final int MUSIC_VOLUME;
-	private final String AT_EVERYONE_PATH;
-	private final Group GROUP;
-	private final Url URL;
-	private final Delay DELAY;
-	private final Map<InterceptorFlag, Boolean> INTERCEPTORS;
 
 	record Group(
 		@JsonProperty("Users") List<String> USERS,
@@ -60,57 +61,6 @@ public class Config {
 			logger.fatal("Couldn't read config file", e);
 			throw new LoadConfigException(filepath, e);
 		}
-	}
-
-	@JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-	public Config(
-		@JsonProperty("Discord_Token") String discordToken,
-		@JsonProperty("Music_Volume") int musicVolume,
-		@JsonProperty("At_Everyone_Path") String atEveryonePath,
-		@JsonProperty("Group") Group group,
-		@JsonProperty("Url") Url url,
-		@JsonProperty("Delay") Delay delay,
-		@JsonProperty("Interceptors") Map<InterceptorFlag, Boolean> interceptors
-	) {
-		this.DISCORD_TOKEN = discordToken;
-		this.MUSIC_VOLUME = musicVolume;
-		this.AT_EVERYONE_PATH = atEveryonePath;
-		this.GROUP = group;
-		this.URL = url;
-		this.DELAY = delay;
-		this.INTERCEPTORS = interceptors;
-	}
-
-	public String getDiscordToken() {
-		return DISCORD_TOKEN;
-	}
-
-	public int getMusicVolume() {
-		return MUSIC_VOLUME;
-	}
-
-	public long getIpCheckDelay() {
-		return DELAY.IP;
-	}
-
-	public List<String> getUserGroupIds() {
-		return GROUP.USERS;
-	}
-
-	public List<String> getModGroupIds() {
-		return GROUP.MODS;
-	}
-
-	public String getAtEveryonePath() {
-		return AT_EVERYONE_PATH;
-	}
-
-	public String getVoiceTrackerBaseUrl() {
-		return URL.VOICE_TRACKER;
-	}
-
-	public Map<InterceptorFlag, Boolean> getInterceptors() {
-		return this.INTERCEPTORS;
 	}
 
 }
