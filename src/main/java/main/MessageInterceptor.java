@@ -51,7 +51,7 @@ public class MessageInterceptor {
 	 */
 	private void interceptAtEveryone(Message message, MessageChannel channel) {
 		if (message.getMentions().mentionsEveryone()) {
-			File[] pics = new File(Globals.AT_EVERYONE_PATH).listFiles();
+			File[] pics = new File(Config.getConfig().AT_EVERYONE_PATH()).listFiles();
 
 			// Send a text response if no images found
 			if (pics == null || pics.length == 0) {
@@ -127,7 +127,7 @@ public class MessageInterceptor {
 
 
 	private void interceptWhoWouldaThoughtMeme(String msg, MessageChannel channel) {
-		if (!Globals.WHO_WOULDA_THOUGHT_ENABLED) {
+		if (!Config.getConfig().interceptors().whoWouldaThought()) {
 			return;
 		}
 
@@ -167,7 +167,7 @@ public class MessageInterceptor {
 
 
 	private void interceptTwitterLink(Message message, String msg) {
-		if (!Globals.TWITTER_LINK_EMBED_ENABLED) {
+		if (!Config.getConfig().interceptors().twitterEmbed()) {
 			return;
 		}
 
@@ -187,7 +187,7 @@ public class MessageInterceptor {
 
 
 	private void interceptMudaeBotRoll(Message message, String msg) {
-		if (!Globals.MUDAE_BOT_ROLLS_ENABLED) {
+		if (!Config.getConfig().interceptors().mudaeRolls()) {
 			return;
 		}
 

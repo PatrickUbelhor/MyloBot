@@ -1,7 +1,7 @@
 package lib.services;
 
 import main.Bot;
-import main.Globals;
+import main.Constants;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -96,7 +96,7 @@ public class MessageSubscriber {
 //		sb.deleteCharAt(sb.length() - 1); // Remove trailing "\n"
 		
 		// Save to file
-		try (FileWriter fw = new FileWriter(Globals.SERVICES_SAVE_PATH, false)) {
+		try (FileWriter fw = new FileWriter(Constants.SERVICES_SAVE_PATH, false)) {
 			fw.append(sb.toString());
 		} catch (IOException e) {
 			logger.error("Failed to save service subscribers", e);
@@ -105,7 +105,7 @@ public class MessageSubscriber {
 	
 	
 	public void loadSubscribers() {
-		File saveFile = new File(Globals.SERVICES_SAVE_PATH);
+		File saveFile = new File(Constants.SERVICES_SAVE_PATH);
 		if (!saveFile.exists()) {
 			return;
 		}

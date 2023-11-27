@@ -5,7 +5,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import lib.commands.Command;
-import main.Globals;
+import main.Config;
 import lib.main.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -114,7 +114,7 @@ public abstract class Music extends Command {
 	private TrackScheduler generatePlayer() {
 		AudioPlayer player = playerManager.createPlayer();
 		TrackScheduler trackScheduler = new TrackScheduler(player);
-		player.setVolume(Globals.MUSIC_VOLUME);
+		player.setVolume(Config.getConfig().MUSIC_VOLUME());
 		player.addListener(trackScheduler); // TODO: How is this not a circular reference?
 		
 		return trackScheduler;

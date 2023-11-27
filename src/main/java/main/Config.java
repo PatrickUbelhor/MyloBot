@@ -1,6 +1,5 @@
 package main;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -11,56 +10,59 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Patrick Ubelhor
- * @version 11/25/2023
+ * @version 11/26/2023
  */
-//@JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
 public record Config(
-	@JsonProperty("Discord_Token") String discordToken,
-	@JsonProperty("Music_Volume") int musicVolume,
-	@JsonProperty("At_Everyone_Path") String atEveryonePath,
-	@JsonProperty("Group") Group group,
+	@JsonProperty("Discord_Token") String DISCORD_TOKEN,
+	@JsonProperty("Music_Volume") int MUSIC_VOLUME,
+	@JsonProperty("At_Everyone_Path") String AT_EVERYONE_PATH,
+	@JsonProperty("Group") Groups groups,
 	@JsonProperty("Url") Url url,
 	@JsonProperty("Delay") Delay delay,
-	@JsonProperty("Interceptors") Map<InterceptorFlag, Boolean> interceptors
+	@JsonProperty("Interceptors") InterceptorFlag interceptors
 ) {
 
 	private static final Logger logger = LogManager.getLogger(Config.class);
+	private static Config config;
 
-	record Group(
-		@JsonProperty("Users") List<String> USERS,
-		@JsonProperty("Mods") List<String> MODS
+	public record Groups(
+		@JsonProperty("Users") List<String> USER_GROUP_IDS,
+		@JsonProperty("Mods") List<String> MOD_GROUP_IDS
 	) {}
 
-	record Url(
+	public record Url(
 		@JsonProperty("Voice_Tracker") String VOICE_TRACKER
 	) {}
 
 	/**
 	 * Represent the delay between runs of the service
 	 */
-	record Delay(
+	public record Delay(
 		@JsonProperty("Ip") long IP
 	) {}
 
-	enum InterceptorFlag {
-		@JsonProperty("Who_Woulda_Thought") whoWouldaThought,
-		@JsonProperty("Twitter_Link_Embed") twitterEmbed,
-		@JsonProperty("Mudae_Bot_Rolls") mudaeRolls
-	}
+	public record InterceptorFlag(
+		@JsonProperty("Who_Woulda_Thought") boolean whoWouldaThought,
+		@JsonProperty("Twitter_Link_Embed") boolean twitterEmbed,
+		@JsonProperty("Mudae_Bot_Rolls") boolean mudaeRolls
+	) {}
 
-	public static Config load(String filepath)
+	public static void load(String filepath)
 		throws LoadConfigException {
 		ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 		try {
-			return mapper.readValue(new File(filepath), Config.class);
+			config = mapper.readValue(new File(filepath), Config.class);
 		} catch (IOException e) {
 			logger.fatal("Couldn't read config file", e);
 			throw new LoadConfigException(filepath, e);
 		}
+	}
+
+	public static Config getConfig() {
+		return config;
 	}
 
 }
