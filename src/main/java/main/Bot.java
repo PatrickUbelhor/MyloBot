@@ -64,11 +64,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static main.Globals.DISCORD_TOKEN;
 
 /**
  * @author Patrick Ubelhor
- * @version 11/22/2023
+ * @version 11/26/2023
  */
 public class Bot extends ListenerAdapter {
 
@@ -86,9 +85,10 @@ public class Bot extends ListenerAdapter {
 	private static List<Role> modRoles;
 
 	public static void main(String[] args) {
+		Config.load(Constants.CONFIG_PATH);
 
 		// Create 'AtEveryone' directory if not found
-		File pics = new File(Globals.AT_EVERYONE_PATH);
+		File pics = new File(Config.getConfig().AT_EVERYONE_PATH());
 		if (!pics.exists() && !pics.mkdir()) {
 			logger.error("Could not create 'AtEveryone' directory!");
 		}
@@ -96,7 +96,7 @@ public class Bot extends ListenerAdapter {
 
 		// Log into Discord account
 		try {
-			jda = JDABuilder.createDefault(DISCORD_TOKEN)
+			jda = JDABuilder.createDefault(Config.getConfig().DISCORD_TOKEN())
 				.enableIntents(
 					GatewayIntent.GUILD_MEMBERS,
 					GatewayIntent.MESSAGE_CONTENT
@@ -149,7 +149,7 @@ public class Bot extends ListenerAdapter {
 		};
 
 		Service[] preInitServices = {
-			new IPChange(Globals.IP_CHECK_DELAY),
+			new IPChange(Config.getConfig().delay().IP()),
 		};
 
 
@@ -203,14 +203,14 @@ public class Bot extends ListenerAdapter {
 	private static void loadRoles() {
 		logger.info("Getting roles...");
 		// TODO: Check here if role actually exists?
-		userRoles = Globals.USER_GROUP_IDS
+		userRoles = Config.getConfig().groups().USER_GROUP_IDS()
 			.parallelStream()
-			.map(s -> jda.getRoleById(s))
+			.map(id -> jda.getRoleById(id))
 			.collect(Collectors.toList());
 
-		modRoles = Globals.MOD_GROUP_IDS
+		modRoles = Config.getConfig().groups().MOD_GROUP_IDS()
 			.parallelStream()
-			.map(s -> jda.getRoleById(s))
+			.map(id -> jda.getRoleById(id))
 			.collect(Collectors.toList());
 		logger.info("Got roles");
 	}
@@ -260,16 +260,16 @@ public class Bot extends ListenerAdapter {
 
 		// Tokenize and parse message
 		List<Token> tokens = lexer.lex(msg);
-		if (tokens.isEmpty() || tokens.get(0).getType() != TokenType.COMMAND || author.isBot())
+		if (tokens.isEmpty() || tokens.get(0).type() != TokenType.COMMAND || author.isBot())
 			return; // Checking isBot() prevents user from spamming a !reverse
 		logger.info("Received: '" + msg + "'");
 
 		for (Token token : tokens) {
-			logger.debug(token.getType().name() + " | " + token.getData());
+			logger.debug(token.type().name() + " | " + token.data());
 		}
 
 		// If message ends with "&", then the message should be removed
-		if (tokens.get(tokens.size() - 1).getType() == TokenType.AMP) {
+		if (tokens.get(tokens.size() - 1).type() == TokenType.AMP) {
 			message.delete().queue();
 			tokens = tokens.subList(0, tokens.size() - 1);
 		}
@@ -288,7 +288,7 @@ public class Bot extends ListenerAdapter {
 
 		String[] args = new String[tokens.size()];
 		for (int i = 0; i < args.length; i++) {
-			args[i] = tokens.get(i).getData();
+			args[i] = tokens.get(i).data();
 		}
 		args[0] = args[0].substring(1).toLowerCase();
 

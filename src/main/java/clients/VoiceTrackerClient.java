@@ -1,6 +1,6 @@
 package clients;
 
-import main.Globals;
+import main.Config;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -38,8 +38,9 @@ public class VoiceTrackerClient {
 	
 	public void logJoinEvent(Long userSnowflake, Long channelId) {
 		String body = String.format(bodyFormat, "null", channelId);
+		String baseUrl = Config.getConfig().url().VOICE_TRACKER();
 		Request request = new Request.Builder()
-				.url(Globals.VOICE_TRACKER_BASE_URL + "/join/" + userSnowflake)
+				.url(baseUrl + "/join/" + userSnowflake)
 				.post(RequestBody.create(body, JSON))
 				.build();
 		
@@ -50,8 +51,9 @@ public class VoiceTrackerClient {
 	
 	public void logMoveEvent(Long snowflake, Long leavingChannelId, Long joiningChannelId) {
 		String body = String.format(bodyFormat, leavingChannelId, joiningChannelId);
+		String baseUrl = Config.getConfig().url().VOICE_TRACKER();
 		Request request = new Request.Builder()
-				.url(Globals.VOICE_TRACKER_BASE_URL + "/move/" + snowflake)
+				.url(baseUrl + "/move/" + snowflake)
 				.post(RequestBody.create(body, JSON))
 				.build();
 		
@@ -61,8 +63,9 @@ public class VoiceTrackerClient {
 	
 	public void logLeaveEvent(Long userSnowflake, Long channelId) {
 		String body = String.format(bodyFormat, channelId, "null");
+		String baseUrl = Config.getConfig().url().VOICE_TRACKER();
 		Request request = new Request.Builder()
-				.url(Globals.VOICE_TRACKER_BASE_URL + "/leave/" + userSnowflake)
+				.url(baseUrl + "/leave/" + userSnowflake)
 				.post(RequestBody.create(body, JSON))
 				.build();
 		

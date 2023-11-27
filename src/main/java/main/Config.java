@@ -1,139 +1,68 @@
 package main;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import lib.exception.LoadConfigException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
  * @author Patrick Ubelhor
- * @version 11/24/2023
+ * @version 11/26/2023
  */
-public class Config {
+public record Config(
+	@JsonProperty("Discord_Token") String DISCORD_TOKEN,
+	@JsonProperty("Music_Volume") int MUSIC_VOLUME,
+	@JsonProperty("At_Everyone_Path") String AT_EVERYONE_PATH,
+	@JsonProperty("Group") Groups groups,
+	@JsonProperty("Url") Url url,
+	@JsonProperty("Delay") Delay delay,
+	@JsonProperty("Interceptors") InterceptorFlag interceptors
+) {
 
-	private final String DISCORD_TOKEN;
-	private final int MUSIC_VOLUME;
-	private final String AT_EVERYONE_PATH;
-	private final Group GROUP;
-	private final Url URL;
-	private final Delay DELAY;
-	private final Interceptors INTERCEPTORS;
+	private static final Logger logger = LogManager.getLogger(Config.class);
+	private static Config config;
 
+	public record Groups(
+		@JsonProperty("Users") List<String> USER_GROUP_IDS,
+		@JsonProperty("Mods") List<String> MOD_GROUP_IDS
+	) {}
 
-	@JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-	public Config(
-		@JsonProperty("Discord_Token") String discordToken,
-		@JsonProperty("Music_Volume") int musicVolume,
-		@JsonProperty("At_Everyone_Path") String atEveryonePath,
-		@JsonProperty("Group") Group group,
-		@JsonProperty("Url") Url url,
-		@JsonProperty("Delay") Delay delay,
-		@JsonProperty("Interceptors") Interceptors interceptors
-	) {
-		this.DISCORD_TOKEN = discordToken;
-		this.MUSIC_VOLUME = musicVolume;
-		this.AT_EVERYONE_PATH = atEveryonePath;
-		this.GROUP = group;
-		this.URL = url;
-		this.DELAY = delay;
-		this.INTERCEPTORS = interceptors;
-	}
-
-
-	public String getDiscordToken() {
-		return DISCORD_TOKEN;
-	}
-
-
-	public int getMusicVolume() {
-		return MUSIC_VOLUME;
-	}
-
-
-	public long getIpCheckDelay() {
-		return DELAY.IP;
-	}
-
-
-	public List<String> getUserGroupIds() {
-		return GROUP.USERS;
-	}
-
-
-	public List<String> getModGroupIds() {
-		return GROUP.MODS;
-	}
-
-
-	public String getAtEveryonePath() {
-		return AT_EVERYONE_PATH;
-	}
-
-
-	public String getVoiceTrackerBaseUrl() {
-		return URL.VOICE_TRACKER;
-	}
-
-
-	public Interceptors getInterceptors() {
-		return this.INTERCEPTORS;
-	}
-
-
-	static class Group {
-		private final List<String> USERS;
-		private final List<String> MODS;
-
-		Group(
-			@JsonProperty("Users") List<String> users,
-			@JsonProperty("Mods") List<String> mods
-		) {
-			this.USERS = users;
-			this.MODS = mods;
-		}
-	}
-
-
-	static class Url {
-		private final String VOICE_TRACKER;
-
-		@JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-		Url(
-			@JsonProperty("Voice_Tracker") String voiceTracker
-		) {
-			this.VOICE_TRACKER = voiceTracker;
-		}
-	}
-
+	public record Url(
+		@JsonProperty("Voice_Tracker") String VOICE_TRACKER
+	) {}
 
 	/**
 	 * Represent the delay between runs of the service
 	 */
-	static class Delay {
-		private final long IP;
+	public record Delay(
+		@JsonProperty("Ip") long IP
+	) {}
 
-		Delay(
-			@JsonProperty("Ip") long ip
-		) {
-			this.IP = ip;
+	public record InterceptorFlag(
+		@JsonProperty("Who_Woulda_Thought") boolean whoWouldaThought,
+		@JsonProperty("Twitter_Link_Embed") boolean twitterEmbed,
+		@JsonProperty("Mudae_Bot_Rolls") boolean mudaeRolls
+	) {}
+
+	public static void load(String filepath)
+		throws LoadConfigException {
+		ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+		try {
+			config = mapper.readValue(new File(filepath), Config.class);
+		} catch (IOException e) {
+			logger.fatal("Couldn't read config file", e);
+			throw new LoadConfigException(filepath, e);
 		}
 	}
 
-
-	static class Interceptors {
-		public final boolean WHO_WOULDA_THOUGHT;
-		public final boolean TWITTER_LINK_EMBED;
-		public final boolean MUDAE_BOT_ROLLS;
-
-		Interceptors(
-			@JsonProperty("Who_Woulda_Thought") boolean whoWouldaThought,
-			@JsonProperty("Twitter_Link_Embed") boolean twitterLinkEmbed,
-			@JsonProperty("Mudae_Bot_Rolls") boolean mudaeBotRolls
-		) {
-			this.WHO_WOULDA_THOUGHT = whoWouldaThought;
-			this.TWITTER_LINK_EMBED = twitterLinkEmbed;
-			this.MUDAE_BOT_ROLLS = mudaeBotRolls;
-		}
+	public static Config getConfig() {
+		return config;
 	}
 
 }
