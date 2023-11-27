@@ -26,7 +26,8 @@ class PeriodicRunner extends Thread {
 		this.end = end;
 	}
 	
-	
+
+	@Override
 	public void run() {
 		// Exit the thread immediately if initialization failed
 		if (!init.getAsBoolean()) {

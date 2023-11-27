@@ -43,7 +43,7 @@ public class MessageSubscriber {
 	public void sendMessage(String topic, String message) {
 		Iterator<Subscriber> subIterator = subscribers.getOrDefault(topic, new LinkedList<>()).iterator();
 		while (subIterator.hasNext()) {
-			TextChannel channel = Bot.getJDA().getTextChannelById(subIterator.next().getChannelSnowflake());
+			TextChannel channel = Bot.getJDA().getTextChannelById(subIterator.next().channelSnowflake());
 			
 			if (channel == null) {
 				subIterator.remove();
@@ -87,7 +87,7 @@ public class MessageSubscriber {
 			}
 			
 			for (Subscriber sub : subscribers.get(service)) {
-				sb.append(sub.getChannelSnowflake());
+				sb.append(sub.channelSnowflake());
 				sb.append(",");
 			}
 			sb.deleteCharAt(sb.length() - 1); // Remove trailing ","

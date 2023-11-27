@@ -260,16 +260,16 @@ public class Bot extends ListenerAdapter {
 
 		// Tokenize and parse message
 		List<Token> tokens = lexer.lex(msg);
-		if (tokens.isEmpty() || tokens.get(0).getType() != TokenType.COMMAND || author.isBot())
+		if (tokens.isEmpty() || tokens.get(0).type() != TokenType.COMMAND || author.isBot())
 			return; // Checking isBot() prevents user from spamming a !reverse
 		logger.info("Received: '" + msg + "'");
 
 		for (Token token : tokens) {
-			logger.debug(token.getType().name() + " | " + token.getData());
+			logger.debug(token.type().name() + " | " + token.data());
 		}
 
 		// If message ends with "&", then the message should be removed
-		if (tokens.get(tokens.size() - 1).getType() == TokenType.AMP) {
+		if (tokens.get(tokens.size() - 1).type() == TokenType.AMP) {
 			message.delete().queue();
 			tokens = tokens.subList(0, tokens.size() - 1);
 		}
@@ -288,7 +288,7 @@ public class Bot extends ListenerAdapter {
 
 		String[] args = new String[tokens.size()];
 		for (int i = 0; i < args.length; i++) {
-			args[i] = tokens.get(i).getData();
+			args[i] = tokens.get(i).data();
 		}
 		args[0] = args[0].substring(1).toLowerCase();
 
