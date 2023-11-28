@@ -86,12 +86,16 @@ public class Party extends AbstractParty {
 	@Override
 	public String getDescription() {
 		return "Creates a party in the voice chat and notifies anyone who joins to be quiet." +
-			"A single voice channel may only have one active party at a time.";
+			" A single voice channel may only have one active party at a time.";
+	}
+
+	public String getShortDescription() {
+		return "Creates a party in the voice chat and notifies anyone who joins to be quiet";
 	}
 
 	@Override
 	public SlashCommandData getCommandData() {
-		return super.getDefaultCommandData()
+		return super.getDefaultCommandData(getShortDescription())
 			.addOption(
 				OptionType.STRING,
 				"party_name",
