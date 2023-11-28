@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 11/23/2023
+ * @version 11/28/2023
  */
 public abstract class Command {
 
@@ -103,14 +103,6 @@ public abstract class Command {
 	}
 
 
-	public SlashCommandData getCommandData() {
-		String desc = "NOT YET IMPLEMENTED - " + getDescription();
-		if (desc.length() > SlashCommandData.MAX_DESCRIPTION_LENGTH) {
-			desc = desc.substring(0, SlashCommandData.MAX_DESCRIPTION_LENGTH - 3) + "...";
-		}
-
-		return Commands.slash(this.getName(), desc);
-	}
 
 
 	protected SlashCommandData getDefaultCommandData() {
@@ -131,17 +123,14 @@ public abstract class Command {
 		return Commands.slash(this.getName(), desc);
 	}
 
+	public abstract SlashCommandData getCommandData();
 
-	public void runSlash(SlashCommandInteractionEvent event) {
-		event.reply("Not yet implemented").queue();
-	}
-
+	public abstract void runSlash(SlashCommandInteractionEvent event);
 
 	public abstract void run(MessageReceivedEvent event, String[] args);
 
 	public abstract String getUsage();
 
 	public abstract String getDescription();
-//	public abstract CommandData getCommandData();
 
 }

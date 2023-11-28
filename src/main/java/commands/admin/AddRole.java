@@ -7,7 +7,10 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,7 +18,7 @@ import java.util.List;
 
 /**
  * @author Patrick Ubelhor
- * @version 12/13/2021
+ * @version 11/28/2023
  */
 public class AddRole extends Command {
 
@@ -78,6 +81,28 @@ public class AddRole extends Command {
 		}
 	}
 
+	@Override
+	public void runSlash(SlashCommandInteractionEvent event) {
+		Guild guild = event.getGuild();
+		Member self = guild.getSelfMember();
+
+		if (!self.hasPermission(net.dv8tion.jda.api.Permission.MANAGE_ROLES)) {
+			event.reply("I don't have permission to assign roles in this guild.").queue();
+			return;
+		}
+
+		Member member = event.getOption("user").getAsMember();
+		Role role = event.getOption("role").getAsRole();
+
+		if (!self.canInteract(role)) {
+			event.reply("I'm not ranked high enough to add that role.").queue();
+			return;
+		}
+
+		guild.addRoleToMember(member, role)
+			.reason("Requested by " + event.getUser().getName())
+			.queue();
+	}
 
 	@Override
 	public String getUsage() {
@@ -89,4 +114,10 @@ public class AddRole extends Command {
 		return "Adds a role to a user";
 	}
 
+	@Override
+	public SlashCommandData getCommandData() {
+		return super.getDefaultCommandData()
+			.addOption(OptionType.USER, "user", "The user on which to apply the role", true)
+			.addOption(OptionType.ROLE, "role", "The role to add to the user", true);
+	}
 }

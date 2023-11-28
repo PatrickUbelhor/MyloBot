@@ -6,7 +6,6 @@ import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
@@ -15,7 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * @author Patrick Ubelhor
- * @version 10/21/2022
+ * @version 11/27/2023
  */
 public class ClearText extends Command {
 
@@ -52,10 +51,7 @@ public class ClearText extends Command {
 			.setEphemeral(true)
 			.queue();
 
-		int num = 1;
-		for (OptionMapping option : event.getOptionsByName("num")) {
-			num = Math.toIntExact(option.getAsLong());
-		}
+		int num = event.getOption("num").getAsInt();
 
 		deleteMessages(num, event.getChannel());
 		event.reply("Finished deleting messages")

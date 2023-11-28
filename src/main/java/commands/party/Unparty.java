@@ -3,11 +3,13 @@ package commands.party;
 import lib.main.Permission;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 /**
  * @author Patrick Ubelhor
- * @version 10/12/2021
+ * @version 11/28/2023
  */
 public class Unparty extends AbstractParty {
 	
@@ -44,6 +46,31 @@ public class Unparty extends AbstractParty {
 		String response = "Disbanded party '%s'".formatted(party.getName());
 		
 		textChannel.sendMessage(response).queue();
+	}
+
+	@Override
+	public void runSlash(SlashCommandInteractionEvent event) {
+		AudioChannel audioChannel = event.getMember().getVoiceState().getChannel();
+
+		if (audioChannel == null) {
+			event.reply("You must be in a voice channel to disband a party").queue();
+			return;
+		}
+
+		if (!partyExists(audioChannel.getIdLong())) {
+			event.reply("This voice channel doesn't have a party.").queue();
+			return;
+		}
+
+		PartyState party = removeParty(audioChannel.getIdLong());
+		String response = "Disbanded party '%s'".formatted(party.getName());
+
+		event.reply(response).queue();
+	}
+
+	@Override
+	public SlashCommandData getCommandData() {
+		return super.getDefaultCommandData();
 	}
 	
 }

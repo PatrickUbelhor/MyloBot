@@ -4,6 +4,7 @@ import lib.main.Permission;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author Patrick Ubelhor
- * @version 10/16/2022
+ * @version 11/28/2023
  */
 public class Party extends AbstractParty {
 
@@ -53,12 +54,34 @@ public class Party extends AbstractParty {
 		textChannel.sendMessage("Created party '%s'".formatted(partyName)).queue();
 	}
 
+	@Override
+	public void runSlash(SlashCommandInteractionEvent event) {
+		AudioChannel audioChannel = event.getMember().getVoiceState().getChannel();
+		String partyName = event.getOption("party_name").getAsString();
+
+		if (audioChannel == null) {
+			event.reply("You must be in a voice channel to create a party.").queue();
+			return;
+		}
+
+		if (partyExists(audioChannel.getIdLong())) {
+			event.reply("This voice channel already has a party.").queue();
+			return;
+		}
+
+		List<Long> members = audioChannel.getMembers()
+			.stream()
+			.map(ISnowflake::getIdLong)
+			.collect(Collectors.toList());
+
+		createParty(audioChannel.getIdLong(), partyName, members);
+		event.reply("Created party '%s'".formatted(partyName)).queue();
+	}
 
 	@Override
 	public String getUsage() {
 		return this.getName() + " <party_name>";
 	}
-
 
 	@Override
 	public String getDescription() {
@@ -66,10 +89,9 @@ public class Party extends AbstractParty {
 			"A single voice channel may only have one active party at a time.";
 	}
 
-
 	@Override
 	public SlashCommandData getCommandData() {
-		return super.getCommandData()
+		return super.getDefaultCommandData()
 			.addOption(
 				OptionType.STRING,
 				"party_name",

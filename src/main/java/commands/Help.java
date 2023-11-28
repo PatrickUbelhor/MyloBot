@@ -5,14 +5,16 @@ import lib.main.Permission;
 import main.Bot;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * @author Patrick Ubelhor
- * @version 12/10/2021
+ * @version 11/27/2023
  */
 public class Help extends Command {
 	
@@ -21,8 +23,8 @@ public class Help extends Command {
 	public Help(Permission permission) {
 		super("help", permission);
 	}
-	
-	
+
+
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
 		MessageChannel channel = event.getChannel();
@@ -35,7 +37,17 @@ public class Help extends Command {
 			channel.sendMessage(msg).queue();
 		}
 	}
-	
+
+
+	@Override
+	public void runSlash(SlashCommandInteractionEvent event) {
+		List<String> entries = getCommandEntries();
+		List<String> messages = generateMessages(entries);
+		for (String msg : messages) {
+			event.reply(msg).queue();
+		}
+	}
+
 	
 	private List<String> getCommandEntries() {
 		LinkedList<String> entries = new LinkedList<>();
@@ -52,7 +64,7 @@ public class Help extends Command {
 		
 		return entries;
 	}
-	
+
 	
 	private List<String> generateMessages(List<String> entries) {
 		LinkedList<String> messages = new LinkedList<>();
@@ -71,17 +83,23 @@ public class Help extends Command {
 		
 		return messages;
 	}
-	
+
 	
 	@Override
 	public String getUsage() {
 		return getName();
 	}
-	
+
 	
 	@Override
 	public String getDescription() {
 		return "Prints a message containing all bot commands and their descriptions";
+	}
+
+
+	@Override
+	public SlashCommandData getCommandData() {
+		return super.getDefaultCommandData();
 	}
 	
 }

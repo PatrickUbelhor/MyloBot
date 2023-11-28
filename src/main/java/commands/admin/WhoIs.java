@@ -23,7 +23,7 @@ import java.util.Set;
 
 /**
  * @author Patrick Ubelhor
- * @version 10/16/2022
+ * @version 11/27/2023
  */
 public class WhoIs extends Command {
 
@@ -36,7 +36,6 @@ public class WhoIs extends Command {
 		Nickname: %s
 		 Created: %s
 		  Joined: %s
-		  Status: %s
 		  Avatar: %s
 		   Roles: %s
 		""";
@@ -84,7 +83,6 @@ public class WhoIs extends Command {
 	}
 
 	private List<MessageCreateData> getInfoAboutMembers(Collection<Member> members) {
-
 		return members.parallelStream()
 			.map(member -> {
 				User user = member.getUser();
@@ -95,7 +93,6 @@ public class WhoIs extends Command {
 					member.getEffectiveName(),
 					user.getTimeCreated(),
 					member.getTimeJoined(),
-					member.getOnlineStatus().getKey(),
 					user.getEffectiveAvatarUrl(),
 					rolesToString(member.getRoles())
 				);

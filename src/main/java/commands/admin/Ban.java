@@ -5,7 +5,10 @@ import lib.main.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @author Patrick Ubelhor
- * @version 2/27/2020
+ * @version 11/28/2023
  */
 public class Ban extends Command {
 
@@ -83,6 +86,22 @@ public class Ban extends Command {
 		}
 	}
 
+	@Override
+	public void runSlash(SlashCommandInteractionEvent event) {
+		Member member = event.getOption("user").getAsMember();
+		assert member != null;
+
+		member.ban(0, TimeUnit.SECONDS).queue(
+			success -> {
+				logger.info("Successfully banned {}", member.getEffectiveName());
+				event.reply("Successfully banned %s!".formatted(member.getEffectiveName())).queue();
+			},
+			error -> {
+				logger.warn("Error banning user: {}\n{}", member.getEffectiveName(), error.toString());
+				event.reply("Error banning user: %s".formatted(member.getEffectiveName())).queue();
+			}
+		);
+	}
 
 	@Override
 	public String getUsage() {
@@ -90,9 +109,14 @@ public class Ban extends Command {
 		return "ban @users";
 	}
 
-
 	@Override
 	public String getDescription() {
 		return "Bans a user from the guild";
+	}
+
+	@Override
+	public SlashCommandData getCommandData() {
+		return super.getDefaultCommandData()
+			.addOption(OptionType.USER, "user", "The user to ban", true);
 	}
 }
