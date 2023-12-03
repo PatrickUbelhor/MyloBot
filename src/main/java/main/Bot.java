@@ -1,5 +1,6 @@
 package main;
 
+import commands.Bug;
 import commands.GetVoiceLog;
 import commands.Help;
 import commands.Random;
@@ -67,7 +68,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author Patrick Ubelhor
- * @version 11/26/2023
+ * @version 12/2/2023
  */
 public class Bot extends ListenerAdapter {
 
@@ -134,6 +135,7 @@ public class Bot extends ListenerAdapter {
 			new Party(Permission.USER),
 			new Unparty(Permission.USER),
 			new WhoIs(Permission.USER),
+			new Bug(Permission.USER),
 			new ClearText(Permission.MOD),
 			new AddRole(Permission.MOD),
 			new Kick(Permission.MOD),
