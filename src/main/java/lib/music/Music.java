@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -21,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Patrick Ubelhor
- * @version 10/16/2022
+ * @version 12/3/2023
  */
 public abstract class Music extends Command {
 	
@@ -56,7 +57,7 @@ public abstract class Music extends Command {
 	
 	
 	// TODO: Should return track scheduler. On failure, should throw exception.
-	protected final boolean joinAudioChannel(Guild guild, Member member) {
+	protected final boolean joinAudioChannel(Guild guild, Member member, MessageChannel logChannel) {
 		AudioManager guildAudioManager = guild.getAudioManager();
 		AudioChannelUnion audioChannel = member.getVoiceState().getChannel();
 
@@ -73,6 +74,7 @@ public abstract class Music extends Command {
 		Long guildId = guild.getIdLong();
 		trackSchedulers.putIfAbsent(guildId, generatePlayer());
 		TrackScheduler trackScheduler = trackSchedulers.get(guildId);
+		trackScheduler.setLogChannel(logChannel);
 		
 		guildAudioManager.setSendingHandler(new AudioPlayerSendHandler(trackScheduler.getPlayer()));
 		guildAudioManager.openAudioConnection(vc);

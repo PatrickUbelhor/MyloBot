@@ -7,6 +7,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import main.Bot;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author Patrick Ubelhor, Evan Perry Grove
- * @version 8/11/2021, 5/4/2018
+ * @version 12/3/2023, 5/4/2018
  */
 public class TrackScheduler extends AudioEventAdapter {
 	
@@ -25,6 +26,7 @@ public class TrackScheduler extends AudioEventAdapter {
 	
 	private final AudioPlayer player;
 	private final BlockingDeque<AudioTrack> queue;
+	private MessageChannel logChannel;
 	
 	TrackScheduler(AudioPlayer player) {
 		this.player = player;
@@ -38,15 +40,34 @@ public class TrackScheduler extends AudioEventAdapter {
 	public AudioPlayer getPlayer() {
 		return player;
 	}
-	
+
+
+	/**
+	 * Sets the channel to which the scheduler should send messages.
+	 * This is particularly helpful in case of an error, so that users can
+	 * be notified when and why a song failed to play.
+	 *
+	 * @param channel The channel to message on error.
+	 */
+	public void setLogChannel(MessageChannel channel) {
+		this.logChannel = channel;
+	}
+
+
+	private void sendMessage(String message) {
+		if (logChannel != null) {
+			logChannel.sendMessage(message).queue();
+		}
+	}
+
 	
 	/**
 	 * Essentially a proxy to player#startTrack(), but updates the bot's Discord status
 	 * with the name of this song.
 	 *
-	 * @param track The track to start playing, passing null will stop the current track and return false
-	 * @param noInterrupt Whether to only start if nothing else is playing
-	 * @return True if the track was started
+	 * @param track The track to start playing, passing null will stop the current track and return false.
+	 * @param noInterrupt Whether to only start if nothing else is playing.
+	 * @return True if the track was started.
 	 */
 	private boolean startTrack(AudioTrack track, boolean noInterrupt) {
 		boolean result = player.startTrack(track, noInterrupt);
@@ -221,12 +242,23 @@ public class TrackScheduler extends AudioEventAdapter {
 	@Override
 	public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception) {
 		logger.error("[Music] Track Exception | {}\n{}", exception.severity.name(), exception.getMessage(), exception);
+
+		if (exception.severity == FriendlyException.Severity.COMMON) {
+			String msg = "Failed to play track '%s'\n%s".formatted(track.getInfo().title, exception.getMessage());
+			sendMessage(msg);
+		}
+
+		String msg = "Critical error: failed to play track '%s'. Check the log file for more details"
+			.formatted(track.getInfo().title);
+		sendMessage(msg);
 	}
 	
 	
 	@Override
 	public void onTrackStuck(AudioPlayer player, AudioTrack track, long thresholdMs) {
 		logger.warn("[Music] Track is stuck | Threshold {}ms", thresholdMs);
+		sendMessage("The track got stuck. Skipping...");
+
 		playNext();
 	}
 	

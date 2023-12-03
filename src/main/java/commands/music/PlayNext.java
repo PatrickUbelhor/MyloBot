@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 /**
  * @author Patrick Ubelhor
- * @version 10/16/2022
+ * @version 12/3/2023
  *
  */
 public final class PlayNext extends Music {
@@ -27,7 +27,7 @@ public final class PlayNext extends Music {
 		if (args.length < 2) return;
 		
 		// Joins the voice channel if not in one
-		if (!joinAudioChannel(event.getGuild(), event.getMember())) {
+		if (!joinAudioChannel(event.getGuild(), event.getMember(), event.getChannel())) {
 			event.getChannel().sendMessage("You must be in a voice channel to begin playing music.").queue();
 			return; // If we failed to join a voice channel, return
 		}
@@ -41,7 +41,7 @@ public final class PlayNext extends Music {
 	@Override
 	public void runSlash(SlashCommandInteractionEvent event) {
 		// Joins the voice channel if not in one
-		if (!joinAudioChannel(event.getGuild(), event.getMember())) {
+		if (!joinAudioChannel(event.getGuild(), event.getMember(), event.getChannel())) {
 			event.reply("You must be in a voice channel to begin playing music.").queue();
 			return; // If we failed to join a voice channel, return
 		}
