@@ -15,7 +15,7 @@ import java.util.List;
 
 /**
  * @author Patrick Ubelhor
- * @version 10/16/2022
+ * @version 12/4/2022
  */
 public class PeekQueue extends Music {
 
@@ -28,14 +28,7 @@ public class PeekQueue extends Music {
 	public void run(MessageReceivedEvent event, String[] args) {
 		TrackScheduler trackScheduler = Music.trackSchedulers.get(event.getGuild().getIdLong());
 		String playbackQueueMessage = generateQueueMessage(trackScheduler);
-
-		List<String> splitMessages = SplitUtil.split(
-			playbackQueueMessage,
-			2000,
-			true,
-			Strategy.NEWLINE, // split on '\n' characters if possible
-			Strategy.ANYWHERE // otherwise split on the limit
-		);
+		List<String> splitMessages = splitMessages(playbackQueueMessage);
 
 		MessageChannel channel = event.getChannel();
 		splitMessages.forEach(msg -> channel.sendMessage(msg).queue());
@@ -46,16 +39,19 @@ public class PeekQueue extends Music {
 	public void runSlash(SlashCommandInteractionEvent event) {
 		TrackScheduler trackScheduler = Music.trackSchedulers.get(event.getGuild().getIdLong());
 		String playbackQueueMessage = generateQueueMessage(trackScheduler);
+		List<String> splitMessages = splitMessages(playbackQueueMessage);
 
-		List<String> splitMessages = SplitUtil.split(
-			playbackQueueMessage,
+		splitMessages.forEach(msg -> event.reply(msg).queue());
+	}
+
+	private List<String> splitMessages(String entireMessage) {
+		return SplitUtil.split(
+			entireMessage,
 			2000,
 			true,
 			Strategy.NEWLINE, // split on '\n' characters if possible
 			Strategy.ANYWHERE // otherwise split on the limit
 		);
-
-		splitMessages.forEach(msg -> event.reply(msg).queue());
 	}
 
 	private String generateQueueMessage(TrackScheduler scheduler) {

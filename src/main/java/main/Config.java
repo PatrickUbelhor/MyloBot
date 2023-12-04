@@ -13,12 +13,13 @@ import java.util.List;
 
 /**
  * @author Patrick Ubelhor
- * @version 11/26/2023
+ * @version 12/2/2023
  */
 public record Config(
 	@JsonProperty("Discord_Token") String DISCORD_TOKEN,
 	@JsonProperty("Music_Volume") int MUSIC_VOLUME,
 	@JsonProperty("At_Everyone_Path") String AT_EVERYONE_PATH,
+	@JsonProperty("Admin_Id") String ADMIN_ID,
 	@JsonProperty("Group") Groups groups,
 	@JsonProperty("Url") Url url,
 	@JsonProperty("Delay") Delay delay,

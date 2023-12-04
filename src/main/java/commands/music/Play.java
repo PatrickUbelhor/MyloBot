@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 /**
  * @author Patrick Ubelhor
- * @version 10/16/2022
+ * @version 12/3/2023
  *
  * TODO: Make bot leave voice channel after some period of inactivity
  * TODO: Ability to loop
@@ -31,7 +31,7 @@ public final class Play extends Music {
 		if (args.length < 2) return;
 		
 		// Joins the voice channel if not in one
-		if (!joinAudioChannel(event.getGuild(), event.getMember())) {
+		if (!joinAudioChannel(event.getGuild(), event.getMember(), event.getChannel())) {
 			event.getChannel().sendMessage("You must be in a voice channel to begin playing music.").queue();
 			return; // If we failed to join a voice channel, return
 		}
@@ -43,23 +43,12 @@ public final class Play extends Music {
 			return;
 		}
 		
-		// Build YouTube query
-		StringBuilder queryBuilder = new StringBuilder();
-		for (int i = 1; i < args.length; i++) {
-			queryBuilder.append(args[i]);
-			queryBuilder.append(' ');
-		}
-		String query = queryBuilder.toString().strip();
-		
-		// TODO: send YouTube query
-		// TODO: Fix PlayNext
-				
 	}
 	
 	@Override
 	public void runSlash(SlashCommandInteractionEvent event) {
 		// Joins the voice channel if not in one
-		if (!joinAudioChannel(event.getGuild(), event.getMember())) {
+		if (!joinAudioChannel(event.getGuild(), event.getMember(), event.getChannel())) {
 			event.reply("You must be in a voice channel to begin playing music.").queue();
 			return; // If we failed to join a voice channel, return
 		}
