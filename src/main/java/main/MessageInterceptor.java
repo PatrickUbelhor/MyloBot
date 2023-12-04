@@ -3,7 +3,7 @@ package main;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -14,7 +14,7 @@ import java.util.Random;
 
 /**
  * @author Patrick Ubelhor
- * @version 11/24/2023
+ * @version 12/4/2023
  */
 public class MessageInterceptor {
 
@@ -30,7 +30,7 @@ public class MessageInterceptor {
 		User author = event.getAuthor();
 		Message message = event.getMessage();
 		MessageChannel channel = event.getChannel();
-		TextChannel ch = event.getChannel().asTextChannel();
+		GuildMessageChannel ch = event.getGuildChannel();
 		String msg = message.getContentDisplay().trim();
 
 		interceptAtEveryone(message, channel);
@@ -71,7 +71,7 @@ public class MessageInterceptor {
 	 *
 	 * @param author The author of the message
 	 */
-	private void interceptEvanPost(User author, TextChannel ch) {
+	private void interceptEvanPost(User author, GuildMessageChannel ch) {
 		if (author.getIdLong() == 104652244556718080L) {
 			String dm = "Evan just posted in " + ch.getGuild().getName() + "#" + ch.getName() + "."
 				+ "\nA citation will be required.";

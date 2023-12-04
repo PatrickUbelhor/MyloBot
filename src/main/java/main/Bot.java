@@ -68,7 +68,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author Patrick Ubelhor
- * @version 12/2/2023
+ * @version 12/4/2023
  */
 public class Bot extends ListenerAdapter {
 
@@ -251,6 +251,18 @@ public class Bot extends ListenerAdapter {
 
 	@Override
 	public void onMessageReceived(MessageReceivedEvent event) {
+		switch (event.getChannelType()) {
+			case TEXT:
+				// Do nothing here (for now)
+				break;
+			case PRIVATE:
+				// If from a DM, do special stuff here
+				return;
+			case GROUP:
+				// If from a group message, do special stuff here
+				return;
+			// TODO: There's a lot of new channel types to add now
+		}
 
 		User author = event.getAuthor();
 		Message message = event.getMessage();
@@ -274,18 +286,6 @@ public class Bot extends ListenerAdapter {
 		if (tokens.get(tokens.size() - 1).type() == TokenType.AMP) {
 			message.delete().queue();
 			tokens = tokens.subList(0, tokens.size() - 1);
-		}
-
-		switch (event.getChannelType()) {
-			case TEXT:
-				// Do nothing here (for now)
-				break;
-			case PRIVATE:
-				// If from a DM, do special stuff here
-				return;
-			case GROUP:
-				// If from a group message, do special stuff here
-				return;
 		}
 
 		String[] args = new String[tokens.size()];
