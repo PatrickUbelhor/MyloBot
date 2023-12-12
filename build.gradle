@@ -3,6 +3,8 @@ version '6.2.0'
 
 apply plugin: 'java'
 apply plugin: 'application'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
 
 java {
 	sourceCompatibility = JavaVersion.VERSION_21
@@ -14,6 +16,18 @@ application {
 }
 
 
+buildscript {
+	repositories {
+		mavenCentral()
+		maven {
+			url "https://plugins.gradle.org/m2/"
+		}
+	}
+	dependencies {
+		classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.7.11'
+	}
+}
+
 repositories {
 	mavenCentral()
 	maven {
@@ -21,6 +35,7 @@ repositories {
 		url 'https://m2.dv8tion.net/releases'
 	}
 }
+
 
 dependencies {
 	implementation group: 'jakarta.annotation', name: 'jakarta.annotation-api', version: '2.1.1'
@@ -30,6 +45,10 @@ dependencies {
 	implementation group: 'com.squareup.okhttp3',       name: 'okhttp',         version: '4.12.0'
 	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.16.0'
 	implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml',  version: '2.16.0'
+
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
 }
 
 jar {
