@@ -1,6 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
-import './App.css';
+import './App.scss';
+import NowPlaying from './now-playing/NowPlaying';
 
 function App() {
 	return (
@@ -10,20 +11,17 @@ function App() {
 			</header>
 			<main className="content">
 				<div className="song-queue">
-					<div className="now-playing">
-						<h2>Now Playing:</h2>
-						<span className="now-playing__album-icon"></span>
-						<span>some song</span>
+					<NowPlaying />
+					<div className="controls">
+						<button className="pause-play">||</button>
+						<button className="skip">&gt;</button>
 					</div>
-					<ul className="upcoming-songs">
-						<li>Song 1</li>
-						<li>Song 2</li>
-						<li>Song 3</li>
-					</ul>
-				</div>
-				<div className="controls">
-					<button className="pause-play">||</button>
-					<button className="skip">&gt;</button>
+					<h2>Queue</h2>
+					<ol className="upcoming-songs">
+						<li>Dark Elves City | Menzoberranzan | ASMR Ambience | 1 Hour</li>
+						<li>Combat Music Megamix - The Witcher 3: Wild Hunt</li>
+						<li>The Infinite Library📜✨ [ Immersive Ambience Experience ]</li>
+					</ol>
 				</div>
 				<img src={logo} className="App-logo" alt="logo" />
 			</main>
