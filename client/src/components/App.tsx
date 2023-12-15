@@ -11,7 +11,9 @@ function App() {
 			<main className="content">
 				<div className="song-queue">
 					<div className="now-playing">
-						Now Playing: some song
+						<h2>Now Playing:</h2>
+						<span className="now-playing__album-icon"></span>
+						<span>some song</span>
 					</div>
 					<ul className="upcoming-songs">
 						<li>Song 1</li>

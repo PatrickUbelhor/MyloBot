@@ -38,6 +38,13 @@
 	padding: 12px 16px;
 }
 
+.now-playing__album-icon {
+  display: flex;
+  height: 64px;
+  width: 64px;
+  background-color: #dbdedf;
+}
+
 .upcoming-songs li {
 	padding: 12px;
 }
