@@ -24,7 +24,7 @@ import java.util.List;
 
 /**
  * @author Patrick Ubelhor
- * @version 11/23/2023
+ * @version 9/27/2024
  * <p>
  * TODO: Could divide into a FileWriterTrigger and WebTrigger????
  * TODO: Add code to onReconnect in Bot.java to send proper events to all triggers
@@ -93,7 +93,7 @@ public class VoiceTrackerTrigger implements Trigger {
 		logger.debug("[Voice] JOIN {} | {}", member.getEffectiveName(), channel.getName());
 
 		handleJoin(channel, member);
-		voiceTrackerClient.logJoinEvent(member.getIdLong(), channel.getIdLong());
+//		voiceTrackerClient.logJoinEvent(member.getIdLong(), channel.getIdLong());
 
 		if (voiceTrackerFileWriter != null) {
 			voiceTrackerFileWriter.enter(channel, member);
@@ -109,10 +109,10 @@ public class VoiceTrackerTrigger implements Trigger {
 		Member member = event.getMember();
 
 		handleJoin(channelJoined, member);
-		voiceTrackerClient.logJoinEvent(
-			member.getIdLong(),
-			channelJoined.getIdLong()
-		);
+//		voiceTrackerClient.logJoinEvent(
+//			member.getIdLong(),
+//			channelJoined.getIdLong()
+//		);
 
 		if (voiceTrackerFileWriter != null) {
 			voiceTrackerFileWriter.enter(channelJoined, member);
@@ -124,7 +124,7 @@ public class VoiceTrackerTrigger implements Trigger {
 		logger.debug("[Voice] LEAVE {} | {}", member.getEffectiveName(), channel.getName());
 
 		handleLeave(channel, member);
-		voiceTrackerClient.logLeaveEvent(member.getIdLong(), channel.getIdLong());
+//		voiceTrackerClient.logLeaveEvent(member.getIdLong(), channel.getIdLong());
 
 		if (voiceTrackerFileWriter != null) {
 			voiceTrackerFileWriter.exit(channel, member);
@@ -140,10 +140,10 @@ public class VoiceTrackerTrigger implements Trigger {
 		Member member = event.getMember();
 
 		handleLeave(channelLeft, member);
-		voiceTrackerClient.logLeaveEvent(
-			member.getIdLong(),
-			channelLeft.getIdLong()
-		);
+//		voiceTrackerClient.logLeaveEvent(
+//			member.getIdLong(),
+//			channelLeft.getIdLong()
+//		);
 
 		if (voiceTrackerFileWriter != null) {
 			voiceTrackerFileWriter.exit(channelLeft, member);
@@ -165,11 +165,11 @@ public class VoiceTrackerTrigger implements Trigger {
 
 		handleLeave(channelLeft, member);
 		handleJoin(channelJoined, member);
-		voiceTrackerClient.logMoveEvent(
-			member.getIdLong(),
-			channelLeft.getIdLong(),
-			channelJoined.getIdLong()
-		);
+//		voiceTrackerClient.logMoveEvent(
+//			member.getIdLong(),
+//			channelLeft.getIdLong(),
+//			channelJoined.getIdLong()
+//		);
 
 		if (voiceTrackerFileWriter != null) {
 			voiceTrackerFileWriter.move(event);
@@ -197,12 +197,12 @@ public class VoiceTrackerTrigger implements Trigger {
 				joinedUsers.removeAll(originalUsers);
 				leftUsers.removeAll(activeUserIds);
 
-				joinedUsers.forEach(userId -> voiceTrackerClient.logJoinEvent(userId, channel.getIdLong()));
-				leftUsers.forEach(userId -> voiceTrackerClient.logLeaveEvent(userId, channel.getIdLong()));
+//				joinedUsers.forEach(userId -> voiceTrackerClient.logJoinEvent(userId, channel.getIdLong()));
+//				leftUsers.forEach(userId -> voiceTrackerClient.logLeaveEvent(userId, channel.getIdLong()));
 				continue;
 			}
 
-			activeUserIds.forEach(userId -> voiceTrackerClient.logJoinEvent(userId, channel.getIdLong()));
+//			activeUserIds.forEach(userId -> voiceTrackerClient.logJoinEvent(userId, channel.getIdLong()));
 			channels.put(channel.getIdLong(), activeUserIds);
 		}
 	}

@@ -66,7 +66,7 @@ public class AddRole extends Command {
 
 		// Check if we are higher in the role hierarchy than the target role.
 		// Can't add roles equal or higher than us.
-		Role role = possibleRoles.get(0);
+		Role role = possibleRoles.getFirst();
 		logger.debug("Found role: {} | {}", role.getName(), role.getId());
 		if (!self.canInteract(role)) {
 			channel.sendMessage("I'm not ranked high enough to add that role.").queue();

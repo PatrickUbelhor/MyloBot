@@ -44,7 +44,7 @@ public class Mute extends Command {
 		for (Member member : members) {
 			guild.mute(member, true).queue(
 				success -> {
-					logger.info("Successfully muted " + member.getEffectiveName());
+					logger.info("Successfully muted {}", member.getEffectiveName());
 					channel.sendMessage("Successfully muted ")
 						.addContent(member.getEffectiveName())
 						.addContent("!")

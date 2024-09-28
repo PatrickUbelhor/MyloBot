@@ -68,7 +68,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author Patrick Ubelhor
- * @version 12/4/2023
+ * @version 9/27/2024
  */
 public class Bot extends ListenerAdapter {
 
@@ -274,16 +274,16 @@ public class Bot extends ListenerAdapter {
 
 		// Tokenize and parse message
 		List<Token> tokens = lexer.lex(msg);
-		if (tokens.isEmpty() || tokens.get(0).type() != TokenType.COMMAND || author.isBot())
+		if (tokens.isEmpty() || tokens.getFirst().type() != TokenType.COMMAND || author.isBot())
 			return; // Checking isBot() prevents user from spamming a !reverse
-		logger.info("Received: '" + msg + "'");
+		logger.info("Received: '{}'", msg);
 
 		for (Token token : tokens) {
-			logger.debug(token.type().name() + " | " + token.data());
+			logger.debug("{} | {}", token.type().name(), token.data());
 		}
 
 		// If message ends with "&", then the message should be removed
-		if (tokens.get(tokens.size() - 1).type() == TokenType.AMP) {
+		if (tokens.getLast().type() == TokenType.AMP) {
 			message.delete().queue();
 			tokens = tokens.subList(0, tokens.size() - 1);
 		}
