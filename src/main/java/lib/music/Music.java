@@ -4,10 +4,6 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
-import dev.lavalink.youtube.clients.TvHtml5Embedded;
-import dev.lavalink.youtube.clients.TvHtml5EmbeddedWithThumbnail;
-import dev.lavalink.youtube.clients.Web;
-import dev.lavalink.youtube.clients.skeleton.Client;
 import lib.commands.Command;
 import lib.main.Permission;
 import main.Config;
@@ -26,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Patrick Ubelhor
- * @version 6/18/2024
+ * @version 12/6/2024
  */
 public abstract class Music extends Command {
 	
@@ -45,12 +41,7 @@ public abstract class Music extends Command {
 	protected boolean subInit() {
 		if (!hasInit.getAndSet(true)) { // Each music command (play, skip, etc.) will call this. Only want to run it once.
 			dev.lavalink.youtube.YoutubeAudioSourceManager youtubeSourceManager =
-				new dev.lavalink.youtube.YoutubeAudioSourceManager(
-					false,
-					new TvHtml5Embedded(),
-					new TvHtml5EmbeddedWithThumbnail(),
-					new Web()
-				);
+				new dev.lavalink.youtube.YoutubeAudioSourceManager(false);
 
 			playerManager.registerSourceManager(youtubeSourceManager);
 			playerManager.enableGcMonitoring();
