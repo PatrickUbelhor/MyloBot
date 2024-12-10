@@ -14,7 +14,7 @@ import java.util.Random;
 
 /**
  * @author Patrick Ubelhor
- * @version 12/4/2023
+ * @version 12/9/2024
  */
 public class MessageInterceptor {
 
@@ -31,15 +31,16 @@ public class MessageInterceptor {
 		Message message = event.getMessage();
 		MessageChannel channel = event.getChannel();
 		GuildMessageChannel ch = event.getGuildChannel();
-		String msg = message.getContentDisplay().trim();
+		String text = message.getContentDisplay().trim();
+		String lowercaseText = text.toLowerCase();
 
 		interceptAtEveryone(message, channel);
 		interceptEvanPost(author, ch);
-		interceptDavidMeme(author, channel, msg);
-		interceptWhoWouldaThoughtMeme(msg, channel);
-		interceptAramMsg(author, message, msg);
-		interceptTwitterLink(message, msg);
-		interceptMudaeBotRoll(message, msg);
+		interceptDavidMeme(author, channel, lowercaseText);
+		interceptWhoWouldaThoughtMeme(text, channel);
+		interceptAramMsg(author, message, text);
+		interceptTwitterLink(message, text);
+		interceptMudaeBotRoll(message, text);
 	}
 
 
@@ -87,39 +88,39 @@ public class MessageInterceptor {
 	 *
 	 * @param author The author of the message
 	 * @param ch     The channel to which the message was sent
-	 * @param msg    The content of the message
+	 * @param lowercaseText    The lowercased content of the message
 	 */
-	private void interceptDavidMeme(User author, MessageChannel ch, String msg) {
+	private void interceptDavidMeme(User author, MessageChannel ch, String lowercaseText) {
 		if (!author.isBot() && ch.getName().equals("david")) {
-			if (msg.toLowerCase().contains("david")) {
+			if (lowercaseText.contains("david")) {
 				ch.sendMessage("David").queue();
 			}
 
-			if (msg.toLowerCase().contains("like")) {
+			if (lowercaseText.contains("like")) {
 				ch.sendMessage("I like moster trucks and David").queue();
 			}
 
-			if (msg.toLowerCase().contains("coming") && author.getIdLong() == 104400026993709056L) {
+			if (lowercaseText.contains("coming") && author.getIdLong() == 104400026993709056L) {
 				ch.sendMessage("David is coming").queue();
 			}
 
-			if (msg.toLowerCase().contains("rick") || msg.toLowerCase().contains("morty")) {
+			if (lowercaseText.contains("rick") || lowercaseText.contains("morty")) {
 				ch.sendMessage("Rick & Morty").queue();
 			}
 
-			if (msg.toLowerCase().contains("julia") || msg.toLowerCase().contains("10th letter") || msg.toLowerCase().contains("tenth letter")) {
+			if (lowercaseText.contains("julia") || lowercaseText.contains("10th letter") || lowercaseText.contains("tenth letter")) {
 				ch.sendMessage("Daily reminder").queue();
 			}
 
-			if (msg.toLowerCase().contains("what") && msg.toLowerCase().contains("is")) {
+			if (lowercaseText.contains("what") && lowercaseText.contains("is")) {
 				ch.sendMessage("me").queue();
 			}
 
-			if (msg.toLowerCase().contains("jeff")) {
+			if (lowercaseText.contains("jeff")) {
 				ch.sendMessage("Mah namma Jeeefffff").queue();
 			}
 
-			if (msg.toLowerCase().contains("minion") || msg.toLowerCase().contains("minin")) {
+			if (lowercaseText.contains("minion") || lowercaseText.contains("minin")) {
 				ch.sendMessage("MINION").queue();
 			}
 		}
