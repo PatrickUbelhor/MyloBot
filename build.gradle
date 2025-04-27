@@ -1,5 +1,5 @@
 group 'com.patrickubelhor'
-version '6.2.9'
+version '6.2.10'
 
 apply plugin: 'java'
 apply plugin: 'application'
@@ -24,7 +24,7 @@ dependencies {
 	implementation group: 'jakarta.annotation', name: 'jakarta.annotation-api', version: '3.0.0'
 	implementation group: 'org.apache.logging.log4j',   name: 'log4j-core',     version: '2.24.2'
 	implementation group: 'dev.arbjerg',				name: 'lavaplayer',		version: '2.2.3'
-	implementation group: 'dev.lavalink.youtube',		name: 'v2',				version: '1.12.0'
+	implementation group: 'dev.lavalink.youtube',		name: 'v2',				version: '1.13.0'
 	implementation group: 'net.dv8tion',                name: 'JDA',            version: '5.2.1'
 	implementation group: 'com.squareup.okhttp3',       name: 'okhttp',         version: '4.12.0'
 	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.18.2'
