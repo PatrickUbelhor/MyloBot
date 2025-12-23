@@ -1,5 +1,6 @@
 package lib.triggers;
 
+import jakarta.annotation.Nonnull;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 
 /**
@@ -8,8 +9,8 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
  */
 public interface Trigger {
 	
-	void onGuildVoiceJoin(GuildVoiceUpdateEvent event);
-	void onGuildVoiceLeave(GuildVoiceUpdateEvent event);
-	void onGuildVoiceMove(GuildVoiceUpdateEvent event);
+	void onGuildVoiceJoin(@Nonnull GuildVoiceUpdateEvent event);
+	void onGuildVoiceLeave(@Nonnull GuildVoiceUpdateEvent event);
+	void onGuildVoiceMove(@Nonnull GuildVoiceUpdateEvent event);
 	
 }

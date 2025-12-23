@@ -6,6 +6,8 @@ import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import lib.commands.Command;
 import lib.main.Permission;
+import lib.triggers.Trigger;
+import main.Bot;
 import main.Config;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -13,18 +15,23 @@ import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.managers.AudioManager;
+import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 /**
  * @author Patrick Ubelhor
- * @version 12/6/2024
+ * @version 12/23/2025
  */
-public abstract class Music extends Command {
+public abstract class Music extends Command implements Trigger {
 	
 	protected static AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
 	private static final AtomicBoolean hasInit = new AtomicBoolean(false);
@@ -93,24 +100,19 @@ public abstract class Music extends Command {
 
 	protected final boolean leaveAudioChannel(MessageReceivedEvent event) {
 		Long guildId = event.getGuild().getIdLong();
-
-		if (!audioManagers.containsKey(guildId)) {
-			event.getChannel().sendMessage("I can't leave a server I'm not in!").queue();
-			return false;
-		}
-
-		AudioManager audioManager = audioManagers.get(guildId);
-		audioManager.closeAudioConnection();
-		audioManagers.remove(guildId);
-		return true;
+		return leaveAudioChannel(guildId, msg -> event.getChannel().sendMessage(msg).queue());
 	}
 
 
 	protected final boolean leaveAudioChannel(SlashCommandInteractionEvent event) {
 		Long guildId = event.getGuild().getIdLong();
+		return leaveAudioChannel(guildId, msg -> event.reply(msg).queue());
+	}
 
+
+	protected final boolean leaveAudioChannel(Long guildId, Consumer<String> handleCannotLeave) {
 		if (!audioManagers.containsKey(guildId)) {
-			event.reply("I can't leave a server I'm not in!").queue();
+			handleCannotLeave.accept("I can't leave a server I'm not in!");
 			return false;
 		}
 
@@ -128,6 +130,28 @@ public abstract class Music extends Command {
 		player.addListener(trackScheduler); // TODO: How is this not a circular reference?
 
 		return trackScheduler;
+	}
+
+	@Override
+	public final void onGuildVoiceJoin(@NonNull GuildVoiceUpdateEvent event) {}
+
+	@Override
+	public final void onGuildVoiceLeave(@NotNull GuildVoiceUpdateEvent event) {
+		AudioChannelUnion channel = event.getChannelLeft();
+		if (channel == null) {
+			return;
+		}
+
+		VoiceChannel vc = channel.asVoiceChannel();
+		List<Member> members = vc.getMembers();
+		if (members.size() == 1 && members.getFirst().getIdLong() == Bot.getJDA().getSelfUser().getIdLong()) {
+			leaveAudioChannel(channel.getGuild().getIdLong(), msg -> {});
+		}
+	}
+
+	@Override
+	public final void onGuildVoiceMove(@NonNull GuildVoiceUpdateEvent event) {
+		onGuildVoiceLeave(event);
 	}
 
 }
