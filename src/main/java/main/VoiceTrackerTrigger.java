@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jspecify.annotations.NonNull;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -102,7 +103,7 @@ public class VoiceTrackerTrigger implements Trigger {
 
 
 	@Override
-	public void onGuildVoiceJoin(GuildVoiceUpdateEvent event) {
+	public void onGuildVoiceJoin(@NonNull GuildVoiceUpdateEvent event) {
 		logger.debug("[Voice] JOIN {} | {}", event.getMember().getEffectiveName(), event.getChannelJoined().getName());
 
 		AudioChannel channelJoined = event.getChannelJoined();
@@ -133,7 +134,7 @@ public class VoiceTrackerTrigger implements Trigger {
 
 
 	@Override
-	public void onGuildVoiceLeave(GuildVoiceUpdateEvent event) {
+	public void onGuildVoiceLeave(@NonNull GuildVoiceUpdateEvent event) {
 		logger.debug("[Voice] LEAVE {} | {}", event.getMember().getEffectiveName(), event.getChannelLeft().getName());
 
 		AudioChannel channelLeft = event.getChannelLeft();
@@ -152,7 +153,7 @@ public class VoiceTrackerTrigger implements Trigger {
 
 
 	@Override
-	public void onGuildVoiceMove(GuildVoiceUpdateEvent event) {
+	public void onGuildVoiceMove(@NonNull GuildVoiceUpdateEvent event) {
 		logger.debug("[Voice] MOVE {} | {} -> {}",
 			event.getMember().getEffectiveName(),
 			event.getChannelLeft().getName(),
