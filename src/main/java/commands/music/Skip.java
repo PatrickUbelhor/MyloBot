@@ -1,6 +1,7 @@
 package commands.music;
 
-import lib.music.Music;
+import lib.commands.Command;
+import lib.music.MusicManager;
 import lib.music.TrackScheduler;
 import lib.main.Permission;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -12,9 +13,9 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 /**
  * @author Patrick Ubelhor
- * @version 10/16/2022
+ * @version 12/24/2025
  */
-public final class Skip extends Music {
+public final class Skip extends Command {
 	
 	public Skip(Permission permission) {
 		super("skip", permission);
@@ -23,7 +24,7 @@ public final class Skip extends Music {
 	
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
-		TrackScheduler trackScheduler = Music.trackSchedulers.get(event.getGuild().getIdLong());
+		TrackScheduler trackScheduler = MusicManager.getInstance().getTrackScheduler(event.getGuild().getIdLong());
 		MessageChannel channel = event.getChannel();
 		
 		if (args.length == 1) {
@@ -43,7 +44,7 @@ public final class Skip extends Music {
 			quantity = option.getAsString();
 		}
 		
-		TrackScheduler trackScheduler = Music.trackSchedulers.get(event.getGuild().getIdLong());
+		TrackScheduler trackScheduler = MusicManager.getInstance().getTrackScheduler(event.getGuild().getIdLong());
 		String response = this.skip(trackScheduler, quantity);
 		event.reply(response).queue();
 	}
