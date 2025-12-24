@@ -1,9 +1,9 @@
 package main;
 
 import commands.party.AbstractParty;
+import jakarta.annotation.Nonnull;
 import lib.triggers.Trigger;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
-import org.jspecify.annotations.NonNull;
 
 /**
  * @author Patrick Ubelhor
@@ -12,19 +12,19 @@ import org.jspecify.annotations.NonNull;
 public class PartyTrigger implements Trigger {
 	
 	@Override
-	public final void onGuildVoiceJoin(@NonNull GuildVoiceUpdateEvent event) {
+	public final void onGuildVoiceJoin(@Nonnull GuildVoiceUpdateEvent event) {
 		AbstractParty.handleJoin(event.getChannelJoined(), event.getMember());
 	}
 	
 	
 	@Override
-	public final void onGuildVoiceLeave(@NonNull GuildVoiceUpdateEvent event) {
+	public final void onGuildVoiceLeave(@Nonnull GuildVoiceUpdateEvent event) {
 		AbstractParty.handleLeave(event.getChannelLeft());
 	}
 	
 	
 	@Override
-	public final void onGuildVoiceMove(@NonNull GuildVoiceUpdateEvent event) {
+	public final void onGuildVoiceMove(@Nonnull GuildVoiceUpdateEvent event) {
 		AbstractParty.handleLeave(event.getChannelLeft());
 		AbstractParty.handleJoin(event.getChannelJoined(), event.getMember());
 	}

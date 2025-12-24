@@ -4,6 +4,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
+import jakarta.annotation.Nonnull;
 import lib.commands.Command;
 import lib.main.Permission;
 import lib.triggers.Trigger;
@@ -19,8 +20,6 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.managers.AudioManager;
-import org.jetbrains.annotations.NotNull;
-import org.jspecify.annotations.NonNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -133,10 +132,10 @@ public abstract class Music extends Command implements Trigger {
 	}
 
 	@Override
-	public final void onGuildVoiceJoin(@NonNull GuildVoiceUpdateEvent event) {}
+	public final void onGuildVoiceJoin(@Nonnull GuildVoiceUpdateEvent event) {}
 
 	@Override
-	public final void onGuildVoiceLeave(@NotNull GuildVoiceUpdateEvent event) {
+	public final void onGuildVoiceLeave(@Nonnull GuildVoiceUpdateEvent event) {
 		AudioChannelUnion channel = event.getChannelLeft();
 		if (channel == null) {
 			return;
@@ -150,7 +149,7 @@ public abstract class Music extends Command implements Trigger {
 	}
 
 	@Override
-	public final void onGuildVoiceMove(@NonNull GuildVoiceUpdateEvent event) {
+	public final void onGuildVoiceMove(@Nonnull GuildVoiceUpdateEvent event) {
 		onGuildVoiceLeave(event);
 	}
 
