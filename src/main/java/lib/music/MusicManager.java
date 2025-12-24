@@ -102,6 +102,13 @@ public final class MusicManager implements Closeable {
 	}
 
 
+	// TODO: Probably want to add functions like queueNext() and queueLast() to better decouple
+	// the implementation from individual commands
+	public AudioPlayerManager getAudioPlayerManager() {
+		return audioPlayerManager;
+	}
+
+
 	public boolean leaveAudioChannel(MessageReceivedEvent event) {
 		Long guildId = event.getGuild().getIdLong();
 		return leaveAudioChannel(guildId, msg -> event.getChannel().sendMessage(msg).queue());

@@ -2,7 +2,6 @@ package commands.music;
 
 import lib.commands.Command;
 import lib.main.Permission;
-import lib.music.Music;
 import lib.music.MusicManager;
 import lib.music.TrackScheduler;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
