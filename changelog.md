@@ -1,8 +1,21 @@
 # Changelog
+Format: `Major.Feature.Minor`.
+
+Major:
+Large code refactors that may significantly affect performance,
+project organization, or control flow. Also includes addition of large
+suites of features.
+
+Feature:
+Changes that add small-to-medium size features that impact the user interface.
+
+Minor:
+Code refactors that do not impact the user interface.
 
 ## 6.3.1
 ### Misc
 * Added a changelog
+* Refactored music commands to use a central service, instead of inheritance, for audio management
 
 ## 6.3.0
 ### Features
