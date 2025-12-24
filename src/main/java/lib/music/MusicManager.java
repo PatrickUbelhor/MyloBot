@@ -5,6 +5,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import dev.lavalink.youtube.YoutubeAudioSourceManager;
+import jakarta.annotation.Nullable;
 import main.Config;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -91,6 +92,16 @@ public final class MusicManager implements Closeable {
 	}
 
 
+	/**
+	 * @param guildId The snowflake ID of the guild
+	 * @return The track schedule for the guild. `Null` if the bot has never
+	 * 	 joined a voice channel for that guild.
+	 */
+	public @Nullable TrackScheduler getTrackScheduler(Long guildId) {
+		return trackSchedulers.get(guildId);
+	}
+
+
 	public boolean leaveAudioChannel(MessageReceivedEvent event) {
 		Long guildId = event.getGuild().getIdLong();
 		return leaveAudioChannel(guildId, msg -> event.getChannel().sendMessage(msg).queue());
@@ -103,6 +114,11 @@ public final class MusicManager implements Closeable {
 	}
 
 
+	/**
+	 * @param guildId The snowflake ID of the guild containing the voice channel to leave
+	 * @param handleCannotLeave A function that consumes a human-readable error message if there is no call to leave
+	 * @return True if the bot leaves successfully. Otherwise, false.
+	 */
 	public boolean leaveAudioChannel(Long guildId, Consumer<String> handleCannotLeave) {
 		if (!audioManagers.containsKey(guildId)) {
 			handleCannotLeave.accept("I can't leave a server I'm not in!");
