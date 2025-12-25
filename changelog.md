@@ -12,6 +12,12 @@ Changes that add small-to-medium size features that impact the user interface.
 Minor:
 Code refactors that do not impact the user interface.
 
+## 6.3.2
+### Misc
+* Updated Java to v25
+* Updated JDA to v6.2.0
+* Updated OkHttp to v5.3.2
+
 ## 6.3.1
 ### Misc
 * Added a changelog
