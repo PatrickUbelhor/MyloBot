@@ -17,6 +17,7 @@ Code refactors that do not impact the user interface.
 * Updated Java to v25
 * Updated JDA to v6.2.0
 * Updated OkHttp to v5.3.2
+* Updated Gradle wrapper to v9.2.1
 
 ## 6.3.1
 ### Misc
