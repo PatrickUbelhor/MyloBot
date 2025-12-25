@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 
 /**
  * @author Patrick Ubelhor
- * @version 12/24/2025
+ * @version 12/25/2025
  */
 public final class MusicManager implements Closeable {
 
@@ -32,9 +32,9 @@ public final class MusicManager implements Closeable {
 		return instance;
 	}
 
-	private static AudioPlayerManager audioPlayerManager = new DefaultAudioPlayerManager();
-	private static HashMap<Long, TrackScheduler> trackSchedulers = new HashMap<>();
-	private static HashMap<Long, AudioManager> audioManagers = new HashMap<>();
+	private final AudioPlayerManager audioPlayerManager = new DefaultAudioPlayerManager();
+	private final HashMap<Long, TrackScheduler> trackSchedulers = new HashMap<>();
+	private final HashMap<Long, AudioManager> audioManagers = new HashMap<>();
 
 	public MusicManager() {
 		YoutubeAudioSourceManager youtubeAudioSourceManager = new YoutubeAudioSourceManager(false);
