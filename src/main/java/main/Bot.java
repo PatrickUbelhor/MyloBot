@@ -53,6 +53,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.IPChange;
@@ -101,8 +102,10 @@ public class Bot extends ListenerAdapter {
 			jda = JDABuilder.createDefault(Config.getConfig().DISCORD_TOKEN())
 				.enableIntents(
 					GatewayIntent.GUILD_MEMBERS,
+					GatewayIntent.GUILD_VOICE_STATES,
 					GatewayIntent.MESSAGE_CONTENT
 				)
+				.enableCache(CacheFlag.VOICE_STATE)
 				.setMemberCachePolicy(MemberCachePolicy.ALL)
 				.setBulkDeleteSplittingEnabled(false)
 				.setCompression(Compression.NONE)
