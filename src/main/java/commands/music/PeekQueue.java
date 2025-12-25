@@ -1,7 +1,8 @@
 package commands.music;
 
+import lib.commands.Command;
 import lib.main.Permission;
-import lib.music.Music;
+import lib.music.MusicManager;
 import lib.music.TrackScheduler;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -15,9 +16,9 @@ import java.util.List;
 
 /**
  * @author Patrick Ubelhor
- * @version 12/4/2022
+ * @version 12/24/2025
  */
-public class PeekQueue extends Music {
+public class PeekQueue extends Command {
 
 	public PeekQueue(Permission permission) {
 		super("queue", permission);
@@ -26,7 +27,7 @@ public class PeekQueue extends Music {
 	@Override
 	// TODO: add ability to view pages of queue
 	public void run(MessageReceivedEvent event, String[] args) {
-		TrackScheduler trackScheduler = Music.trackSchedulers.get(event.getGuild().getIdLong());
+		TrackScheduler trackScheduler = MusicManager.getInstance().getTrackScheduler(event.getGuild().getIdLong());
 		String playbackQueueMessage = generateQueueMessage(trackScheduler);
 		List<String> splitMessages = splitMessages(playbackQueueMessage);
 
@@ -37,7 +38,7 @@ public class PeekQueue extends Music {
 	@Override
 	// TODO: add ability to view pages of queue
 	public void runSlash(SlashCommandInteractionEvent event) {
-		TrackScheduler trackScheduler = Music.trackSchedulers.get(event.getGuild().getIdLong());
+		TrackScheduler trackScheduler = MusicManager.getInstance().getTrackScheduler(event.getGuild().getIdLong());
 		String playbackQueueMessage = generateQueueMessage(trackScheduler);
 		List<String> splitMessages = splitMessages(playbackQueueMessage);
 

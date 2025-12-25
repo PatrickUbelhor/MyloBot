@@ -1,6 +1,7 @@
 package commands.music;
 
-import lib.music.Music;
+import lib.commands.Command;
+import lib.music.MusicManager;
 import lib.music.QueueNextAudioLoadResultHandler;
 import lib.music.TrackScheduler;
 import lib.main.Permission;
@@ -12,10 +13,10 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 /**
  * @author Patrick Ubelhor
- * @version 12/3/2023
+ * @version 12/24/2025
  *
  */
-public final class PlayNext extends Music {
+public final class PlayNext extends Command {
 
 	public PlayNext(Permission permission) {
 		super("playnext", permission);
@@ -23,25 +24,28 @@ public final class PlayNext extends Music {
 	
 	@Override
 	public void run(MessageReceivedEvent event, String[] args) {
+		MusicManager musicManager = MusicManager.getInstance();
 		
 		if (args.length < 2) return;
 		
 		// Joins the voice channel if not in one
-		if (!joinAudioChannel(event.getGuild(), event.getMember(), event.getChannel())) {
+		if (!musicManager.joinAudioChannel(event.getGuild(), event.getMember(), event.getChannel())) {
 			event.getChannel().sendMessage("You must be in a voice channel to begin playing music.").queue();
 			return; // If we failed to join a voice channel, return
 		}
 		
 		if (args[1].startsWith("http") || args[1].startsWith("www")) {
-			TrackScheduler trackScheduler = Music.trackSchedulers.get(event.getGuild().getIdLong());
-			playerManager.loadItem(args[1], new QueueNextAudioLoadResultHandler(trackScheduler));
+			TrackScheduler trackScheduler = musicManager.getTrackScheduler(event.getGuild().getIdLong());
+			musicManager.getAudioPlayerManager().loadItem(args[1], new QueueNextAudioLoadResultHandler(trackScheduler));
 		}
 	}
 	
 	@Override
 	public void runSlash(SlashCommandInteractionEvent event) {
+		MusicManager musicManager = MusicManager.getInstance();
+
 		// Joins the voice channel if not in one
-		if (!joinAudioChannel(event.getGuild(), event.getMember(), event.getChannel())) {
+		if (!musicManager.joinAudioChannel(event.getGuild(), event.getMember(), event.getChannel())) {
 			event.reply("You must be in a voice channel to begin playing music.").queue();
 			return; // If we failed to join a voice channel, return
 		}
@@ -56,8 +60,8 @@ public final class PlayNext extends Music {
 			return;
 		}
 		
-		TrackScheduler trackScheduler = Music.trackSchedulers.get(event.getGuild().getIdLong());
-		playerManager.loadItem(link, new QueueNextAudioLoadResultHandler(trackScheduler));
+		TrackScheduler trackScheduler = musicManager.getTrackScheduler(event.getGuild().getIdLong());
+		musicManager.getAudioPlayerManager().loadItem(link, new QueueNextAudioLoadResultHandler(trackScheduler));
 		event.reply("Adding song to front of queue: " + link).queue();
 	}
 	

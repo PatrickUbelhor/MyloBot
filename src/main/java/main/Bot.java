@@ -68,7 +68,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author Patrick Ubelhor
- * @version 12/23/2025
+ * @version 12/24/2025
  */
 public class Bot extends ListenerAdapter {
 
@@ -82,7 +82,7 @@ public class Bot extends ListenerAdapter {
 	private static VoiceTrackerFileWriter tracker; // TODO: make sure this is a singleton so it gets closed
 	private static VoiceTrackerTrigger voiceTrackerTrigger;
 	private static PartyTrigger partyTrigger;
-	private static Play playCommandAndTrigger;
+	private static AutoLeaveTrigger autoLeaveTrigger;
 	private static List<Role> userRoles;
 	private static List<Role> modRoles;
 
@@ -121,11 +121,11 @@ public class Bot extends ListenerAdapter {
 		messageInterceptor = new MessageInterceptor();
 		partyTrigger = new PartyTrigger();
 		voiceTrackerTrigger = new VoiceTrackerTrigger(jda);
-		playCommandAndTrigger = new Play(Permission.USER);
+		autoLeaveTrigger = new AutoLeaveTrigger();
 
 		Command[] preInitCommands = {
 			new Help(Permission.USER),
-			playCommandAndTrigger,
+			new Play(Permission.USER),
 			new PlayNext(Permission.USER),
 			new Skip(Permission.USER),
 			new Pause(Permission.USER),
@@ -412,7 +412,7 @@ public class Bot extends ListenerAdapter {
 		if (event.getChannelLeft() == null) {
 			partyTrigger.onGuildVoiceJoin(event);
 			voiceTrackerTrigger.onGuildVoiceJoin(event);
-			playCommandAndTrigger.onGuildVoiceJoin(event);
+			autoLeaveTrigger.onGuildVoiceJoin(event);
 			return;
 		}
 
@@ -420,14 +420,14 @@ public class Bot extends ListenerAdapter {
 		if (event.getChannelJoined() == null) {
 			partyTrigger.onGuildVoiceLeave(event);
 			voiceTrackerTrigger.onGuildVoiceLeave(event);
-			playCommandAndTrigger.onGuildVoiceLeave(event);
+			autoLeaveTrigger.onGuildVoiceLeave(event);
 			return;
 		}
 
 		// Else, user moved
 		partyTrigger.onGuildVoiceMove(event);
 		voiceTrackerTrigger.onGuildVoiceMove(event);
-		playCommandAndTrigger.onGuildVoiceMove(event);
+		autoLeaveTrigger.onGuildVoiceMove(event);
 	}
 
 }
