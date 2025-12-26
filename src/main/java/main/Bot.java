@@ -69,7 +69,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author Patrick Ubelhor
- * @version 12/24/2025
+ * @version 12/26/2025
  */
 public class Bot extends ListenerAdapter {
 
@@ -84,8 +84,8 @@ public class Bot extends ListenerAdapter {
 	private static VoiceTrackerTrigger voiceTrackerTrigger;
 	private static PartyTrigger partyTrigger;
 	private static AutoLeaveTrigger autoLeaveTrigger;
-	private static List<Role> userRoles;
 	private static List<Role> modRoles;
+	private static List<Long> adminUserIds;
 
 	public static void main(String[] args) {
 		Config.load(Constants.CONFIG_PATH);
@@ -150,15 +150,14 @@ public class Bot extends ListenerAdapter {
 			new Subscribe(Permission.MOD),
 			new Unsubscribe(Permission.MOD),
 			new Disconnect(Permission.MOD),
-			new Shutdown(Permission.MOD),
-			new GetIp(Permission.MOD),
-			new GetVoiceLog(Permission.MOD, tracker)
+			new Shutdown(Permission.ADMIN),
+			new GetIp(Permission.ADMIN),
+			new GetVoiceLog(Permission.ADMIN, tracker)
 		};
 
 		Service[] preInitServices = {
 			new IPChange(Config.getConfig().delay().IP()),
 		};
-
 
 		// Initialize triggers
 		voiceTrackerTrigger.init();
@@ -210,14 +209,13 @@ public class Bot extends ListenerAdapter {
 	private static void loadRoles() {
 		logger.info("Getting roles...");
 		// TODO: Check here if role actually exists?
-		userRoles = Config.getConfig().groups().USER_GROUP_IDS()
-			.parallelStream()
-			.map(id -> jda.getRoleById(id))
-			.collect(Collectors.toList());
-
 		modRoles = Config.getConfig().groups().MOD_GROUP_IDS()
 			.parallelStream()
 			.map(id -> jda.getRoleById(id))
+			.collect(Collectors.toList());
+		adminUserIds = Config.getConfig().groups().ADMIN_USER_IDS()
+			.parallelStream()
+			.map(Long::parseLong)
 			.collect(Collectors.toList());
 		logger.info("Got roles");
 	}
@@ -299,45 +297,47 @@ public class Bot extends ListenerAdapter {
 		}
 		args[0] = args[0].substring(1).toLowerCase();
 
-		// Runs the command, if it exists and the user has valid permission levels. Otherwise prints an error message
-		if (commands.containsKey(args[0])) {
-			Command command = commands.get(args[0]);
-			List<Role> authorRoles = event.getMember().getRoles();
-
-			boolean isUser = userRoles.parallelStream()
-				.anyMatch(authorRoles::contains);
-
-			boolean isMod = modRoles.parallelStream()
-				.anyMatch(authorRoles::contains);
-
-
-			// Call the command, given the user has proper permissions
-			String response;
-			switch (command.getPerm()) {
-				case DISABLED:
-					response = String.format("``%s`` has been disabled by the bot admin, sorry!", args[0]);
-					author.openPrivateChannel().complete().sendMessage(response).queue();
-					break;
-				case USER:
-					if (isUser || isMod) {
-						command.run(event, args);
-					} else {
-						response = String.format("You do not have permission to use ``%s``, sorry!", args[0]);
-						author.openPrivateChannel().complete().sendMessage(response).queue();
-					}
-					break;
-				case MOD:
-					if (isMod) {
-						command.run(event, args);
-					} else {
-						response = String.format("You do not have permission to use ``%s``, sorry!", args[0]);
-						author.openPrivateChannel().complete().sendMessage(response).queue();
-					}
-					break;
-			}
-
-		} else {
+		// If the command doesn't exist, print an error message
+		if (!commands.containsKey(args[0])) {
 			channel.sendMessage("Unknown or unavailable command").queue();
+			return;
+		}
+
+		// Runs the command if the user has valid permission levels. Otherwise prints an error message
+		Command command = commands.get(args[0]);
+		List<Role> authorRoles = event.getMember().getRoles();
+
+		boolean isMod = modRoles.parallelStream()
+			.anyMatch(authorRoles::contains);
+		boolean isAdmin = adminUserIds.parallelStream()
+			.anyMatch(id -> id == author.getIdLong());
+
+		// Call the command, given the user has proper permissions
+		String response;
+		switch (command.getPerm()) {
+			case DISABLED:
+				response = String.format("``%s`` has been disabled by the bot admin, sorry!", args[0]);
+				author.openPrivateChannel().complete().sendMessage(response).queue();
+				break;
+			case USER:
+				command.run(event, args);
+				break;
+			case MOD:
+				if (isMod || isAdmin) {
+					command.run(event, args);
+				} else {
+					response = String.format("You do not have permission to use ``%s``, sorry!", args[0]);
+					author.openPrivateChannel().complete().sendMessage(response).queue();
+				}
+				break;
+			case ADMIN:
+				if (isAdmin) {
+					command.run(event, args);
+				} else {
+					response = String.format("You do not have permission to use ``%s``, sorry!", args[0]);
+					author.openPrivateChannel().complete().sendMessage(response).queue();
+				}
+				break;
 		}
 	}
 
@@ -347,13 +347,13 @@ public class Bot extends ListenerAdapter {
 		super.onSlashCommandInteraction(event);
 		String commandName = event.getName();
 		Command command = commands.get(commandName);
+		User author = event.getUser();
 		List<Role> authorRoles = event.getMember().getRoles();
-
-		boolean isUser = userRoles.parallelStream()
-			.anyMatch(authorRoles::contains);
 
 		boolean isMod = modRoles.parallelStream()
 			.anyMatch(authorRoles::contains);
+		boolean isAdmin = adminUserIds.parallelStream()
+			.anyMatch(id -> id == author.getIdLong());
 
 		String response;
 		User user = event.getUser();
@@ -363,12 +363,7 @@ public class Bot extends ListenerAdapter {
 				user.openPrivateChannel().complete().sendMessage(response).queue();
 				break;
 			case USER:
-				if (isUser || isMod) {
-					command.runSlash(event);
-				} else {
-					response = String.format("You do not have permission to use ``%s``, sorry!", commandName);
-					user.openPrivateChannel().complete().sendMessage(response).queue();
-				}
+				command.runSlash(event);
 				break;
 			case MOD:
 				if (isMod) {
@@ -376,6 +371,14 @@ public class Bot extends ListenerAdapter {
 				} else {
 					response = String.format("You do not have permission to use ``%s``, sorry!", commandName);
 					user.openPrivateChannel().complete().sendMessage(response).queue();
+				}
+				break;
+			case ADMIN:
+				if (isAdmin) {
+					command.runSlash(event);
+				} else {
+					response = String.format("You do not have permission to use ``%s``, sorry!", commandName);
+					author.openPrivateChannel().complete().sendMessage(response).queue();
 				}
 				break;
 		}

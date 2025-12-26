@@ -13,7 +13,7 @@ import java.util.List;
 
 /**
  * @author Patrick Ubelhor
- * @version 12/2/2023
+ * @version 12/26/2025
  */
 public record Config(
 	@JsonProperty("Discord_Token") String DISCORD_TOKEN,
@@ -30,7 +30,7 @@ public record Config(
 	private static Config config;
 
 	public record Groups(
-		@JsonProperty("Users") List<String> USER_GROUP_IDS,
+		@JsonProperty("Admins") List<String> ADMIN_USER_IDS,
 		@JsonProperty("Mods") List<String> MOD_GROUP_IDS
 	) {}
 
