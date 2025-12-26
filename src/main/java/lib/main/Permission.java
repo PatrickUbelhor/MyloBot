@@ -2,10 +2,10 @@ package lib.main;
 
 /**
  * @author Patrick Ubelhor
- * @version 03/17/2018
+ * @version 12/26/2025
  */
 public enum Permission {
 	
-	DISABLED, USER, MOD
+	DISABLED, USER, MOD, ADMIN
 	
 }

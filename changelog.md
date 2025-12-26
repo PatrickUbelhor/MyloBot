@@ -12,6 +12,12 @@ Changes that add small-to-medium size features that impact the user interface.
 Minor:
 Code refactors that do not impact the user interface.
 
+## 6.4.0
+### Features
+* Removed role checks for the 'user' permission group
+  * Any guild member can now run all the basic commands
+* Added an 'admin' permission level for sensitive commands, like 'shutdown' or 'getip'
+
 ## 6.3.2
 ### Misc
 * Updated Java to v25
