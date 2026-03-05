@@ -1,5 +1,5 @@
 group = 'com.patrickubelhor'
-version = '6.4.0'
+version = '6.4.1'
 
 apply plugin: 'java'
 apply plugin: 'application'
@@ -24,11 +24,16 @@ dependencies {
 	implementation 'jakarta.annotation:jakarta.annotation-api:3.0.0'
 	implementation 'org.apache.logging.log4j:log4j-core:2.25.3'
 	implementation 'dev.arbjerg:lavaplayer:2.2.6'
-	implementation 'dev.lavalink.youtube:v2:1.16.0'
-	implementation 'net.dv8tion:JDA:6.2.0'
+	implementation 'dev.lavalink.youtube:v2:1.18.0'
+	implementation 'net.dv8tion:JDA:6.3.1'
 	implementation 'com.squareup.okhttp3:okhttp:5.3.2'
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.5'
 	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.18.5'
+
+	implementation 'club.minnced:jdave-native-linux-x86-64:0.1.7'
+//	implementation 'club.minnced:jdave-native-linux-aarch64:0.1.7'
+//	implementation 'club.minnced:jdave-native-win-x86-64:0.1.7'
+//	implementation 'club.minnced:jdave-native-darwin:0.1.7'
 }
 
 jar {
@@ -37,7 +42,8 @@ jar {
 	manifest {
 		attributes(
 			'Implementation-Title': 'MyloBot',
-			'Main-Class': application.mainClass
+			'Main-Class': application.mainClass,
+			'Enable-Native-Access': 'ALL-UNNAMED'
 		)
 	}
 
