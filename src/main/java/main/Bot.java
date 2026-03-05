@@ -1,5 +1,6 @@
 package main;
 
+import club.minnced.discord.jdave.interop.JDaveSessionFactory;
 import commands.Bug;
 import commands.GetVoiceLog;
 import commands.Help;
@@ -35,6 +36,7 @@ import lib.services.Service;
 import log.VoiceTrackerFileWriter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.audio.AudioModuleConfig;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
@@ -69,7 +71,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author Patrick Ubelhor
- * @version 12/26/2025
+ * @version 3/4/2026
  */
 public class Bot extends ListenerAdapter {
 
@@ -109,6 +111,10 @@ public class Bot extends ListenerAdapter {
 				.setMemberCachePolicy(MemberCachePolicy.ALL)
 				.setBulkDeleteSplittingEnabled(false)
 				.setCompression(Compression.NONE)
+				.setAudioModuleConfig(
+					new AudioModuleConfig()
+						.withDaveSessionFactory(new JDaveSessionFactory())
+				)
 				.build()
 				.awaitReady();
 		} catch (Exception e) {
